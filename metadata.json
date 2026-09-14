@@ -1,0 +1,6 @@
+{
+  "name": "Vasbyt — SA Running & Club Finder",
+  "description": "South African road & trail running calendar, club directory, interactive route maps, elevation profiles, and GPS watch sync to Garmin, Apple Watch, Polar, and Coros.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
