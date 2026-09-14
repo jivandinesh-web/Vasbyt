@@ -100,14 +100,21 @@ export interface Club {
 }
 
 export interface UserProfile {
+  uid?: string;
+  email?: string;
+  photoURL?: string;
   name: string;
   province: string;
   club: string;
+  licenseNumber?: string;
+  category?: string;
   pb5k: string;
   pb10k: string;
   pbHalf: string;
   pbFull: string;
+  pbUltra?: string;
   goal: string;
+  updatedAt?: string;
 }
 
 export interface UserFavorites {

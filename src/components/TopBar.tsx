@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Home, Map, Calendar, Users, User, Star } from 'lucide-react';
+import { Home, Map, Calendar, Users, User, Star, LogIn, HelpCircle } from 'lucide-react';
 import { TabType } from '../types';
+import { useAuth } from '../context/AuthContext';
+import { GoogleSignInButton } from './GoogleSignInButton';
 
 interface TopBarProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
   favoriteCount: number;
+  onOpenHowTo: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
   activeTab,
   onTabChange,
   favoriteCount,
+  onOpenHowTo,
 }) => {
+  const { user, loginWithGoogle, authLoading } = useAuth();
+
   const [clockText, setClockText] = useState<{ day: string; time: string }>({
     day: '',
     time: '',
@@ -107,22 +113,88 @@ export const TopBar: React.FC<TopBarProps> = ({
           })}
         </nav>
 
-        {/* SAST Live Clock & Quick Info */}
-        <div id="vasbyt-clock-wrapper" className="flex items-center gap-3">
+        {/* Right Section: Clock & Google Auth Status */}
+        <div id="vasbyt-topbar-right" className="flex items-center gap-2 sm:gap-3">
+          {/* How To Button */}
+          <button
+            id="btn-topbar-howto"
+            type="button"
+            onClick={onOpenHowTo}
+            title="How to use Vasbyt SA Running guide"
+            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-[#1b212b] hover:bg-[#242c38] text-[#d8b34a] hover:text-[#f5efe3] border border-[#d8b34a]/30 hover:border-[#d8b34a]/70 rounded-xs text-xs font-bold tracking-wider uppercase transition-colors cursor-pointer"
+          >
+            <HelpCircle className="w-3.5 h-3.5 text-[#d8b34a]" />
+            <span>How To</span>
+          </button>
+
+          {/* SAST Live Clock */}
           <div
             id="vasbyt-clock"
-            className="text-right leading-tight font-mono tracking-tight"
+            className="hidden lg:block text-right leading-tight font-mono tracking-tight"
           >
             <div className="text-[11px] text-[#6d7580] flex items-center justify-end gap-1.5">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#7c8f5c] animate-pulse" />
               <span>{clockText.day}</span>
-              <span className="hidden sm:inline text-[9px] text-[#6d7580] uppercase">SAST</span>
+              <span className="text-[9px] text-[#6d7580] uppercase">SAST</span>
             </div>
             <div className="text-sm font-bold text-[#f5efe3]">{clockText.time}</div>
           </div>
+
+          {/* Google Account Profile Button or Sign-In */}
+          {user ? (
+            <button
+              id="topbar-user-pill"
+              onClick={() => onTabChange('profile')}
+              title={`Logged in as ${user.displayName || user.email} · View Profile`}
+              className="flex items-center gap-2 bg-[#1b212b] hover:bg-[#242c38] border border-[#2c333f] hover:border-[#e28b37]/50 rounded-full py-1 pl-1.5 pr-3 transition-colors cursor-pointer"
+            >
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName || 'Google Profile'}
+                  referrerPolicy="no-referrer"
+                  className="w-6 h-6 rounded-full object-cover border border-[#e28b37]"
+                />
+              ) : (
+                <div className="w-6 h-6 rounded-full bg-[#e28b37]/20 border border-[#e28b37] flex items-center justify-center text-[#e28b37] text-xs font-bold">
+                  {(user.displayName || user.email || 'R').charAt(0).toUpperCase()}
+                </div>
+              )}
+              <span className="text-xs font-semibold text-[#f5efe3] max-w-[90px] sm:max-w-[120px] truncate">
+                {user.displayName?.split(' ')[0] || 'Runner'}
+              </span>
+            </button>
+          ) : (
+            <button
+              id="topbar-google-signin-btn"
+              onClick={loginWithGoogle}
+              disabled={authLoading}
+              title="Sign in with Google to sync profile & fixtures"
+              className="inline-flex items-center gap-1.5 bg-[#242c38] hover:bg-[#2c3645] border border-[#3d4756] hover:border-[#e28b37]/60 text-xs font-semibold text-[#f5efe3] py-1.5 px-2.5 sm:px-3 rounded-xs transition-colors cursor-pointer"
+            >
+              <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
+              </svg>
+              <span className="hidden sm:inline">Sign In</span>
+            </button>
+          )}
         </div>
       </div>
     </header>
   );
 };
-

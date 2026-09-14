@@ -10,14 +10,19 @@ import {
 } from '../data/runningData';
 import { MajorRace } from '../types';
 import { ElevationProfile } from './ElevationProfile';
-import { Calendar, ArrowRight, MapPin, Trophy, Sparkles, ChevronRight, X } from 'lucide-react';
+import { Calendar, ArrowRight, MapPin, Trophy, Sparkles, ChevronRight, X, HelpCircle } from 'lucide-react';
 
 interface HomeViewProps {
   onSelectProvince: (provId: string) => void;
   onSelectRaceTab: () => void;
+  onOpenHowTo?: () => void;
 }
 
-export const HomeView: React.FC<HomeViewProps> = ({ onSelectProvince, onSelectRaceTab }) => {
+export const HomeView: React.FC<HomeViewProps> = ({
+  onSelectProvince,
+  onSelectRaceTab,
+  onOpenHowTo,
+}) => {
   const [selectedMajor, setSelectedMajor] = useState<MajorRace | null>(null);
 
   // Compute next upcoming race
@@ -73,7 +78,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectProvince, onSelectRa
 
           <div>
             {/* Quick action buttons */}
-            <div className="flex flex-wrap gap-3 mb-6">
+            <div className="flex flex-wrap items-center gap-3 mb-6">
               <button
                 onClick={onSelectRaceTab}
                 className="inline-flex items-center gap-2 bg-[#e28b37] text-[#1b1103] hover:bg-[#eb9a4a] text-sm font-bold px-4 py-2.5 rounded-xs transition-colors cursor-pointer"
@@ -82,6 +87,17 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectProvince, onSelectRa
                 Browse Race Calendar
                 <ArrowRight className="w-4 h-4" />
               </button>
+
+              {onOpenHowTo && (
+                <button
+                  id="home-btn-howto"
+                  onClick={onOpenHowTo}
+                  className="inline-flex items-center gap-2 bg-[#1b212b] hover:bg-[#242c38] text-[#d8b34a] hover:text-[#f5efe3] border border-[#d8b34a]/40 hover:border-[#d8b34a]/80 text-sm font-bold px-4 py-2.5 rounded-xs transition-colors cursor-pointer"
+                >
+                  <HelpCircle className="w-4 h-4 text-[#d8b34a]" />
+                  How To Use Vasbyt
+                </button>
+              )}
             </div>
 
             {/* Stats Row */}

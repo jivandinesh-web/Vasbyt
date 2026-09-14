@@ -1,7 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { PROVINCES, getProvince } from '../data/runningData';
 import { UserProfile, UserFavorites } from '../types';
-import { User, Award, MapPin, Target, Star, Check, Trash2 } from 'lucide-react';
+import {
+  User,
+  Award,
+  MapPin,
+  Target,
+  Star,
+  Check,
+  Trash2,
+  Cloud,
+  CloudCheck,
+  LogOut,
+  ShieldCheck,
+  AlertCircle,
+  Hash,
+  Activity,
+} from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { GoogleSignInButton } from './GoogleSignInButton';
+
+const ATHLETE_CATEGORIES = [
+  'Senior (20–39)',
+  'Veteran (40–49)',
+  'Master (50–59)',
+  'Grandmaster (60–69)',
+  'Great Grandmaster (70+)',
+  'Junior (U20)',
+];
 
 interface ProfileViewProps {
   profile: UserProfile;
@@ -18,8 +44,21 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   onToggleRaceFavorite,
   onToggleClubFavorite,
 }) => {
+  const {
+    user,
+    authLoading,
+    loginError,
+    syncState,
+    lastSyncedAt,
+    loginWithGoogle,
+    logout,
+    clearLoginError,
+    saveCloudProfile,
+  } = useAuth();
+
   const [formData, setFormData] = useState<UserProfile>(profile);
   const [showSavedToast, setShowSavedToast] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   useEffect(() => {
     setFormData(profile);
@@ -29,11 +68,18 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSaving(true);
     onSaveProfile(formData);
+
+    if (user) {
+      await saveCloudProfile(formData, favorites);
+    }
+
+    setIsSaving(false);
     setShowSavedToast(true);
-    setTimeout(() => setShowSavedToast(false), 2000);
+    setTimeout(() => setShowSavedToast(false), 2500);
   };
 
   const homeProv = getProvince(profile.province);
@@ -46,23 +92,130 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   return (
     <div id="view-profile" className="space-y-6 pb-8 text-left">
       {/* Header */}
-      <div className="pb-3 border-b border-[#2c333f]">
-        <h1
-          id="profile-pagehead"
-          className="font-display font-extrabold text-2xl sm:text-3xl tracking-wider uppercase text-[#f5efe3] leading-none"
-        >
-          Runner Passport
-        </h1>
-        <p className="text-xs sm:text-sm text-[#9aa1ac] mt-1">
-          Manage your personal records, provincial athletics affiliation, and saved race fixtures.
-        </p>
+      <div className="pb-3 border-b border-[#2c333f] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1
+            id="profile-pagehead"
+            className="font-display font-extrabold text-2xl sm:text-3xl tracking-wider uppercase text-[#f5efe3] leading-none"
+          >
+            Runner Passport &amp; Profile
+          </h1>
+          <p className="text-xs sm:text-sm text-[#9aa1ac] mt-1">
+            Manage your personal records, provincial athletics affiliation, and saved fixtures.
+          </p>
+        </div>
+
+        {/* Cloud Sync Status Indicator */}
+        {user && (
+          <div className="flex items-center gap-2 bg-[#171c24] border border-[#2c333f] px-3 py-1.5 rounded-xs text-xs text-[#9aa1ac]">
+            <span className="w-2 h-2 rounded-full bg-[#7c8f5c] animate-pulse" />
+            <Cloud className="w-3.5 h-3.5 text-[#7c8f5c]" />
+            <span>
+              {syncState === 'saving'
+                ? 'Syncing to Cloud…'
+                : lastSyncedAt
+                ? `Cloud Synced (${lastSyncedAt})`
+                : 'Cloud Connected'}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Google Authentication Card */}
+      <div
+        id="profile-google-auth-card"
+        className="bg-gradient-to-r from-[#171c24] via-[#1a202c] to-[#171c24] border border-[#2c333f] rounded-xs p-4 sm:p-5 shadow-sm"
+      >
+        {user ? (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName || 'Google Profile'}
+                  referrerPolicy="no-referrer"
+                  className="w-12 h-12 rounded-full border-2 border-[#e28b37] object-cover shadow-xs shrink-0"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-[#e28b37]/20 border-2 border-[#e28b37] flex items-center justify-center text-[#e28b37] font-bold text-lg shrink-0">
+                  {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-sm sm:text-base text-[#f5efe3]">
+                    {user.displayName || profile.name || 'Runner'}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[#7c8f5c] bg-[#7c8f5c]/10 border border-[#7c8f5c]/30 px-2 py-0.5 rounded-full">
+                    <ShieldCheck className="w-3 h-3" />
+                    Google Verified
+                  </span>
+                </div>
+                <p className="text-xs text-[#9aa1ac] font-mono mt-0.5">{user.email}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                id="btn-google-signout"
+                onClick={logout}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xs text-xs font-semibold text-[#9aa1ac] hover:text-[#f5efe3] hover:bg-[#242c38] border border-[#2c333f] transition-colors cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                Sign Out
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <h2 className="font-display font-bold text-base text-[#f5efe3] tracking-wide uppercase">
+                  Google Profile Sync
+                </h2>
+                <span className="text-[10px] uppercase font-bold text-[#e28b37] bg-[#e28b37]/10 border border-[#e28b37]/30 px-2 py-0.5 rounded-full">
+                  Recommended
+                </span>
+              </div>
+              <p className="text-xs text-[#9aa1ac] max-w-2xl leading-relaxed">
+                Sign in with your Google account to automatically store your ASA athlete passport, personal best times, and bookmarked race fixtures safely in the cloud across all your devices.
+              </p>
+            </div>
+
+            <div className="shrink-0">
+              <GoogleSignInButton
+                onClick={loginWithGoogle}
+                loading={authLoading}
+                label="Sign in with Google"
+                size="md"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Login Error Notification */}
+        {loginError && (
+          <div className="mt-3 p-3 bg-[#e24a4a]/10 border border-[#e24a4a]/30 rounded-xs flex items-center justify-between gap-3 text-xs text-[#fca5a5]">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-[#e24a4a]" />
+              <span>{loginError}</span>
+            </div>
+            <button
+              onClick={clearLoginError}
+              className="text-[#9aa1ac] hover:text-white text-xs underline cursor-pointer shrink-0"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Responsive Grid: Left Column Passport & Starred, Right Column Edit Form */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column (5 cols on lg) */}
         <div className="lg:col-span-5 space-y-6">
-          {/* Runner Profile Card */}
+          {/* Runner Profile Passport Card */}
           <div
             id="profile-card"
             className="bg-gradient-to-br from-[#241a10] via-[#1a1f29] to-[#12151b] border border-[#a86526] rounded-xs p-6 shadow-xl relative overflow-hidden"
@@ -76,24 +229,48 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 className="font-display font-black text-xs tracking-widest text-[#e28b37] uppercase flex items-center gap-1.5"
               >
                 <User className="w-3.5 h-3.5" />
-                ASA Athlete Profile
+                ASA Athlete Passport
               </div>
-              <span className="text-[10px] uppercase tracking-wider font-bold text-[#d8b34a] bg-[#d8b34a]/15 border border-[#d8b34a]/30 px-2 py-0.5 rounded-full">
-                {homeProv ? homeProv.ab : 'RSA'}
-              </span>
+              <div className="flex items-center gap-1.5">
+                {formData.licenseNumber && (
+                  <span className="text-[10px] uppercase font-mono font-bold text-[#f5efe3] bg-[#242c38] px-2 py-0.5 rounded-xs border border-[#2c333f]">
+                    #{formData.licenseNumber}
+                  </span>
+                )}
+                <span className="text-[10px] uppercase tracking-wider font-bold text-[#d8b34a] bg-[#d8b34a]/15 border border-[#d8b34a]/30 px-2 py-0.5 rounded-full">
+                  {homeProv ? homeProv.ab : 'RSA'}
+                </span>
+              </div>
             </div>
 
-            <h2
-              id="profile-display-name"
-              className="font-display font-bold text-3xl sm:text-4xl text-[#f5efe3] uppercase leading-none mt-1 mb-2"
-            >
-              {profile.name || 'Unnamed Runner'}
-            </h2>
+            <div className="flex items-center gap-3.5 mt-1 mb-2">
+              {user?.photoURL && (
+                <img
+                  src={user.photoURL}
+                  alt={formData.name || 'Runner'}
+                  referrerPolicy="no-referrer"
+                  className="w-12 h-12 rounded-full border border-[#e28b37]/50 object-cover shrink-0"
+                />
+              )}
+              <div>
+                <h2
+                  id="profile-display-name"
+                  className="font-display font-bold text-2xl sm:text-3xl text-[#f5efe3] uppercase leading-none"
+                >
+                  {formData.name || user?.displayName || 'Unnamed Runner'}
+                </h2>
+                {formData.category && (
+                  <span className="text-[10px] text-[#e28b37] font-semibold uppercase tracking-wider block mt-1">
+                    {formData.category}
+                  </span>
+                )}
+              </div>
+            </div>
 
-            <div id="profile-meta" className="text-xs sm:text-sm text-[#9aa1ac] flex items-center gap-1.5 mb-5">
+            <div id="profile-meta" className="text-xs text-[#9aa1ac] flex items-center gap-1.5 mb-5">
               <MapPin className="w-3.5 h-3.5 text-[#e28b37] shrink-0" />
               <span>
-                {profile.club ? `${profile.club} · ` : ''}
+                {formData.club ? `${formData.club} · ` : ''}
                 {homeProv ? homeProv.name : 'No home province set'}
               </span>
             </div>
@@ -103,51 +280,59 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <span className="text-[10.5px] uppercase tracking-wider text-[#6d7580] font-semibold block mb-2">
                 Personal Bests
               </span>
-              <div id="pb-grid" className="grid grid-cols-4 gap-2">
-                <div className="bg-[#12151b]/80 border border-[#2c333f] rounded-xs p-2.5 text-center">
-                  <b className="font-display text-base sm:text-lg text-[#d8b34a] block leading-tight">
-                    {profile.pb5k || '—'}
+              <div id="pb-grid" className="grid grid-cols-5 gap-1.5 sm:gap-2">
+                <div className="bg-[#12151b]/80 border border-[#2c333f] rounded-xs p-2 text-center">
+                  <b className="font-display text-sm sm:text-base text-[#d8b34a] block leading-tight">
+                    {formData.pb5k || '—'}
                   </b>
-                  <span className="text-[9px] text-[#6d7580] uppercase tracking-wider block mt-1">
+                  <span className="text-[8.5px] text-[#6d7580] uppercase tracking-wider block mt-1">
                     5 km
                   </span>
                 </div>
-                <div className="bg-[#12151b]/80 border border-[#2c333f] rounded-xs p-2.5 text-center">
-                  <b className="font-display text-base sm:text-lg text-[#d8b34a] block leading-tight">
-                    {profile.pb10k || '—'}
+                <div className="bg-[#12151b]/80 border border-[#2c333f] rounded-xs p-2 text-center">
+                  <b className="font-display text-sm sm:text-base text-[#d8b34a] block leading-tight">
+                    {formData.pb10k || '—'}
                   </b>
-                  <span className="text-[9px] text-[#6d7580] uppercase tracking-wider block mt-1">
+                  <span className="text-[8.5px] text-[#6d7580] uppercase tracking-wider block mt-1">
                     10 km
                   </span>
                 </div>
-                <div className="bg-[#12151b]/80 border border-[#2c333f] rounded-xs p-2.5 text-center">
-                  <b className="font-display text-base sm:text-lg text-[#d8b34a] block leading-tight">
-                    {profile.pbHalf || '—'}
+                <div className="bg-[#12151b]/80 border border-[#2c333f] rounded-xs p-2 text-center">
+                  <b className="font-display text-sm sm:text-base text-[#d8b34a] block leading-tight">
+                    {formData.pbHalf || '—'}
                   </b>
-                  <span className="text-[9px] text-[#6d7580] uppercase tracking-wider block mt-1">
+                  <span className="text-[8.5px] text-[#6d7580] uppercase tracking-wider block mt-1">
                     21.1 km
                   </span>
                 </div>
-                <div className="bg-[#12151b]/80 border border-[#2c333f] rounded-xs p-2.5 text-center">
-                  <b className="font-display text-base sm:text-lg text-[#d8b34a] block leading-tight">
-                    {profile.pbFull || '—'}
+                <div className="bg-[#12151b]/80 border border-[#2c333f] rounded-xs p-2 text-center">
+                  <b className="font-display text-sm sm:text-base text-[#d8b34a] block leading-tight">
+                    {formData.pbFull || '—'}
                   </b>
-                  <span className="text-[9px] text-[#6d7580] uppercase tracking-wider block mt-1">
+                  <span className="text-[8.5px] text-[#6d7580] uppercase tracking-wider block mt-1">
                     42.2 km
+                  </span>
+                </div>
+                <div className="bg-[#12151b]/80 border border-[#2c333f] rounded-xs p-2 text-center">
+                  <b className="font-display text-sm sm:text-base text-[#d8b34a] block leading-tight">
+                    {formData.pbUltra || '—'}
+                  </b>
+                  <span className="text-[8.5px] text-[#6d7580] uppercase tracking-wider block mt-1">
+                    Ultra
                   </span>
                 </div>
               </div>
             </div>
 
             {/* Goal Race */}
-            {profile.goal && (
+            {formData.goal && (
               <div
                 id="profile-goal-display"
                 className="text-xs text-[#9aa1ac] mt-5 pt-3.5 border-t border-[#2c333f] flex items-center gap-2"
               >
                 <Target className="w-4 h-4 text-[#e28b37] shrink-0" />
                 <span>
-                  Season Target: <b className="text-[#f5efe3] font-semibold">{profile.goal}</b>
+                  Season Target: <b className="text-[#f5efe3] font-semibold">{formData.goal}</b>
                 </span>
               </div>
             )}
@@ -179,14 +364,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       </span>
                       <span className="text-[#f5efe3] font-medium truncate">{item.name}</span>
                     </div>
-
                     <button
-                      onClick={() => {
-                        if (item.kind === 'Race') onToggleRaceFavorite(item.name);
-                        else onToggleClubFavorite(item.name);
-                      }}
-                      title="Remove from favorites"
-                      className="text-[#6d7580] hover:text-[#b5502f] p-1 cursor-pointer shrink-0 transition-colors"
+                      onClick={() =>
+                        item.kind === 'Race'
+                          ? onToggleRaceFavorite(item.name)
+                          : onToggleClubFavorite(item.name)
+                      }
+                      title="Remove bookmark"
+                      className="text-[#6d7580] hover:text-[#e24a4a] p-1 rounded-xs transition-colors cursor-pointer shrink-0"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -199,35 +384,63 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
         {/* Right Column: Edit Profile Form (7 cols on lg) */}
         <div className="lg:col-span-7 bg-[#171c24] border border-[#2c333f] rounded-xs p-6 sm:p-7 shadow-sm">
-          <h3 className="font-display font-bold text-lg text-[#f5efe3] uppercase tracking-wide pb-3 border-b border-[#2c333f] mb-5">
-            Edit Passport Details
-          </h3>
+          <div className="flex items-center justify-between pb-3 border-b border-[#2c333f] mb-5">
+            <h3 className="font-display font-bold text-lg text-[#f5efe3] uppercase tracking-wide">
+              Edit Passport Details
+            </h3>
+            {user && (
+              <span className="text-[10.5px] text-[#7c8f5c] font-semibold flex items-center gap-1 bg-[#7c8f5c]/10 border border-[#7c8f5c]/30 px-2 py-0.5 rounded-full">
+                <Cloud className="w-3 h-3" />
+                Firestore Synced
+              </span>
+            )}
+          </div>
 
           <form id="profile-form" onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <label
-                htmlFor="pf-name"
-                className="block text-[11px] uppercase tracking-wider text-[#6d7580] font-semibold"
-              >
-                Runner Full Name
-              </label>
-              <input
-                id="pf-name"
-                type="text"
-                value={formData.name}
-                onChange={(e) => handleChange('name', e.target.value)}
-                placeholder="e.g. Sipho Sithole"
-                className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-3.5 py-2.5 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37]"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="pf-name"
+                  className="block text-[11px] uppercase tracking-wider text-[#6d7580] font-semibold"
+                >
+                  Runner Full Name
+                </label>
+                <input
+                  id="pf-name"
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => handleChange('name', e.target.value)}
+                  placeholder={user?.displayName || 'e.g. Sipho Sithole'}
+                  className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-3.5 py-2.5 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="pf-license"
+                  className="block text-[11px] uppercase tracking-wider text-[#6d7580] font-semibold flex items-center justify-between"
+                >
+                  <span>ASA License / Bib #</span>
+                  <span className="text-[10px] text-[#6d7580] lowercase">optional</span>
+                </label>
+                <input
+                  id="pf-license"
+                  type="text"
+                  value={formData.licenseNumber || ''}
+                  onChange={(e) => handleChange('licenseNumber', e.target.value)}
+                  placeholder="e.g. 2026-ASA-14920"
+                  className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-3.5 py-2.5 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37]"
+                />
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1.5">
                 <label
                   htmlFor="pf-province"
                   className="block text-[11px] uppercase tracking-wider text-[#6d7580] font-semibold"
                 >
-                  Home Athletics Province
+                  Athletics Province
                 </label>
                 <select
                   id="pf-province"
@@ -249,7 +462,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   htmlFor="pf-club"
                   className="block text-[11px] uppercase tracking-wider text-[#6d7580] font-semibold"
                 >
-                  Registered Running Club
+                  Registered Club
                 </label>
                 <input
                   id="pf-club"
@@ -260,15 +473,37 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-3.5 py-2.5 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37]"
                 />
               </div>
+
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="pf-category"
+                  className="block text-[11px] uppercase tracking-wider text-[#6d7580] font-semibold"
+                >
+                  Age Category
+                </label>
+                <select
+                  id="pf-category"
+                  value={formData.category || ''}
+                  onChange={(e) => handleChange('category', e.target.value)}
+                  className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-3.5 py-2.5 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37]"
+                >
+                  <option value="">Select Category…</option>
+                  {ATHLETE_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Personal Bests Section */}
             <div className="pt-2">
               <span className="block text-[11px] uppercase tracking-wider text-[#d8b34a] font-bold mb-2.5">
-                Personal Bests (PB Times)
+                Personal Bests (Official Time Records)
               </span>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
                 <div className="space-y-1.5">
                   <label
                     htmlFor="pf-5k"
@@ -282,7 +517,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     value={formData.pb5k}
                     onChange={(e) => handleChange('pb5k', e.target.value)}
                     placeholder="mm:ss"
-                    className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-3 py-2 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37] text-center"
+                    className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-2.5 py-2 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37] text-center"
                   />
                 </div>
 
@@ -299,7 +534,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     value={formData.pb10k}
                     onChange={(e) => handleChange('pb10k', e.target.value)}
                     placeholder="mm:ss"
-                    className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-3 py-2 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37] text-center"
+                    className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-2.5 py-2 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37] text-center"
                   />
                 </div>
 
@@ -316,7 +551,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     value={formData.pbHalf}
                     onChange={(e) => handleChange('pbHalf', e.target.value)}
                     placeholder="h:mm:ss"
-                    className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-3 py-2 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37] text-center"
+                    className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-2.5 py-2 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37] text-center"
                   />
                 </div>
 
@@ -333,7 +568,24 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     value={formData.pbFull}
                     onChange={(e) => handleChange('pbFull', e.target.value)}
                     placeholder="h:mm:ss"
-                    className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-3 py-2 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37] text-center"
+                    className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-2.5 py-2 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37] text-center"
+                  />
+                </div>
+
+                <div className="space-y-1.5 col-span-2 sm:col-span-1">
+                  <label
+                    htmlFor="pf-ultra"
+                    className="block text-[10px] uppercase tracking-wider text-[#6d7580] font-medium"
+                  >
+                    Ultra (50km+)
+                  </label>
+                  <input
+                    id="pf-ultra"
+                    type="text"
+                    value={formData.pbUltra || ''}
+                    onChange={(e) => handleChange('pbUltra', e.target.value)}
+                    placeholder="h:mm:ss"
+                    className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-2.5 py-2 text-[#f5efe3] text-sm focus:outline-none focus:border-[#e28b37] text-center"
                   />
                 </div>
               </div>
@@ -356,22 +608,31 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               />
             </div>
 
-            <div className="flex items-center gap-4 pt-4 border-t border-[#2c333f]">
-              <button
-                id="pf-save-btn"
-                type="submit"
-                className="inline-flex items-center gap-2 font-bold text-xs sm:text-sm bg-[#e28b37] text-[#1b1103] hover:bg-[#eb9a4a] py-2.5 px-5 rounded-xs cursor-pointer transition-colors"
-              >
-                Save Profile Changes
-              </button>
-              {showSavedToast && (
-                <span
-                  id="pf-savemsg"
-                  className="inline-flex items-center gap-1.5 text-xs text-[#7c8f5c] font-bold animate-in fade-in"
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-[#2c333f]">
+              <div className="flex items-center gap-3">
+                <button
+                  id="pf-save-btn"
+                  type="submit"
+                  disabled={isSaving}
+                  className="inline-flex items-center gap-2 font-bold text-xs sm:text-sm bg-[#e28b37] text-[#1b1103] hover:bg-[#eb9a4a] py-2.5 px-5 rounded-xs cursor-pointer transition-colors disabled:opacity-60"
                 >
-                  <Check className="w-4 h-4 text-[#7c8f5c]" />
-                  Profile updated successfully!
-                </span>
+                  {isSaving ? 'Saving…' : user ? 'Save & Sync to Cloud' : 'Save Profile Changes'}
+                </button>
+                {showSavedToast && (
+                  <span
+                    id="pf-savemsg"
+                    className="inline-flex items-center gap-1.5 text-xs text-[#7c8f5c] font-bold animate-in fade-in"
+                  >
+                    <Check className="w-4 h-4 text-[#7c8f5c]" />
+                    {user ? 'Profile synced to Cloud!' : 'Profile saved locally!'}
+                  </span>
+                )}
+              </div>
+
+              {!user && (
+                <p className="text-[11px] text-[#6d7580] italic">
+                  Saved locally in browser. Sign in with Google above to back up to cloud.
+                </p>
               )}
             </div>
           </form>

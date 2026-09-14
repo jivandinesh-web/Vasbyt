@@ -1,13 +1,17 @@
 import React from 'react';
-import { Home, Map, Calendar, Users, User } from 'lucide-react';
+import { Home, Map, Calendar, Users, User, HelpCircle } from 'lucide-react';
 import { TabType } from '../types';
+import { useAuth } from '../context/AuthContext';
 
 interface TabBarProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
+  onOpenHowTo?: () => void;
 }
 
-export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => {
+export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange, onOpenHowTo }) => {
+  const { user } = useAuth();
+
   const tabs: { id: TabType; label: string; icon: React.ReactNode }[] = [
     {
       id: 'home',
@@ -32,7 +36,18 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => {
     {
       id: 'profile',
       label: 'Profile',
-      icon: <User className="w-5 h-5 transition-transform" strokeWidth={activeTab === 'profile' ? 2.2 : 1.8} />,
+      icon: user?.photoURL ? (
+        <img
+          src={user.photoURL}
+          alt="Profile"
+          referrerPolicy="no-referrer"
+          className={`w-5 h-5 rounded-full object-cover border ${
+            activeTab === 'profile' ? 'border-[#e28b37]' : 'border-transparent'
+          }`}
+        />
+      ) : (
+        <User className="w-5 h-5 transition-transform" strokeWidth={activeTab === 'profile' ? 2.2 : 1.8} />
+      ),
     },
   ];
 
@@ -62,6 +77,22 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => {
             </button>
           );
         })}
+
+        {onOpenHowTo && (
+          <button
+            key="howto"
+            id="tab-btn-howto"
+            type="button"
+            onClick={onOpenHowTo}
+            title="How to use Vasbyt Guide"
+            className="flex-1 flex flex-col items-center justify-center gap-1 pt-2.5 pb-2 cursor-pointer transition-colors bg-transparent border-none text-[#d8b34a] hover:text-[#f5efe3]"
+          >
+            <HelpCircle className="w-5 h-5 text-[#d8b34a]" strokeWidth={1.8} />
+            <span className="text-[10px] uppercase tracking-wider font-bold text-[#d8b34a]">
+              How To
+            </span>
+          </button>
+        )}
       </div>
     </nav>
   );

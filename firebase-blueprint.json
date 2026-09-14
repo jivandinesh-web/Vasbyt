@@ -1,0 +1,46 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile containing runner passport details, personal bests, and ASA athletics affiliation",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "name": { "type": "string", "maxLength": 100 },
+        "photoURL": { "type": "string", "maxLength": 1024 },
+        "province": { "type": "string", "maxLength": 30 },
+        "club": { "type": "string", "maxLength": 100 },
+        "licenseNumber": { "type": "string", "maxLength": 50 },
+        "category": { "type": "string", "maxLength": 50 },
+        "pb5k": { "type": "string", "maxLength": 20 },
+        "pb10k": { "type": "string", "maxLength": 20 },
+        "pbHalf": { "type": "string", "maxLength": 20 },
+        "pbFull": { "type": "string", "maxLength": 20 },
+        "pbUltra": { "type": "string", "maxLength": 20 },
+        "goal": { "type": "string", "maxLength": 200 },
+        "favorites": {
+          "type": "object",
+          "properties": {
+            "races": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "clubs": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "updatedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["uid"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Individual runner profile document keyed by authenticated Firebase user UID"
+    }
+  }
+}
