@@ -10,13 +10,15 @@ import { DistanceCode, Discipline } from '../types';
 import { ElevationProfile } from './ElevationProfile';
 import { WatchSyncModal } from './WatchSyncModal';
 import { getEnrichedRaceRoute } from '../utils/routeData';
-import { Search, ChevronDown, ChevronUp, RotateCcw, Mountain, Activity, Flag, Watch, Compass } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, RotateCcw, Mountain, Activity, Flag, Watch, Compass, Footprints, Trees, Tent } from 'lucide-react';
 
 interface RacesViewProps {
   activeProv: string;
   onSelectProv: (prov: string) => void;
   favorites: string[];
   onToggleFavorite: (raceName: string) => void;
+  activeDiscipline?: string;
+  onSelectDiscipline?: (disc: string) => void;
 }
 
 export const RacesView: React.FC<RacesViewProps> = ({
@@ -24,8 +26,17 @@ export const RacesView: React.FC<RacesViewProps> = ({
   onSelectProv,
   favorites,
   onToggleFavorite,
+  activeDiscipline: controlledDiscipline,
+  onSelectDiscipline,
 }) => {
-  const [activeDiscipline, setActiveDiscipline] = useState<string>('all');
+  const [internalDiscipline, setInternalDiscipline] = useState<string>('all');
+  const activeDiscipline = controlledDiscipline !== undefined ? controlledDiscipline : internalDiscipline;
+  const setActiveDiscipline = (disc: string) => {
+    setInternalDiscipline(disc);
+    if (onSelectDiscipline) {
+      onSelectDiscipline(disc);
+    }
+  };
   const [activeDist, setActiveDist] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedRaceKey, setExpandedRaceKey] = useState<string | null>(null);
@@ -41,6 +52,9 @@ export const RacesView: React.FC<RacesViewProps> = ({
     { key: 'road', label: 'Road Running', count: RACES.filter((r) => r.discipline === 'road').length },
     { key: 'trail', label: 'Trail Running', count: RACES.filter((r) => r.discipline === 'trail').length },
     { key: 'track', label: 'Track & Field', count: RACES.filter((r) => r.discipline === 'track').length },
+    { key: 'walking', label: 'Walking', count: RACES.filter((r) => r.discipline === 'walking').length },
+    { key: 'hiking', label: 'Hiking', count: RACES.filter((r) => r.discipline === 'hiking').length },
+    { key: 'trekking', label: 'Trekking', count: RACES.filter((r) => r.discipline === 'trekking').length },
   ];
 
   const distChips: { key: string; label: string }[] = [
@@ -52,6 +66,9 @@ export const RacesView: React.FC<RacesViewProps> = ({
     { key: 'T', label: '10km' },
     { key: 'F', label: '5km Fun Run' },
     { key: 'TR', label: 'Track Classic' },
+    { key: 'WK', label: 'Walking (5k - 50k)' },
+    { key: 'HK', label: 'Mountain Hike' },
+    { key: 'TK', label: 'Wilderness Trek' },
   ];
 
   let filteredRaces = RACES.map((r) => ({
@@ -116,6 +133,27 @@ export const RacesView: React.FC<RacesViewProps> = ({
           <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider bg-[#4f8fb0]/20 text-[#4f8fb0] border border-[#4f8fb0]/60 px-2 py-0.5 rounded-xs font-bold">
             <Activity className="w-3 h-3" />
             Track
+          </span>
+        );
+      case 'walking':
+        return (
+          <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider bg-[#d8b34a]/20 text-[#d8b34a] border border-[#d8b34a]/60 px-2 py-0.5 rounded-xs font-bold">
+            <Footprints className="w-3 h-3" />
+            Walking
+          </span>
+        );
+      case 'hiking':
+        return (
+          <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/60 px-2 py-0.5 rounded-xs font-bold">
+            <Trees className="w-3 h-3" />
+            Hiking
+          </span>
+        );
+      case 'trekking':
+        return (
+          <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider bg-[#c084fc]/20 text-[#c084fc] border border-[#c084fc]/60 px-2 py-0.5 rounded-xs font-bold">
+            <Tent className="w-3 h-3" />
+            Trekking
           </span>
         );
       case 'road':

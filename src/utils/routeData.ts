@@ -11,7 +11,14 @@ export interface EnrichedRaceRoute {
   distanceKm: number;
   cutoffTime: string;
   courseType: 'Point-to-Point' | 'Loop' | 'Out & Back' | 'Stage Run';
-  surface: 'Asphalt Road' | 'Mountain Singletrack' | 'Jeep Track & Trail' | 'Track Oval';
+  surface:
+    | 'Asphalt Road'
+    | 'Mountain Singletrack'
+    | 'Jeep Track & Trail'
+    | 'Track Oval'
+    | 'Paved Footpath & Promenade'
+    | 'Mountain Hiking Trail & Rocky Path'
+    | 'Wilderness Singletrack & Escarpment';
   waterTablesCount: number;
   qualifierFor?: string;
 }
@@ -28,12 +35,15 @@ const CITY_ANCHORS: Record<string, { lat: number; lng: number; baseEle: number }
   'Newlands': { lat: -33.9721, lng: 18.4651, baseEle: 35 },
   'Stellenbosch': { lat: -33.9321, lng: 18.8602, baseEle: 120 },
   'Paarl': { lat: -33.7262, lng: 18.9632, baseEle: 110 },
+  'Clanwilliam': { lat: -32.1785, lng: 18.8921, baseEle: 150 },
   'Nature’s Valley': { lat: -33.9795, lng: 23.5621, baseEle: 15 },
   'Durban': { lat: -29.8587, lng: 31.0218, baseEle: 10 },
   'Pietermaritzburg': { lat: -29.6171, lng: 30.3992, baseEle: 650 },
   'Underberg': { lat: -29.7891, lng: 29.4981, baseEle: 1560 },
   'Gqeberha': { lat: -33.9608, lng: 25.6022, baseEle: 40 },
   'East London': { lat: -33.0153, lng: 27.9116, baseEle: 35 },
+  'Hogsback': { lat: -32.5951, lng: 26.9366, baseEle: 1280 },
+  'Port Alfred': { lat: -33.5959, lng: 26.8912, baseEle: 20 },
   'Lady Grey': { lat: -30.7121, lng: 27.2189, baseEle: 1650 },
   'Bloemfontein': { lat: -29.0852, lng: 26.1596, baseEle: 1395 },
   'Clarens': { lat: -28.5172, lng: 28.4194, baseEle: 1820 },
@@ -42,6 +52,7 @@ const CITY_ANCHORS: Record<string, { lat: number; lng: number; baseEle: number }
   'Polokwane': { lat: -23.9045, lng: 29.4688, baseEle: 1310 },
   'Mokopane': { lat: -24.1872, lng: 29.0112, baseEle: 1120 },
   'Louis Trichardt': { lat: -23.0462, lng: 29.9041, baseEle: 950 },
+  'Haenertsburg': { lat: -23.9431, lng: 29.9501, baseEle: 1420 },
   'Rustenburg': { lat: -25.6676, lng: 27.2421, baseEle: 1170 },
   'Potchefstroom': { lat: -26.7145, lng: 27.0971, baseEle: 1350 },
   'Hartbeespoort': { lat: -25.7282, lng: 27.8812, baseEle: 1180 },
@@ -375,6 +386,9 @@ export function getEnrichedRaceRoute(
   else if (distCode === 'T') distKm = 10.0;
   else if (distCode === 'F') distKm = 5.0;
   else if (distCode === 'TR') distKm = 5.0;
+  else if (distCode === 'WK') distKm = 15.0;
+  else if (distCode === 'HK') distKm = 18.0;
+  else if (distCode === 'TK') distKm = 35.0;
 
   // City center lookup
   const anchor = CITY_ANCHORS[city] || {
@@ -384,7 +398,12 @@ export function getEnrichedRaceRoute(
   };
 
   const isTrail = discipline === 'trail';
-  const eleScale = isTrail ? 600 : distKm > 30 ? 320 : 160;
+  const isHiking = discipline === 'hiking';
+  const isTrekking = discipline === 'trekking';
+  const isWalking = discipline === 'walking';
+  const isMountain = isTrail || isHiking || isTrekking;
+
+  const eleScale = isTrekking ? 850 : isHiking ? 680 : isTrail ? 600 : isWalking ? 120 : distKm > 30 ? 320 : 160;
   const numPts = Math.max(8, route.points?.length || 8);
 
   // Generate plausible coordinates around city anchor
@@ -486,28 +505,47 @@ export function getEnrichedRaceRoute(
         ele: eleM,
         lat,
         lng,
-        type: isTrail ? 'climb' : 'landmark',
+        type: isMountain ? 'climb' : 'landmark',
       });
     }
   }
 
-  const waterTablesCount = Math.max(3, Math.round(distKm / 2.5));
-  const cutoffHours = distKm > 80 ? '12h 00m' : distKm > 50 ? '7h 00m' : distKm > 30 ? '6h 00m' : '3h 30m';
+  const waterTablesCount = Math.max(3, Math.round(distKm / (isWalking ? 4 : isMountain ? 6 : 2.5)));
+  
+  let cutoffHours = '3h 30m';
+  if (discipline === 'trekking') {
+    cutoffHours = distKm > 40 ? '24h 00m (Multi-Day)' : distKm > 25 ? '11h 00m' : '7h 00m';
+  } else if (discipline === 'hiking') {
+    cutoffHours = distKm > 25 ? '9h 30m' : distKm > 15 ? '6h 30m' : '4h 00m';
+  } else if (discipline === 'walking') {
+    cutoffHours = distKm > 30 ? '8h 00m' : distKm > 15 ? '5h 00m' : '3h 00m';
+  } else {
+    cutoffHours = distKm > 80 ? '12h 00m' : distKm > 50 ? '7h 00m' : distKm > 30 ? '6h 00m' : '3h 30m';
+  }
+
+  let surface: EnrichedRaceRoute['surface'] = 'Asphalt Road';
+  if (discipline === 'trail') surface = 'Mountain Singletrack';
+  else if (discipline === 'track') surface = 'Track Oval';
+  else if (discipline === 'walking') surface = 'Paved Footpath & Promenade';
+  else if (discipline === 'hiking') surface = 'Mountain Hiking Trail & Rocky Path';
+  else if (discipline === 'trekking') surface = 'Wilderness Singletrack & Escarpment';
+
+  const defaultAscentPerKm = isTrekking ? 58 : isHiking ? 48 : isTrail ? 45 : isWalking ? 4.5 : 8.5;
 
   return {
     coordinates,
     waypoints,
     detailedElevation,
-    totalAscentM: totalAscent || Math.round(distKm * (isTrail ? 45 : 8.5)),
-    totalDescentM: totalDescent || Math.round(distKm * (isTrail ? 45 : 8.5)),
+    totalAscentM: totalAscent || Math.round(distKm * defaultAscentPerKm),
+    totalDescentM: totalDescent || Math.round(distKm * defaultAscentPerKm),
     maxEleM: maxEle,
     minEleM: minEle,
     distanceKm: distKm,
     cutoffTime: cutoffHours,
-    courseType: 'Loop',
-    surface: isTrail ? 'Mountain Singletrack' : 'Asphalt Road',
+    courseType: isTrekking ? 'Stage Run' : isHiking ? 'Point-to-Point' : 'Loop',
+    surface,
     waterTablesCount,
-    qualifierFor: distKm >= 42.2 ? 'Comrades 2027 Qualifier / Two Oceans' : undefined,
+    qualifierFor: distKm >= 42.2 && (discipline === 'road' || discipline === 'trail') ? 'Comrades 2027 Qualifier / Two Oceans' : undefined,
   };
 }
 

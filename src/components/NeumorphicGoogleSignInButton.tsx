@@ -1,39 +1,46 @@
 import React from 'react';
-import { LogIn, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
-interface GoogleSignInButtonProps {
+interface NeumorphicGoogleSignInButtonProps {
   onClick: () => void;
   loading?: boolean;
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   label?: string;
+  theme?: 'dark-neu' | 'light-neu';
 }
 
-export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
+export const NeumorphicGoogleSignInButton: React.FC<NeumorphicGoogleSignInButtonProps> = ({
   onClick,
   loading = false,
   className = '',
   size = 'md',
   label = 'Sign in with Google',
+  theme = 'dark-neu',
 }) => {
   const sizeClasses = {
     sm: 'px-3 py-1.5 text-xs gap-2',
-    md: 'px-4 py-2.5 text-sm gap-2.5',
-    lg: 'px-5 py-3 text-base gap-3',
+    md: 'px-4.5 py-2.5 text-sm gap-3',
+    lg: 'px-6 py-3.5 text-base gap-3.5',
   };
+
+  const styleClasses =
+    theme === 'dark-neu'
+      ? 'neu-btn border border-[#2f394a] text-[#f5efe3] hover:text-white'
+      : 'bg-[#f5efe3] text-[#1f2633] shadow-[5px_5px_12px_#090c10,-3px_-3px_8px_rgba(255,255,255,0.1)] active:shadow-[inset_3px_3px_6px_#c2baa8,inset_-2px_-2px_5px_#ffffff] border border-[#d9d0be]';
 
   return (
     <button
       type="button"
-      id="btn-google-signin"
+      id="btn-neumorphic-google-signin"
       onClick={onClick}
       disabled={loading}
-      className={`neu-btn inline-flex items-center justify-center font-bold text-[#f5efe3] hover:text-white rounded-xs border border-[#2e3747] hover:border-[#e28b37]/50 active:scale-[0.985] transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center justify-center font-bold rounded-xs transition-all cursor-pointer select-none active:scale-[0.985] disabled:opacity-50 disabled:cursor-not-allowed ${sizeClasses[size]} ${styleClasses} ${className}`}
     >
       {loading ? (
         <Loader2 className="w-4 h-4 animate-spin text-[#e28b37]" />
       ) : (
-        <svg className="w-4 h-4 shrink-0 filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]" viewBox="0 0 24 24">
+        <svg className="w-4.5 h-4.5 shrink-0 filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]" viewBox="0 0 24 24">
           <path
             fill="#4285F4"
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -52,7 +59,7 @@ export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
           />
         </svg>
       )}
-      <span className="font-semibold tracking-normal">{label}</span>
+      <span className="tracking-wide">{label}</span>
     </button>
   );
 };

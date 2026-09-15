@@ -372,8 +372,17 @@ export const HowToModal: React.FC<HowToModalProps> = ({
 
         {/* Modal Footer */}
         <div className="px-5 sm:px-6 py-3 bg-[#12151b] border-t border-[#2c333f] flex items-center justify-between">
-          <div className="text-[11px] text-[#6d7580] hidden sm:block">
-            Need help on race day? Check each race card for organizer and emergency contacts.
+          <div className="text-[11px] text-[#6d7580] hidden sm:flex items-center gap-2">
+            <span>Need help on race day? Check each race card for organizer and emergency contacts.</span>
+            <span>•</span>
+            <a
+              href="/sitemap.xml"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#d8b34a] hover:underline"
+            >
+              XML Sitemap
+            </a>
           </div>
           <button
             onClick={onClose}

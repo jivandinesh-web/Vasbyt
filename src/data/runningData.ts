@@ -958,6 +958,462 @@ export const RACES: Race[] = [
       ]
     }
   },
+
+  // --- WALKING EVENTS & FIXTURES ---
+  {
+    name: 'Cape Town Big Walk',
+    prov: 'wc',
+    city: 'Cape Town',
+    date: '2026-11-08',
+    dist: ['WK', 'F', 'T'],
+    discipline: 'walking',
+    organiser: 'Cape Town Big Walk Foundation',
+    site: 'bigwalk.co.za',
+    route: {
+      note: 'South Africa’s premier mass-participation fitness walk winding along the Atlantic Seaboard and Sea Point promenade.',
+      directions: [
+        'Starts at Foreshore and traces along the coastline toward Sea Point and Camps Bay.',
+        'Continuous smooth sea-level ocean views with festive hydration and community encouragement points.',
+        'Finishes at Green Point Track with live entertainment and walker commemorative medals.'
+      ],
+      points: [
+        { label: 'Foreshore Start', y: 5 },
+        { label: 'Sea Point Pavilion', y: 8 },
+        { label: 'Bantry Bay Turn', y: 12 },
+        { label: 'Mouille Point Light', y: 6 },
+        { label: 'Green Point Finish', y: 5 }
+      ]
+    }
+  },
+  {
+    name: 'Gauteng 50km Walk Classic',
+    prov: 'gp',
+    city: 'Centurion',
+    date: '2026-10-18',
+    dist: ['WK', 'T', 'H'],
+    discipline: 'walking',
+    organiser: 'Central Gauteng & AGN Race Walking Commission',
+    site: 'athleticsgautengnorth.co.za',
+    route: {
+      note: 'Official ASA-sanctioned endurance race walking and fitness walk championship on certified highveld roads.',
+      directions: [
+        'Multi-loop road course through Centurion’s wide scenic avenues.',
+        'Strict World Athletics race-walking judges for competitive divisions alongside mass-field fitness walkers.',
+        'Hydration tables every 2.5km with electrolyte fluids and medical support.'
+      ],
+      points: [
+        { label: 'Centurion Arch', y: 20 },
+        { label: 'Highveld Loop 1', y: 28 },
+        { label: 'Southdowns Corner', y: 35 },
+        { label: 'Loop 2 Return', y: 25 },
+        { label: 'Stadium Finish', y: 20 }
+      ]
+    }
+  },
+  {
+    name: 'Durban Golden Mile Coastal Walk',
+    prov: 'kzn',
+    city: 'Durban',
+    date: '2026-10-25',
+    dist: ['WK', 'F', 'T'],
+    discipline: 'walking',
+    organiser: 'Athletics KwaZulu-Natal (KZNA)',
+    site: 'athleticskzn.co.za',
+    route: {
+      note: 'Breezy sunrise coastal walk spanning the legendary paved Durban beachfront promenade from Suncoast to uShaka.',
+      directions: [
+        'Starts at Suncoast Casino beach plaza at sunrise, moving south along the warm Indian Ocean.',
+        'Passes North Beach pier, skate park, and Moses Mabhida promenade.',
+        'Reaches uShaka Marine World and loops back along the oceanfront boardwalk.'
+      ],
+      points: [
+        { label: 'Suncoast Pier', y: 5 },
+        { label: 'North Beach Pier', y: 6 },
+        { label: 'South Beach', y: 5 },
+        { label: 'uShaka Point', y: 7 },
+        { label: 'Promenade Finish', y: 5 }
+      ]
+    }
+  },
+  {
+    name: 'Bloemfontein Botanical Gardens Walk',
+    prov: 'fs',
+    city: 'Bloemfontein',
+    date: '2026-10-31',
+    dist: ['WK', 'T', 'F'],
+    discipline: 'walking',
+    organiser: 'Athletics Free State & SANBI',
+    site: 'sanbi.org/gardens/free-state',
+    route: {
+      note: 'Spring season walking event through indigenous Free State flora, woodland valleys, and botanical garden walkways.',
+      directions: [
+        'Wind through the scenic paved trails of the Free State National Botanical Garden.',
+        'Gentle undulating dolerite koppie inclines with marked bird-watching points.',
+        'Shaded tree canopy walkways finishing near the garden amphitheatre.'
+      ],
+      points: [
+        { label: 'Main Gates', y: 15 },
+        { label: 'Koppie Walkway', y: 32 },
+        { label: 'Arboretum View', y: 28 },
+        { label: 'Wetland Boardwalk', y: 18 },
+        { label: 'Amphitheatre Finish', y: 15 }
+      ]
+    }
+  },
+  {
+    name: 'Karoo Open Plains 25km Walk',
+    prov: 'nc',
+    city: 'Kimberley',
+    date: '2026-11-14',
+    dist: ['WK', 'H'],
+    discipline: 'walking',
+    organiser: 'Athletics Griqualand West (AGW)',
+    site: 'agwathletics.co.za',
+    route: {
+      note: 'Big sky endurance walking fixture through the vast semi-desert plains of the Northern Cape.',
+      directions: [
+        'Out-and-back route stretching across quiet flat Karoo terrain under the expansive open skies.',
+        'Steady rhythm walking with dedicated water stations and sun protection checkpoints.',
+        'Finishes at Kimberley Harriers clubhouse with traditional Karoo hospitality.'
+      ],
+      points: [
+        { label: 'Clubhouse Start', y: 20 },
+        { label: 'Mile 5 Windmill', y: 22 },
+        { label: 'Plains Turnaround', y: 25 },
+        { label: 'Mile 20 Hydration', y: 23 },
+        { label: 'Diamond Gate Finish', y: 20 }
+      ]
+    }
+  },
+  {
+    name: 'Eastern Cape Sunshine Coast 20km Walk',
+    prov: 'ec',
+    city: 'Port Alfred',
+    date: '2026-11-21',
+    dist: ['WK', 'H', 'T'],
+    discipline: 'walking',
+    organiser: 'Eastern Province Athletics (EPA)',
+    site: 'epathletics.co.za',
+    route: {
+      note: 'Picturesque coastal fitness walk between the Kowie River mouth and pristine seaside nature paths.',
+      directions: [
+        'Walk alongside the tidal Kowie River estuary out to the pier.',
+        'Follow ocean pathways with coastal dunes, sea breezes, and indigenous coastal bush.',
+        'Concludes at the Royal St. Andrews sports grounds.'
+      ],
+      points: [
+        { label: 'Kowie River Wharf', y: 5 },
+        { label: 'West Beach Pier', y: 8 },
+        { label: 'Kelly’s Blue Flag Beach', y: 12 },
+        { label: 'Dune Overlook', y: 20 },
+        { label: 'River Estuary Finish', y: 5 }
+      ]
+    }
+  },
+
+  // --- HIKING EVENTS & MOUNTAIN FIXTURES ---
+  {
+    name: 'Table Mountain Skyline & Contour Hike',
+    prov: 'wc',
+    city: 'Cape Town',
+    date: '2026-10-17',
+    dist: ['HK', 'T', 'H'],
+    discipline: 'hiking',
+    organiser: 'Table Mountain Hikers & SANParks',
+    site: 'sanparks.org/parks/table-mountain',
+    route: {
+      note: 'Spectacular alpine day hike traversing Platteklip Gorge, Maclear’s Beacon (1,086m), and descending via Skeleton Gorge.',
+      directions: [
+        'Ascend the dramatic rock steps of Platteklip Gorge onto Table Mountain’s flat table summit.',
+        'Navigate the rocky high plateau past ancient reservoirs to Maclear’s Beacon summit cairn.',
+        'Traverse contour singletracks through indigenous fynbos and descend under Kirstenbosch’s indigenous yellowwoods.'
+      ],
+      points: [
+        { label: 'Kloof Nek Base', y: 15 },
+        { label: 'Platteklip Steps', y: 65 },
+        { label: 'Maclear’s Beacon (1,086m)', y: 96 },
+        { label: 'Hely-Hutchinson Dam', y: 78 },
+        { label: 'Skeleton Gorge Finish', y: 22 }
+      ]
+    }
+  },
+  {
+    name: 'Drakensberg Amphitheatre & Tugela Falls Hike',
+    prov: 'kzn',
+    city: 'Underberg',
+    date: '2026-11-07',
+    dist: ['HK', 'H', 'X'],
+    discipline: 'hiking',
+    organiser: 'Drakensberg Mountain Hikers Club',
+    site: 'kznwildlife.com',
+    route: {
+      note: 'One of the world’s ultimate mountain day hikes to the top of the 3,000m Drakensberg escarpment and Tugela Falls crest.',
+      directions: [
+        'Start at Sentinel Car Park (2,500m) and hike along the sheer Sentinel Peak contours.',
+        'Scale the iconic vertical chain ladders bolted into the basalt cliff face.',
+        'Walk along the high alpine plateau to stand where Tugela Falls plunges nearly 1,000m down the cliff face.'
+      ],
+      points: [
+        { label: 'Sentinel Car Park (2,500m)', y: 50 },
+        { label: 'Witches Rock Contour', y: 68 },
+        { label: 'Chain Ladders Base', y: 84 },
+        { label: 'Amphitheatre Plateau (2,980m)', y: 98 },
+        { label: 'Tugela Falls Crest', y: 94 }
+      ]
+    }
+  },
+  {
+    name: 'Magaliesberg Ridge Heritage Hike',
+    prov: 'nw',
+    city: 'Rustenburg',
+    date: '2026-10-24',
+    dist: ['HK', 'T', 'H'],
+    discipline: 'hiking',
+    organiser: 'Magaliesberg Biosphere Mountain Club',
+    site: 'magaliesbergbiosphere.org.za',
+    route: {
+      note: 'Hike across the ancient quartzite formations and kloofs of one of Earth’s oldest mountain ranges (2.3 billion years old).',
+      directions: [
+        'Climb through pristine rocky quartzite scrambles and indigenous protea veld.',
+        'Traverse high cliffs overlooking the Buffelspoort valley and nesting Cape Vulture colonies.',
+        'Descend through a crystal mountain stream kloof with shaded rock pools.'
+      ],
+      points: [
+        { label: 'Valley Base', y: 20 },
+        { label: 'Quartzite Ridge', y: 60 },
+        { label: 'Beacon Peak Crest', y: 88 },
+        { label: 'Vulture Gorge Viewpoint', y: 72 },
+        { label: 'Mountain Stream Base', y: 20 }
+      ]
+    }
+  },
+  {
+    name: 'Blyde River Canyon Panorama Summit Hike',
+    prov: 'mp',
+    city: 'Graskop',
+    date: '2026-11-15',
+    dist: ['HK', 'H', 'T'],
+    discipline: 'hiking',
+    organiser: 'Mpumalanga Lowveld Escarpment Hikers',
+    site: 'mtpa.co.za',
+    route: {
+      note: 'Breathtaking Drakensberg escarpment hike gazing 800m down into the world’s largest green canyon.',
+      directions: [
+        'Trail winds from Bourke’s Luck Potholes along the canyon rim path.',
+        'Spectacular panoramic vistas of the Three Rondavels and the winding Blyde River below.',
+        'Climbs through mist-belt afro-montane vegetation to God’s Window escarpment.'
+      ],
+      points: [
+        { label: 'Bourke’s Luck Start', y: 30 },
+        { label: 'Lowveld Rim Edge', y: 62 },
+        { label: 'Three Rondavels Overlook', y: 85 },
+        { label: 'God’s Window Mist Crest', y: 92 },
+        { label: 'Graskop Gorge Base', y: 35 }
+      ]
+    }
+  },
+  {
+    name: 'Amatola Mist Belt Mountain Hike',
+    prov: 'ec',
+    city: 'Hogsback',
+    date: '2026-10-11',
+    dist: ['HK', 'H', 'X'],
+    discipline: 'hiking',
+    organiser: 'Amatola Hikers & Forestry Heritage',
+    site: 'visithogsback.co.za',
+    route: {
+      note: 'Fairytale mountain hike through ancient Afrotemperate yellowwood rainforests, fern gorges, and misty mountain waterfalls.',
+      directions: [
+        'Begins in misty Hogsback village and heads deep into the indigenous Tyhume river valley.',
+        'Hike past Madonna and Child Waterfall and giant 800-year-old Outeniqua yellowwood trees.',
+        'Climbs to the three Hogs peaks offering views over the Tyhume basin.'
+      ],
+      points: [
+        { label: 'Hogsback Arboretum', y: 35 },
+        { label: 'Tyhume Waterfall', y: 48 },
+        { label: 'Yellowwood Giant', y: 65 },
+        { label: 'Tor Doone Ridge', y: 88 },
+        { label: 'Forest Eco-Camp Finish', y: 40 }
+      ]
+    }
+  },
+  {
+    name: 'Soutpansberg Bushveld Ridge Hike',
+    prov: 'lp',
+    city: 'Louis Trichardt',
+    date: '2026-11-28',
+    dist: ['HK', 'T', 'H'],
+    discipline: 'hiking',
+    organiser: 'Limpopo Mountain & Birding Hikers',
+    site: 'golimpopo.com',
+    route: {
+      note: 'Wild mountain hike through the Soutpansberg (Salt Pan Mountain) biodiversity hotspot in northern South Africa.',
+      directions: [
+        'Ascend through rare cycad and baobab territory into sub-tropical mountain forest.',
+        'Traverse high rocky bluffs with views stretching north toward the Limpopo river basin.',
+        'Cross pristine mountain streams where samango monkeys and narina trogons reside.'
+      ],
+      points: [
+        { label: 'Mountain Base Camp', y: 25 },
+        { label: 'Cycad Ridge Climb', y: 55 },
+        { label: 'Hanglip Summit (1,719m)', y: 92 },
+        { label: 'Forest Ravine Descent', y: 60 },
+        { label: 'Trailhead Finish', y: 28 }
+      ]
+    }
+  },
+
+  // --- TREKKING EXPEDITIONS & WILDERNESS TRAVERSES ---
+  {
+    name: 'Otter Wilderness Coastal Trek',
+    prov: 'ec',
+    city: 'Nature’s Valley',
+    date: '2026-10-30',
+    dist: ['TK', 'X', 'U'],
+    discipline: 'trekking',
+    organiser: 'SANParks Garden Route National Park',
+    site: 'sanparks.org/parks/garden-route',
+    route: {
+      note: 'The grail of Southern African trekking — 45km across dramatic ocean cliffs, rocky beaches, and the tidal Bloukrans River crossing.',
+      directions: [
+        'Trek along rugged Indian Ocean wave-cut terraces from Storms River mouth.',
+        'Navigate tidal sea caves, steep waterfall gorges, and indigenous coastal fynbos.',
+        'Cross the famous Bloukrans River mouth at low tide and finish on the white sands of Nature’s Valley.'
+      ],
+      points: [
+        { label: 'Storms River Mouth', y: 10 },
+        { label: 'Ngubu Sea Caves', y: 45 },
+        { label: 'Elandsbos River Mouth', y: 38 },
+        { label: 'Bloukrans River Crossing', y: 15 },
+        { label: 'Nature’s Valley Beach', y: 5 }
+      ]
+    }
+  },
+  {
+    name: 'Cederberg Wilderness Multi-Peak Trek',
+    prov: 'wc',
+    city: 'Clanwilliam',
+    date: '2026-11-13',
+    dist: ['TK', 'X', 'U'],
+    discipline: 'trekking',
+    organiser: 'CapeNature Cederberg Wilderness',
+    site: 'capenature.co.za/reserves/cederberg-wilderness-area',
+    route: {
+      note: 'Expedition-style wilderness trek through red sandstone arches, Wolfberg Crags, and the remote Maltese Cross.',
+      directions: [
+        'Depart Algeria campsite into the rugged heart of the Cederberg mountain wilderness.',
+        'Navigate the surreal narrow slot canyons of the Wolfberg Crags.',
+        'Camp under crystal clear starlit skies beside the 20-meter tall Maltese Cross rock pillar.'
+      ],
+      points: [
+        { label: 'Algeria Trailhead', y: 20 },
+        { label: 'Uitkyk Pass', y: 62 },
+        { label: 'Wolfberg Crags Slot', y: 88 },
+        { label: 'Maltese Cross Plateau', y: 95 },
+        { label: 'Sanddrif Valley Finish', y: 30 }
+      ]
+    }
+  },
+  {
+    name: 'Drakensberg Grand Escarpment Trek',
+    prov: 'kzn',
+    city: 'Underberg',
+    date: '2026-12-05',
+    dist: ['TK', 'X', 'U'],
+    discipline: 'trekking',
+    organiser: 'Mountain Club of SA (MCSA)',
+    site: 'mcsa.org.za',
+    route: {
+      note: 'Epic high-altitude mountain expedition traversing the 3,000-metre crest of the uKhahlamba-Drakensberg World Heritage Site.',
+      directions: [
+        'Self-supported wilderness trek across unmarked high alpine afro-alpine tundra.',
+        'Traverses iconic peaks: Cathedral Peak, Champagne Castle (3,377m), and Giant’s Castle.',
+        'Experience wild weather, soaring bearded vultures, and absolute remote mountain isolation.'
+      ],
+      points: [
+        { label: 'Cathedral Peak Base', y: 30 },
+        { label: 'Bell Traverse Saddle', y: 80 },
+        { label: 'Windy Gap Ridge', y: 92 },
+        { label: 'Champagne Castle (3,377m)', y: 99 },
+        { label: 'Monk’s Cowl Valley', y: 35 }
+      ]
+    }
+  },
+  {
+    name: 'Golden Gate Maluti Escarpment Trek',
+    prov: 'fs',
+    city: 'Clarens',
+    date: '2026-11-22',
+    dist: ['TK', 'X', 'H'],
+    discipline: 'trekking',
+    organiser: 'SANParks Golden Gate Highlands',
+    site: 'sanparks.org/parks/golden-gate-highlands',
+    route: {
+      note: 'Multi-day trek through brilliant golden and amber sandstone cliffs at the foothills of the Maluti Mountains.',
+      directions: [
+        'Follow the Ribbok wilderness trail through rolling highland grasslands and sandstone domes.',
+        'Ascend to Generaalskop peak (2,732m) with panoramic views across the Kingdom of Lesotho.',
+        'Trek past ancient San rock art shelters and crystal mountain tarns.'
+      ],
+      points: [
+        { label: 'Glen Reenen Base', y: 35 },
+        { label: 'Brandwag Sandstone Buttress', y: 65 },
+        { label: 'Ribbok Wild Valley', y: 78 },
+        { label: 'Generaalskop Peak (2,732m)', y: 97 },
+        { label: 'Highland Sanctuary Finish', y: 40 }
+      ]
+    }
+  },
+  {
+    name: 'Richtersveld Desert Wilderness Trek',
+    prov: 'nc',
+    city: 'Upington',
+    date: '2026-10-23',
+    dist: ['TK', 'X', 'U'],
+    discipline: 'trekking',
+    organiser: 'SANParks / Ai-Ais Richtersveld Transfrontier',
+    site: 'sanparks.org/parks/ai-ais-richtersveld',
+    route: {
+      note: 'Extraordinary mountain desert wilderness trek through the jagged volcanic gorges and halfmens succulents of the Northern Cape.',
+      directions: [
+        'Trek through dramatic lunar landscapes carved by the Gariep (Orange) River.',
+        'Navigate the remote mountain desert passes of the Richtersveld cultural landscape.',
+        'Camp under the clearest dark-sky Milky Way in the Southern Hemisphere beside the roaring river.'
+      ],
+      points: [
+        { label: 'Sendelingsdrift Base', y: 15 },
+        { label: 'Halfmens Koppie Pass', y: 45 },
+        { label: 'Helskloof Mountain Canyon', y: 75 },
+        { label: 'De Hoop Orange River Bank', y: 20 },
+        { label: 'Potjiespram Oasis Finish', y: 18 }
+      ]
+    }
+  },
+  {
+    name: 'Magoebaskloof Mist Valley Wilderness Trek',
+    prov: 'lp',
+    city: 'Haenertsburg',
+    date: '2026-12-12',
+    dist: ['TK', 'X', 'U'],
+    discipline: 'trekking',
+    organiser: 'Komatiland Forests & Magoebaskloof Trekkers',
+    site: 'magoebasklooftourism.co.za',
+    route: {
+      note: 'Challenging subtropical rainforest and escarpment trek through mist belts, giant tree ferns, and thunderous mountain waterfalls.',
+      directions: [
+        'Trail winds down into the deep gorge of the Groot Letaba river basin.',
+        'Trek through towering indigenous forests where samango monkeys call from the canopy.',
+        'Hike past the roaring Debengeni Falls and climb out onto the misty Wolkberg wilderness ridges.'
+      ],
+      points: [
+        { label: 'Haenertsburg Trailhead', y: 35 },
+        { label: 'Dokolewa River Hut', y: 55 },
+        { label: 'Debengeni Falls Gorge', y: 40 },
+        { label: 'Iron Crown Peak (2,126m)', y: 94 },
+        { label: 'Woodbush Rainforest Finish', y: 45 }
+      ]
+    }
+  },
 ];
 
 export const DIST_LABEL: Record<DistanceCode, string> = {
@@ -968,6 +1424,9 @@ export const DIST_LABEL: Record<DistanceCode, string> = {
   U: 'Ultra',
   X: 'Trail',
   TR: 'Track',
+  WK: 'Walk',
+  HK: 'Hike',
+  TK: 'Trek',
 };
 
 export const CLUBS: Club[] = [
@@ -1113,7 +1572,158 @@ export const CLUBS: Club[] = [
     prov: 'nw',
     city: 'Potchefstroom',
     affiliation: 'Athletics Central North West (ACNW)',
-    blurb: 'Active university town club training on the high altitude North West plains.'
+    blurb: 'Active university town club training on the high altitude North West plains.',
+    disciplines: ['road', 'track'],
+  },
+
+  // --- WALKING CLUBS ---
+  {
+    name: 'Cape Town Walking & Striders',
+    prov: 'wc',
+    city: 'Cape Town',
+    founded: 1994,
+    affiliation: 'Western Province Athletics (WPA)',
+    blurb: 'Premier Western Cape walking club hosting weekend distance walks, speed training, and Sea Point promenades.',
+    disciplines: ['walking', 'road'],
+  },
+  {
+    name: 'Johannesburg Race Walkers & Striders',
+    prov: 'gp',
+    city: 'Johannesburg',
+    founded: 1988,
+    affiliation: 'Central Gauteng Athletics (CGA)',
+    blurb: 'Dedicated race walking and power-walking squad training along Zoo Lake and Westcliff ridges.',
+    disciplines: ['walking', 'road'],
+  },
+  {
+    name: 'Durban Golden Mile Walkers',
+    prov: 'kzn',
+    city: 'Durban',
+    founded: 2002,
+    affiliation: 'Athletics KwaZulu-Natal (KZNA)',
+    blurb: 'Beachfront walking community meeting every dawn along the Golden Mile for 5k-20k fitness walks.',
+    disciplines: ['walking'],
+  },
+  {
+    name: 'Friendly City Walking Club',
+    prov: 'ec',
+    city: 'Gqeberha',
+    founded: 2005,
+    affiliation: 'Eastern Province Athletics (EPA)',
+    blurb: 'Active coastal fitness and race-walking club training along Kings Beach and Cape Recife paths.',
+    disciplines: ['walking'],
+  },
+  {
+    name: 'Bloemfontein Nordic & Power Walkers',
+    prov: 'fs',
+    city: 'Bloemfontein',
+    founded: 2011,
+    affiliation: 'Athletics Free State (AFS)',
+    blurb: 'Passionate Free State walking society training through Tempe, Naval Hill, and botanical garden routes.',
+    disciplines: ['walking'],
+  },
+
+  // --- HIKING CLUBS ---
+  {
+    name: 'Mountain Club of South Africa (MCSA Cape Town)',
+    prov: 'wc',
+    city: 'Cape Town',
+    founded: 1891,
+    affiliation: 'MCSA National',
+    blurb: 'Founded in 1891, South Africa’s premier mountaineering and hiking body maintaining Table Mountain, Cederberg, and Hex River trails.',
+    disciplines: ['hiking', 'trekking'],
+  },
+  {
+    name: 'MCSA Johannesburg Section',
+    prov: 'gp',
+    city: 'Johannesburg',
+    founded: 1931,
+    affiliation: 'MCSA National',
+    blurb: 'Historic mountaineering and hiking club organizing weekend kloofing, Magaliesberg ridge traverses, and Drakensberg hikes.',
+    disciplines: ['hiking', 'trekking'],
+  },
+  {
+    name: 'Drakensberg Bushmen Hiking Club',
+    prov: 'kzn',
+    city: 'Pietermaritzburg',
+    founded: 1978,
+    affiliation: 'KZN Mountain & Wilderness Guild',
+    blurb: 'Leading mountain hiking club exploring the uKhahlamba-Drakensberg escarpment, rock art shelters, and high peaks.',
+    disciplines: ['hiking', 'trekking'],
+  },
+  {
+    name: 'Magaliesberg Hikers & Ramblers',
+    prov: 'nw',
+    city: 'Rustenburg',
+    founded: 1985,
+    affiliation: 'North West Outdoor & Hiking Association',
+    blurb: 'Passionate ridge hikers traversing ancient quartzite kloofs, waterfalls, and biosphere nature sanctuaries.',
+    disciplines: ['hiking'],
+  },
+  {
+    name: 'Lowveld Escarpment Hiking Society',
+    prov: 'mp',
+    city: 'Mbombela',
+    founded: 1990,
+    affiliation: 'Mpumalanga Trail & Escarpment Union',
+    blurb: 'Weekend mountain hikers exploring the breathtaking Blyde River Canyon, God’s Window, and Kaapsehoop trails.',
+    disciplines: ['hiking'],
+  },
+  {
+    name: 'Amatola Mountain Ramblers',
+    prov: 'ec',
+    city: 'Hogsback',
+    founded: 1996,
+    affiliation: 'Eastern Cape Wilderness Society',
+    blurb: 'Hogsback-based mountain hiking guild exploring indigenous yellowwood mist-forests, waterfalls, and Tor Doone.',
+    disciplines: ['hiking'],
+  },
+
+  // --- TREKKING CLUBS ---
+  {
+    name: 'Cape Wilderness Trekkers',
+    prov: 'wc',
+    city: 'Stellenbosch',
+    founded: 2004,
+    affiliation: 'Western Cape Expedition Society',
+    blurb: 'Multi-day backpacking and wilderness trek group covering the Cederberg, Boland trails, and Swartberg passes.',
+    disciplines: ['trekking', 'hiking'],
+  },
+  {
+    name: 'Highveld Alpine & Backpacking Club',
+    prov: 'gp',
+    city: 'Pretoria',
+    founded: 1998,
+    affiliation: 'Gauteng Wilderness Alliance',
+    blurb: 'Self-supported long-distance trekking club training on highveld altitudes for Drakensberg and Karoo traverses.',
+    disciplines: ['trekking', 'hiking'],
+  },
+  {
+    name: 'Drakensberg Wilderness Expeditions',
+    prov: 'kzn',
+    city: 'Underberg',
+    founded: 2001,
+    affiliation: 'Southern Berg Wilderness Collective',
+    blurb: 'Specialists in high-alpine Drakensberg traverses, pass crossings, and alpine plateau survival trekking.',
+    disciplines: ['trekking', 'hiking'],
+  },
+  {
+    name: 'Kalahari & Karoo Trekking Society',
+    prov: 'nc',
+    city: 'Kimberley',
+    founded: 2008,
+    affiliation: 'Northern Cape Eco-Trekking Forum',
+    blurb: 'Endurance desert and canyon trekkers traversing the Richtersveld, Orange River gorge, and vast Karoo plains.',
+    disciplines: ['trekking', 'walking'],
+  },
+  {
+    name: 'Limpopo Bushveld Trekkers',
+    prov: 'lp',
+    city: 'Polokwane',
+    founded: 2012,
+    affiliation: 'Limpopo Wilderness Collective',
+    blurb: 'Wilderness backpacking guild exploring the Soutpansberg peaks, Blouberg wilderness, and Magoebaskloof rain forests.',
+    disciplines: ['trekking', 'hiking'],
   },
 ];
 

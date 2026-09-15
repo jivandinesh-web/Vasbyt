@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { PROVINCES, CLUBS } from '../data/runningData';
-import { Club, ClubContact } from '../types';
+import { Club, ClubContact, Discipline } from '../types';
 import { ClubBadge } from './ClubBadge';
-import { Search, Plus, MapPin, Users, Phone, Mail, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Plus, MapPin, Users, Phone, Mail, Clock, ChevronDown, ChevronUp, Footprints, Trees, Tent, Mountain, Activity, Flag } from 'lucide-react';
 
 interface ClubsViewProps {
   activeProv: string;
@@ -19,6 +19,7 @@ export const ClubsView: React.FC<ClubsViewProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [expandedClubName, setExpandedClubName] = useState<string | null>(null);
+  const [activeDiscipline, setActiveDiscipline] = useState<string>('all');
 
   // User-added contacts keyed by club name
   const [clubContacts, setClubContacts] = useState<Record<string, ClubContact>>(() => {
@@ -59,6 +60,7 @@ export const ClubsView: React.FC<ClubsViewProps> = ({
     city: string;
     affiliation: string;
     blurb: string;
+    disciplines: Discipline[];
     contactPerson: string;
     phoneOrEmail: string;
   }>({
@@ -67,6 +69,7 @@ export const ClubsView: React.FC<ClubsViewProps> = ({
     city: '',
     affiliation: '',
     blurb: '',
+    disciplines: ['road'],
     contactPerson: '',
     phoneOrEmail: '',
   });
@@ -123,6 +126,7 @@ export const ClubsView: React.FC<ClubsViewProps> = ({
       city: newClubForm.city.trim() || 'South Africa',
       affiliation: newClubForm.affiliation.trim() || 'Affiliated Athletics Club',
       blurb: newClubForm.blurb.trim() || 'Active local community running club.',
+      disciplines: newClubForm.disciplines.length > 0 ? newClubForm.disciplines : ['road'],
     };
 
     const updatedClubs = [...customClubs, newClub];
@@ -157,6 +161,7 @@ export const ClubsView: React.FC<ClubsViewProps> = ({
       city: '',
       affiliation: '',
       blurb: '',
+      disciplines: ['road'],
       contactPerson: '',
       phoneOrEmail: '',
     });
@@ -170,20 +175,125 @@ export const ClubsView: React.FC<ClubsViewProps> = ({
     ...PROVINCES.map((p) => ({ id: p.id, label: `${p.name} (${p.ab})` })),
   ];
 
+  const disciplineChips: { key: string; label: string; count: number }[] = [
+    { key: 'all', label: 'All Disciplines', count: allClubs.length },
+    {
+      key: 'road',
+      label: 'Road Running',
+      count: allClubs.filter((c) => !c.disciplines || c.disciplines.includes('road')).length,
+    },
+    {
+      key: 'trail',
+      label: 'Trail Running',
+      count: allClubs.filter((c) => c.disciplines?.includes('trail')).length,
+    },
+    {
+      key: 'track',
+      label: 'Track & Field',
+      count: allClubs.filter((c) => c.disciplines?.includes('track')).length,
+    },
+    {
+      key: 'walking',
+      label: 'Walking',
+      count: allClubs.filter((c) => c.disciplines?.includes('walking')).length,
+    },
+    {
+      key: 'hiking',
+      label: 'Hiking',
+      count: allClubs.filter((c) => c.disciplines?.includes('hiking')).length,
+    },
+    {
+      key: 'trekking',
+      label: 'Trekking',
+      count: allClubs.filter((c) => c.disciplines?.includes('trekking')).length,
+    },
+  ];
+
   const q = searchTerm.toLowerCase().trim();
   const filteredClubs = allClubs.filter((c) => {
     const matchesProv = activeProv === 'all' || c.prov === activeProv;
+    const matchesDiscipline =
+      activeDiscipline === 'all' ||
+      (c.disciplines
+        ? c.disciplines.includes(activeDiscipline as Discipline)
+        : activeDiscipline === 'road');
     const matchesQuery =
       !q ||
       c.name.toLowerCase().includes(q) ||
       c.city.toLowerCase().includes(q) ||
       c.blurb.toLowerCase().includes(q) ||
       (c.customContact?.contactPerson && c.customContact.contactPerson.toLowerCase().includes(q));
-    return matchesProv && matchesQuery;
+    return matchesProv && matchesDiscipline && matchesQuery;
   });
 
   const toggleClubExpand = (name: string) => {
     setExpandedClubName((prev) => (prev === name ? null : name));
+  };
+
+  const getDisciplineBadge = (disc: Discipline) => {
+    switch (disc) {
+      case 'walking':
+        return (
+          <span
+            key={disc}
+            className="inline-flex items-center gap-1 text-[9.5px] uppercase tracking-wider bg-[#d8b34a]/15 text-[#d8b34a] border border-[#d8b34a]/50 px-1.5 py-0.5 rounded-xs font-semibold"
+          >
+            <Footprints className="w-2.5 h-2.5" />
+            Walking
+          </span>
+        );
+      case 'hiking':
+        return (
+          <span
+            key={disc}
+            className="inline-flex items-center gap-1 text-[9.5px] uppercase tracking-wider bg-[#10b981]/15 text-[#10b981] border border-[#10b981]/50 px-1.5 py-0.5 rounded-xs font-semibold"
+          >
+            <Trees className="w-2.5 h-2.5" />
+            Hiking
+          </span>
+        );
+      case 'trekking':
+        return (
+          <span
+            key={disc}
+            className="inline-flex items-center gap-1 text-[9.5px] uppercase tracking-wider bg-[#c084fc]/15 text-[#c084fc] border border-[#c084fc]/50 px-1.5 py-0.5 rounded-xs font-semibold"
+          >
+            <Tent className="w-2.5 h-2.5" />
+            Trekking
+          </span>
+        );
+      case 'trail':
+        return (
+          <span
+            key={disc}
+            className="inline-flex items-center gap-1 text-[9.5px] uppercase tracking-wider bg-[#7c8f5c]/15 text-[#7c8f5c] border border-[#7c8f5c]/50 px-1.5 py-0.5 rounded-xs font-semibold"
+          >
+            <Mountain className="w-2.5 h-2.5" />
+            Trail
+          </span>
+        );
+      case 'track':
+        return (
+          <span
+            key={disc}
+            className="inline-flex items-center gap-1 text-[9.5px] uppercase tracking-wider bg-[#4f8fb0]/15 text-[#4f8fb0] border border-[#4f8fb0]/50 px-1.5 py-0.5 rounded-xs font-semibold"
+          >
+            <Activity className="w-2.5 h-2.5" />
+            Track
+          </span>
+        );
+      case 'road':
+      default:
+        return (
+          <span
+            key={disc}
+            className="inline-flex items-center gap-1 text-[9.5px] uppercase tracking-wider bg-[#e28b37]/15 text-[#e28b37] border border-[#e28b37]/50 px-1.5 py-0.5 rounded-xs font-semibold"
+          >
+            <Flag className="w-2.5 h-2.5" />
+            Road
+          </span>
+        );
+    }
   };
 
   return (
@@ -265,6 +375,32 @@ export const ClubsView: React.FC<ClubsViewProps> = ({
             })}
           </div>
         </div>
+
+        {/* Discipline Filter Chips */}
+        <div>
+          <div className="text-[11px] uppercase tracking-wider text-[#6d7580] font-semibold mb-2">
+            Filter by Discipline
+          </div>
+          <div id="club-discipline-chips" className="flex flex-wrap gap-1.5 sm:gap-2">
+            {disciplineChips.map((disc) => {
+              const isOn = activeDiscipline === disc.key;
+              return (
+                <button
+                  key={disc.key}
+                  id={`chip-club-disc-${disc.key}`}
+                  onClick={() => setActiveDiscipline(disc.key)}
+                  className={`text-xs py-1 px-3 rounded-full border cursor-pointer transition-all ${
+                    isOn
+                      ? 'bg-[#e28b37] border-[#e28b37] text-[#1b1103] font-bold shadow-xs'
+                      : 'bg-[#12151b] border-[#2c333f] text-[#9aa1ac] hover:border-[#6d7580] hover:text-[#f5efe3]'
+                  }`}
+                >
+                  {disc.label} ({disc.count})
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Clubs Grid - Multi-column responsive layout */}
@@ -285,8 +421,9 @@ export const ClubsView: React.FC<ClubsViewProps> = ({
               onClick={() => {
                 setSearchTerm('');
                 onSelectProv('all');
+                setActiveDiscipline('all');
               }}
-              className="text-xs font-semibold bg-[#e28b37] text-[#1b1103] px-4 py-2 rounded-xs"
+              className="text-xs font-semibold bg-[#e28b37] text-[#1b1103] px-4 py-2 rounded-xs cursor-pointer"
             >
               Reset filters
             </button>
@@ -296,6 +433,7 @@ export const ClubsView: React.FC<ClubsViewProps> = ({
             const isFav = favorites.includes(c.name);
             const isOpen = expandedClubName === c.name;
             const hasContact = !!c.customContact?.contactPerson;
+            const clubDisciplines: Discipline[] = c.disciplines && c.disciplines.length > 0 ? c.disciplines : ['road'];
 
             return (
               <div
@@ -319,17 +457,23 @@ export const ClubsView: React.FC<ClubsViewProps> = ({
                         id={`badge-${c.name.replace(/\s+/g, '-').toLowerCase()}`}
                       />
                       <div>
-                        <span
-                          id={`club-prov-tag-${c.name.replace(/\s+/g, '-').toLowerCase()}`}
-                          className="text-[10px] uppercase tracking-wider text-[#d8b34a] bg-[#d8b34a]/10 border border-[#d8b34a]/40 rounded-full px-2 py-0.5 font-bold"
-                        >
-                          {c.prov.toUpperCase()}
-                        </span>
-                        {hasContact && (
-                          <span className="ml-1.5 text-[9.5px] bg-[#7c8f5c]/20 text-[#7c8f5c] border border-[#7c8f5c]/50 px-1.5 py-0.2 rounded-xs font-medium">
-                            Contact Added
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span
+                            id={`club-prov-tag-${c.name.replace(/\s+/g, '-').toLowerCase()}`}
+                            className="text-[10px] uppercase tracking-wider text-[#d8b34a] bg-[#d8b34a]/10 border border-[#d8b34a]/40 rounded-full px-2 py-0.5 font-bold"
+                          >
+                            {c.prov.toUpperCase()}
                           </span>
-                        )}
+                          {hasContact && (
+                            <span className="text-[9.5px] bg-[#7c8f5c]/20 text-[#7c8f5c] border border-[#7c8f5c]/50 px-1.5 py-0.2 rounded-xs font-medium">
+                              Contact Added
+                            </span>
+                          )}
+                        </div>
+                        {/* Discipline Badges */}
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {clubDisciplines.map((d) => getDisciplineBadge(d))}
+                        </div>
                       </div>
                     </div>
 
@@ -648,6 +792,54 @@ export const ClubsView: React.FC<ClubsViewProps> = ({
                   placeholder="Weekly group runs, race-day gazebo, beginner friendly..."
                   className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs px-3 py-2 text-[#f5efe3] text-sm focus:border-[#e28b37] focus:outline-none"
                 />
+              </div>
+
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider text-[#6d7580] font-medium mb-1.5">
+                  Sport Disciplines Offered
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {[
+                    { id: 'road' as Discipline, label: 'Road Running' },
+                    { id: 'trail' as Discipline, label: 'Trail Running' },
+                    { id: 'track' as Discipline, label: 'Track & Field' },
+                    { id: 'walking' as Discipline, label: 'Walking' },
+                    { id: 'hiking' as Discipline, label: 'Hiking' },
+                    { id: 'trekking' as Discipline, label: 'Trekking' },
+                  ].map((disc) => {
+                    const checked = newClubForm.disciplines.includes(disc.id);
+                    return (
+                      <label
+                        key={disc.id}
+                        className={`flex items-center gap-2 text-xs p-2 rounded-xs border cursor-pointer transition-colors ${
+                          checked
+                            ? 'bg-[#e28b37]/15 border-[#e28b37] text-[#f5efe3]'
+                            : 'bg-[#12151b] border-[#2c333f] text-[#9aa1ac] hover:border-[#6d7580]'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setNewClubForm({
+                                ...newClubForm,
+                                disciplines: [...newClubForm.disciplines, disc.id],
+                              });
+                            } else {
+                              setNewClubForm({
+                                ...newClubForm,
+                                disciplines: newClubForm.disciplines.filter((d) => d !== disc.id),
+                              });
+                            }
+                          }}
+                          className="accent-[#e28b37] rounded-xs"
+                        />
+                        <span>{disc.label}</span>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 pt-1">

@@ -64,8 +64,10 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange, onOpenHo
               key={tab.id}
               id={`tab-btn-${tab.id}`}
               onClick={() => onTabChange(tab.id)}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 pt-2.5 pb-2 cursor-pointer transition-colors bg-transparent border-none ${
-                isActive ? 'text-[#e28b37]' : 'text-[#6d7580] hover:text-[#9aa1ac]'
+              className={`flex-1 flex flex-col items-center justify-center gap-1 pt-2 pb-1.5 my-1 mx-0.5 rounded-xs cursor-pointer transition-all ${
+                isActive
+                  ? 'neu-inset-sm text-[#e28b37] border border-[#e28b37]/35'
+                  : 'text-[#6d7580] hover:text-[#9aa1ac]'
               }`}
             >
               <div className={isActive ? 'drop-shadow-[0_0_8px_rgba(226,139,55,0.45)]' : ''}>

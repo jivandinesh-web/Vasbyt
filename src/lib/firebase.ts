@@ -3,6 +3,10 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInAnonymously,
+  updateProfile,
   signOut as fbSignOut,
   User as FirebaseUser,
   onAuthStateChanged,
@@ -91,6 +95,10 @@ testFirestoreConnection().catch(() => {});
 
 export {
   signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInAnonymously,
+  updateProfile,
   fbSignOut,
   onAuthStateChanged,
   doc,

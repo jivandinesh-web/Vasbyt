@@ -8,13 +8,29 @@ import {
   daysUntil,
   formatRaceDate,
 } from '../data/runningData';
-import { MajorRace } from '../types';
+import { MajorRace, Discipline } from '../types';
 import { ElevationProfile } from './ElevationProfile';
-import { Calendar, ArrowRight, MapPin, Trophy, Sparkles, ChevronRight, X, HelpCircle } from 'lucide-react';
+import { NeumorphicButton } from './NeumorphicButton';
+import {
+  Calendar,
+  ArrowRight,
+  MapPin,
+  Trophy,
+  Sparkles,
+  ChevronRight,
+  X,
+  HelpCircle,
+  Footprints,
+  Trees,
+  Tent,
+  Mountain,
+  Activity,
+  Flag,
+} from 'lucide-react';
 
 interface HomeViewProps {
   onSelectProvince: (provId: string) => void;
-  onSelectRaceTab: () => void;
+  onSelectRaceTab: (disc?: string) => void;
   onOpenHowTo?: () => void;
 }
 
@@ -41,6 +57,57 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
   const getRaceCount = (provId: string) => RACES.filter((r) => r.prov === provId).length;
   const getClubCount = (provId: string) => CLUBS.filter((c) => c.prov === provId).length;
+
+  const disciplines = [
+    {
+      id: 'road',
+      label: 'Road Running',
+      desc: 'Marathons & 10ks',
+      count: RACES.filter((r) => (r.discipline || 'road') === 'road').length,
+      icon: Flag,
+      color: '#e28b37',
+    },
+    {
+      id: 'trail',
+      label: 'Trail Running',
+      desc: 'Mountain & bush ultras',
+      count: RACES.filter((r) => r.discipline === 'trail').length,
+      icon: Mountain,
+      color: '#7c8f5c',
+    },
+    {
+      id: 'walking',
+      label: 'Walking',
+      desc: 'Sanctioned speed & racewalking',
+      count: RACES.filter((r) => r.discipline === 'walking').length,
+      icon: Footprints,
+      color: '#d8b34a',
+    },
+    {
+      id: 'hiking',
+      label: 'Hiking',
+      desc: 'Day & weekend alpine trails',
+      count: RACES.filter((r) => r.discipline === 'hiking').length,
+      icon: Trees,
+      color: '#10b981',
+    },
+    {
+      id: 'trekking',
+      label: 'Trekking',
+      desc: 'Multi-day wilderness expeditions',
+      count: RACES.filter((r) => r.discipline === 'trekking').length,
+      icon: Tent,
+      color: '#c084fc',
+    },
+    {
+      id: 'track',
+      label: 'Track & Field',
+      desc: 'Stadia & tartan fixtures',
+      count: RACES.filter((r) => r.discipline === 'track').length,
+      icon: Activity,
+      color: '#4f8fb0',
+    },
+  ];
 
   return (
     <div id="view-home" className="space-y-8 pb-10 text-left">
@@ -71,37 +138,48 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </h1>
 
             <p id="hero-blurb" className="text-sm sm:text-base text-[#9aa1ac] leading-relaxed max-w-xl mb-6">
-              Marathons, ultras, mountain trails, and club time-trials from the Western Cape to the
-              Highveld — structured the way South African road and trail running actually works.
+              Marathons, ultras, mountain trails, walking fixtures, hiking paths, and wilderness trekking
+              from the Western Cape to the Highveld — structured the way South African athletics actually works.
             </p>
           </div>
 
           <div>
-            {/* Quick action buttons */}
+            {/* Quick action buttons with tactile Neumorphic styling */}
             <div className="flex flex-wrap items-center gap-3 mb-6">
-              <button
-                onClick={onSelectRaceTab}
-                className="inline-flex items-center gap-2 bg-[#e28b37] text-[#1b1103] hover:bg-[#eb9a4a] text-sm font-bold px-4 py-2.5 rounded-xs transition-colors cursor-pointer"
+              <NeumorphicButton
+                variant="primary"
+                size="md"
+                onClick={() => onSelectRaceTab('all')}
+                leftIcon={<Calendar className="w-4 h-4 text-[#1a0f02]" />}
+                rightIcon={<ArrowRight className="w-4 h-4 text-[#1a0f02]" />}
               >
-                <Calendar className="w-4 h-4" />
                 Browse Race Calendar
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              </NeumorphicButton>
 
               {onOpenHowTo && (
-                <button
+                <NeumorphicButton
                   id="home-btn-howto"
+                  variant="default"
+                  size="md"
                   onClick={onOpenHowTo}
-                  className="inline-flex items-center gap-2 bg-[#1b212b] hover:bg-[#242c38] text-[#d8b34a] hover:text-[#f5efe3] border border-[#d8b34a]/40 hover:border-[#d8b34a]/80 text-sm font-bold px-4 py-2.5 rounded-xs transition-colors cursor-pointer"
+                  leftIcon={<HelpCircle className="w-4 h-4 text-[#d8b34a]" />}
+                  className="text-[#d8b34a] hover:text-[#f5efe3] border-[#d8b34a]/40"
                 >
-                  <HelpCircle className="w-4 h-4 text-[#d8b34a]" />
                   How To Use Vasbyt
-                </button>
+                </NeumorphicButton>
               )}
             </div>
 
             {/* Stats Row */}
             <div id="hero-stats" className="flex flex-wrap gap-6 sm:gap-8 pt-4 border-t border-[#2c333f]/70">
+              <div>
+                <b className="font-display text-3xl sm:text-4xl text-[#d8b34a] leading-none block">
+                  6
+                </b>
+                <span className="text-[11px] text-[#6d7580] uppercase tracking-wider block mt-1 font-semibold">
+                  Disciplines
+                </span>
+              </div>
               <div>
                 <b className="font-display text-3xl sm:text-4xl text-[#d8b34a] leading-none block">
                   {PROVINCES.length}
@@ -151,7 +229,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           {nextRace ? (
             <div
               id="nextup-card"
-              onClick={onSelectRaceTab}
+              onClick={() => onSelectRaceTab(nextRace.discipline || 'road')}
               className="flex-1 flex flex-col justify-between cursor-pointer group"
             >
               <div>
@@ -172,18 +250,24 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   </div>
                 </div>
 
-                <h3 className="text-xl sm:text-2xl font-bold text-[#f5efe3] group-hover:text-[#e28b37] transition-colors leading-tight mb-2">
-                  {nextRace.name}
-                </h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#f5efe3] group-hover:text-[#e28b37] transition-colors leading-tight">
+                    {nextRace.name}
+                  </h3>
+                </div>
 
-                <p className="text-xs sm:text-sm text-[#9aa1ac] flex items-center gap-1.5 mb-4">
+                <p className="text-xs sm:text-sm text-[#9aa1ac] flex items-center gap-1.5 mb-3">
                   <MapPin className="w-3.5 h-3.5 text-[#e28b37] shrink-0" />
                   <span>
                     {nextRace.city}, <b className="text-[#f5efe3]">{nextRace.prov.toUpperCase()}</b>
                   </span>
                 </p>
 
-                <div className="flex flex-wrap gap-1.5 mb-4">
+                <div className="flex flex-wrap items-center gap-1.5 mb-4">
+                  {/* Discipline indicator */}
+                  <span className="text-[10px] uppercase tracking-wider font-bold bg-[#e28b37]/15 text-[#e28b37] border border-[#e28b37]/40 px-2 py-0.5 rounded-xs">
+                    {(nextRace.discipline || 'road').toUpperCase()}
+                  </span>
                   {nextRace.dist.map((d) => (
                     <span
                       key={d}
@@ -205,6 +289,63 @@ export const HomeView: React.FC<HomeViewProps> = ({
               Calendar refreshing — check the Race Calendar tab.
             </div>
           )}
+        </div>
+      </div>
+
+      {/* 6 Disciplines of Sport Showcase */}
+      <div id="home-disciplines-section" className="space-y-3">
+        <div className="flex items-baseline justify-between">
+          <div>
+            <h2 className="font-display font-black text-xl sm:text-2xl uppercase tracking-wider text-[#f5efe3]">
+              6 Disciplines of Sport
+            </h2>
+            <p className="text-xs sm:text-sm text-[#9aa1ac] mt-0.5">
+              Explore events, trails, and clubs across all supported sporting categories throughout South Africa.
+            </p>
+          </div>
+          <button
+            onClick={() => onSelectRaceTab('all')}
+            className="text-xs text-[#e28b37] hover:underline font-semibold hidden sm:inline-flex items-center gap-1"
+          >
+            All Events →
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {disciplines.map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <button
+                key={item.id}
+                id={`discipline-card-${item.id}`}
+                onClick={() => onSelectRaceTab(item.id)}
+                className="p-3.5 bg-[#171c24] border border-[#2c333f] hover:border-[#e28b37] rounded-xs text-left transition-all hover:bg-[#1f2633] group cursor-pointer flex flex-col justify-between"
+              >
+                <div>
+                  <div
+                    className="w-8 h-8 rounded-xs flex items-center justify-center mb-2.5 transition-transform group-hover:scale-110"
+                    style={{ backgroundColor: `${item.color}20`, border: `1px solid ${item.color}50` }}
+                  >
+                    <IconComponent className="w-4 h-4" style={{ color: item.color }} />
+                  </div>
+                  <h3 className="text-sm font-bold text-[#f5efe3] group-hover:text-[#e28b37] transition-colors leading-tight">
+                    {item.label}
+                  </h3>
+                  <p className="text-[11px] text-[#6d7580] mt-1 line-clamp-1">
+                    {item.desc}
+                  </p>
+                </div>
+                <div className="pt-2.5 mt-2 border-t border-[#2c333f]/60 flex items-center justify-between text-[11px]">
+                  <span className="font-mono font-bold text-[#9aa1ac]">
+                    {item.count} {item.count === 1 ? 'event' : 'events'}
+                  </span>
+                  <span className="text-[#e28b37] opacity-0 group-hover:opacity-100 transition-opacity">
+                    →
+                  </span>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 

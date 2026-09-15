@@ -4,6 +4,10 @@ import {
   db,
   googleProvider,
   signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInAnonymously,
+  updateProfile,
   fbSignOut,
   onAuthStateChanged,
   doc,
@@ -22,7 +26,13 @@ interface AuthContextType {
   loginError: string | null;
   syncState: 'saved' | 'saving' | 'offline' | 'error';
   lastSyncedAt: string | null;
+  isLoginModalOpen: boolean;
+  openLoginModal: () => void;
+  closeLoginModal: () => void;
   loginWithGoogle: () => Promise<void>;
+  loginWithEmail: (email: string, pass: string) => Promise<void>;
+  registerWithEmail: (email: string, pass: string, name?: string) => Promise<void>;
+  loginAsGuestRunner: (name?: string, license?: string) => Promise<void>;
   logout: () => Promise<void>;
   clearLoginError: () => void;
   saveCloudProfile: (profile: UserProfile, favorites?: UserFavorites) => Promise<void>;
@@ -48,6 +58,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   const [loginError, setLoginError] = useState<string | null>(null);
   const [syncState, setSyncState] = useState<'saved' | 'saving' | 'offline' | 'error'>('saved');
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+
+  const openLoginModal = useCallback(() => {
+    setLoginError(null);
+    setIsLoginModalOpen(true);
+  }, []);
+
+  const closeLoginModal = useCallback(() => {
+    setIsLoginModalOpen(false);
+    setLoginError(null);
+  }, []);
 
   // Clear any login error message
   const clearLoginError = useCallback(() => {
@@ -237,6 +258,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     setLoginError(null);
     try {
       await signInWithPopup(auth, googleProvider);
+      setIsLoginModalOpen(false);
     } catch (err: unknown) {
       console.error('Google Sign-In failed:', err);
       const errorMsg =
@@ -251,6 +273,83 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       } else {
         setLoginError('Google Sign-In could not be completed. Please try again or open the app in a new tab.');
       }
+    }
+  };
+
+  // Email & Password Sign-In
+  const loginWithEmail = async (email: string, pass: string) => {
+    setLoginError(null);
+    try {
+      await signInWithEmailAndPassword(auth, email.trim(), pass);
+      setIsLoginModalOpen(false);
+    } catch (err: unknown) {
+      console.error('Email login failed:', err);
+      const errorMsg = err instanceof Error ? err.message : '';
+      if (errorMsg.includes('user-not-found') || errorMsg.includes('invalid-credential') || errorMsg.includes('wrong-password')) {
+        setLoginError('Invalid email or password. Please check your credentials or register a new runner account.');
+      } else if (errorMsg.includes('invalid-email')) {
+        setLoginError('Please enter a valid email address.');
+      } else if (errorMsg.includes('too-many-requests')) {
+        setLoginError('Too many failed login attempts. Please wait a moment and try again.');
+      } else {
+        setLoginError('Sign-in failed. Please verify your details or use Google Sign-In.');
+      }
+    }
+  };
+
+  // Email & Password Registration
+  const registerWithEmail = async (email: string, pass: string, name?: string) => {
+    setLoginError(null);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), pass);
+      if (name && userCredential.user) {
+        try {
+          await updateProfile(userCredential.user, { displayName: name.trim() });
+        } catch {
+          // Ignored
+        }
+      }
+      setIsLoginModalOpen(false);
+    } catch (err: unknown) {
+      console.error('Registration failed:', err);
+      const errorMsg = err instanceof Error ? err.message : '';
+      if (errorMsg.includes('email-already-in-use')) {
+        setLoginError('An account with this email already exists. Please switch to the Sign In tab.');
+      } else if (errorMsg.includes('weak-password')) {
+        setLoginError('Password should be at least 6 characters.');
+      } else if (errorMsg.includes('invalid-email')) {
+        setLoginError('Please enter a valid email address.');
+      } else {
+        setLoginError('Registration failed. Please check your information and try again.');
+      }
+    }
+  };
+
+  // Quick Guest / Runner Passport Sign-In
+  const loginAsGuestRunner = async (name?: string, license?: string) => {
+    setLoginError(null);
+    try {
+      const userCredential = await signInAnonymously(auth);
+      if (userCredential.user && name) {
+        try {
+          await updateProfile(userCredential.user, { displayName: name.trim() });
+        } catch {
+          // Ignored
+        }
+      }
+      if (userCredential.user && (name || license)) {
+        // Save initial license and name to local profile state
+        const updatedLocal = {
+          ...currentLocalProfile,
+          name: name?.trim() || currentLocalProfile.name || 'Runner',
+          licenseNumber: license?.trim() || currentLocalProfile.licenseNumber || '',
+        };
+        await saveCloudProfile(updatedLocal, currentLocalFavorites);
+      }
+      setIsLoginModalOpen(false);
+    } catch (err: unknown) {
+      console.error('Guest sign-in failed:', err);
+      setLoginError('Unable to initialize guest session. Please try Google Sign-In.');
     }
   };
 
@@ -273,7 +372,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         loginError,
         syncState,
         lastSyncedAt,
+        isLoginModalOpen,
+        openLoginModal,
+        closeLoginModal,
         loginWithGoogle,
+        loginWithEmail,
+        registerWithEmail,
+        loginAsGuestRunner,
         logout,
         clearLoginError,
         saveCloudProfile,

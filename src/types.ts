@@ -1,8 +1,8 @@
 export type TabType = 'home' | 'provinces' | 'races' | 'clubs' | 'profile';
 
-export type DistanceCode = 'M' | 'H' | 'T' | 'F' | 'U' | 'X' | 'TR';
+export type DistanceCode = 'M' | 'H' | 'T' | 'F' | 'U' | 'X' | 'TR' | 'WK' | 'HK' | 'TK';
 
-export type Discipline = 'road' | 'trail' | 'track';
+export type Discipline = 'road' | 'trail' | 'track' | 'walking' | 'trekking' | 'hiking';
 
 export interface Province {
   id: string;
@@ -49,7 +49,14 @@ export interface RouteProfile {
   distanceKm?: number;
   cutoffTime?: string;
   courseType?: 'Point-to-Point' | 'Loop' | 'Out & Back' | 'Stage Run';
-  surface?: 'Asphalt Road' | 'Mountain Singletrack' | 'Jeep Track & Trail' | 'Track Oval';
+  surface?:
+    | 'Asphalt Road'
+    | 'Mountain Singletrack'
+    | 'Jeep Track & Trail'
+    | 'Track Oval'
+    | 'Paved Footpath & Promenade'
+    | 'Mountain Hiking Trail & Rocky Path'
+    | 'Wilderness Singletrack & Escarpment';
   waterTablesCount?: number;
   qualifierFor?: string;
   coordinates?: [number, number][]; // [lat, lng] path
@@ -96,6 +103,7 @@ export interface Club {
   founded?: number;
   affiliation?: string;
   blurb: string;
+  disciplines?: Discipline[];
   customContact?: ClubContact;
 }
 
@@ -108,6 +116,7 @@ export interface UserProfile {
   club: string;
   licenseNumber?: string;
   category?: string;
+  disciplines?: Discipline[];
   pb5k: string;
   pb10k: string;
   pbHalf: string;

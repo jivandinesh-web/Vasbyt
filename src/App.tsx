@@ -8,6 +8,9 @@ import { RacesView } from './components/RacesView';
 import { ClubsView } from './components/ClubsView';
 import { ProfileView } from './components/ProfileView';
 import { HowToModal } from './components/HowToModal';
+import { SitemapModal } from './components/SitemapModal';
+import { PrivacyPolicyModal } from './components/PrivacyPolicyModal';
+import { NeumorphicLoginModal } from './components/NeumorphicLoginModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const DEFAULT_PROFILE: UserProfile = {
@@ -44,11 +47,15 @@ function AppLayout({
   onToggleRaceFavorite,
   onToggleClubFavorite,
 }: AppLayoutProps) {
+  const { isLoginModalOpen, closeLoginModal } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [selectedProvinceId, setSelectedProvinceId] = useState<string | null>(null);
   const [raceFilterProv, setRaceFilterProv] = useState<string>('all');
+  const [raceFilterDiscipline, setRaceFilterDiscipline] = useState<string>('all');
   const [clubFilterProv, setClubFilterProv] = useState<string>('all');
   const [isHowToOpen, setIsHowToOpen] = useState<boolean>(false);
+  const [isSitemapOpen, setIsSitemapOpen] = useState<boolean>(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState<boolean>(false);
 
   // Navigation callbacks
   const handleHomeSelectProvince = (provId: string) => {
@@ -57,8 +64,19 @@ function AppLayout({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleNavigateToRaces = (provId: string) => {
+  const handleNavigateToRaces = (provId: string, disc?: string) => {
     setRaceFilterProv(provId);
+    if (disc) {
+      setRaceFilterDiscipline(disc);
+    }
+    setActiveTab('races');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleHomeSelectRaceTab = (disc?: string) => {
+    if (disc) {
+      setRaceFilterDiscipline(disc);
+    }
     setActiveTab('races');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -94,7 +112,7 @@ function AppLayout({
         {activeTab === 'home' && (
           <HomeView
             onSelectProvince={handleHomeSelectProvince}
-            onSelectRaceTab={() => handleTabSwitch('races')}
+            onSelectRaceTab={handleHomeSelectRaceTab}
             onOpenHowTo={() => setIsHowToOpen(true)}
           />
         )}
@@ -112,6 +130,8 @@ function AppLayout({
           <RacesView
             activeProv={raceFilterProv}
             onSelectProv={setRaceFilterProv}
+            activeDiscipline={raceFilterDiscipline}
+            onSelectDiscipline={setRaceFilterDiscipline}
             favorites={favorites.races}
             onToggleFavorite={onToggleRaceFavorite}
           />
@@ -144,15 +164,23 @@ function AppLayout({
             <span className="font-display font-black tracking-wider text-[#f5efe3] text-sm mr-1">
               VAS<span className="text-[#e28b37]">BYT</span>
             </span>
-            <span>South Africa&apos;s Road, Trail &amp; Track Running Fixture Guide</span>
+            <span>South Africa&apos;s Road, Trail, Walking, Hiking &amp; Trekking Fixture Guide</span>
           </div>
-          <div className="flex items-center gap-4 text-[11px] text-[#6d7580]">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[11px] text-[#6d7580]">
             <button
-              id="footer-howto-btn"
-              onClick={() => setIsHowToOpen(true)}
-              className="text-[#d8b34a] hover:text-[#f5efe3] underline cursor-pointer font-medium"
+              id="footer-privacy-btn"
+              onClick={() => setIsPrivacyOpen(true)}
+              className="text-[#9aa1ac] hover:text-[#f5efe3] underline cursor-pointer font-medium"
             >
-              How To Use Vasbyt
+              Privacy Policy
+            </button>
+            <span>•</span>
+            <button
+              id="footer-sitemap-btn"
+              onClick={() => setIsSitemapOpen(true)}
+              className="text-[#9aa1ac] hover:text-[#f5efe3] underline cursor-pointer font-medium"
+            >
+              XML Sitemap
             </button>
             <span>•</span>
             <span>Athletics South Africa (ASA) Provincial Calendars</span>
@@ -175,6 +203,28 @@ function AppLayout({
           setIsHowToOpen(false);
           handleTabSwitch(tab);
         }}
+      />
+
+      {/* Global XML Sitemap Modal */}
+      <SitemapModal
+        isOpen={isSitemapOpen}
+        onClose={() => setIsSitemapOpen(false)}
+        onNavigateTab={(tab) => {
+          setIsSitemapOpen(false);
+          handleTabSwitch(tab);
+        }}
+      />
+
+      {/* Global Privacy Policy Modal */}
+      <PrivacyPolicyModal
+        isOpen={isPrivacyOpen}
+        onClose={() => setIsPrivacyOpen(false)}
+      />
+
+      {/* Global Neumorphic Login & Athlete Registration Modal */}
+      <NeumorphicLoginModal
+        isOpen={isLoginModalOpen}
+        onClose={closeLoginModal}
       />
     </div>
   );

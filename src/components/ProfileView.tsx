@@ -16,9 +16,11 @@ import {
   AlertCircle,
   Hash,
   Activity,
+  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { GoogleSignInButton } from './GoogleSignInButton';
+import { NeumorphicButton } from './NeumorphicButton';
+import { NeumorphicGoogleSignInButton } from './NeumorphicGoogleSignInButton';
 
 const ATHLETE_CATEGORIES = [
   'Senior (20–39)',
@@ -54,6 +56,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     logout,
     clearLoginError,
     saveCloudProfile,
+    openLoginModal,
   } = useAuth();
 
   const [formData, setFormData] = useState<UserProfile>(profile);
@@ -121,10 +124,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         )}
       </div>
 
-      {/* Google Authentication Card */}
+      {/* Athlete Authentication Card with Neumorphic Styling */}
       <div
         id="profile-google-auth-card"
-        className="bg-gradient-to-r from-[#171c24] via-[#1a202c] to-[#171c24] border border-[#2c333f] rounded-xs p-4 sm:p-5 shadow-sm"
+        className="neu-card rounded-xs p-4 sm:p-5"
       >
         {user ? (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -137,7 +140,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   className="w-12 h-12 rounded-full border-2 border-[#e28b37] object-cover shadow-xs shrink-0"
                 />
               ) : (
-                <div className="w-12 h-12 rounded-full bg-[#e28b37]/20 border-2 border-[#e28b37] flex items-center justify-center text-[#e28b37] font-bold text-lg shrink-0">
+                <div className="w-12 h-12 rounded-full neu-inset border border-[#e28b37] flex items-center justify-center text-[#e28b37] font-bold text-lg shrink-0">
                   {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
                 </div>
               )}
@@ -148,48 +151,70 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   </span>
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[#7c8f5c] bg-[#7c8f5c]/10 border border-[#7c8f5c]/30 px-2 py-0.5 rounded-full">
                     <ShieldCheck className="w-3 h-3" />
-                    Google Verified
+                    {user.isAnonymous ? 'ASA Guest Pass' : 'Cloud Verified'}
                   </span>
                 </div>
-                <p className="text-xs text-[#9aa1ac] font-mono mt-0.5">{user.email}</p>
+                <p className="text-xs text-[#9aa1ac] font-mono mt-0.5">
+                  {user.email || 'Direct Passport Session'}
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                id="btn-google-signout"
-                onClick={logout}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xs text-xs font-semibold text-[#9aa1ac] hover:text-[#f5efe3] hover:bg-[#242c38] border border-[#2c333f] transition-colors cursor-pointer"
+            <div className="flex items-center gap-2.5">
+              <NeumorphicButton
+                id="btn-switch-account"
+                variant="default"
+                size="sm"
+                onClick={openLoginModal}
+                leftIcon={<Sparkles className="w-3.5 h-3.5 text-[#e28b37]" />}
+                className="text-xs"
               >
-                <LogOut className="w-3.5 h-3.5" />
+                Switch Account
+              </NeumorphicButton>
+              <NeumorphicButton
+                id="btn-google-signout"
+                variant="default"
+                size="sm"
+                onClick={logout}
+                leftIcon={<LogOut className="w-3.5 h-3.5 text-[#9aa1ac]" />}
+                className="text-xs text-[#9aa1ac] hover:text-white"
+              >
                 Sign Out
-              </button>
+              </NeumorphicButton>
             </div>
           </div>
         ) : (
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <h2 className="font-display font-bold text-base text-[#f5efe3] tracking-wide uppercase">
-                  Google Profile Sync
+                  Athlete Cloud Passport &amp; Sync
                 </h2>
-                <span className="text-[10px] uppercase font-bold text-[#e28b37] bg-[#e28b37]/10 border border-[#e28b37]/30 px-2 py-0.5 rounded-full">
-                  Recommended
+                <span className="text-[10px] uppercase font-bold text-[#e28b37] bg-[#e28b37]/15 border border-[#e28b37]/35 px-2 py-0.5 rounded-full">
+                  Instant Sync
                 </span>
               </div>
-              <p className="text-xs text-[#9aa1ac] max-w-2xl leading-relaxed">
-                Sign in with your Google account to automatically store your ASA athlete passport, personal best times, and bookmarked race fixtures safely in the cloud across all your devices.
+              <p className="text-xs text-[#9aa1ac] max-w-xl leading-relaxed">
+                Sign in with Google, your email, or your ASA permanent license number to preserve personal bests, race bookmarks, and provincial club affiliations across all devices.
               </p>
             </div>
 
-            <div className="shrink-0">
-              <GoogleSignInButton
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+              <NeumorphicGoogleSignInButton
                 onClick={loginWithGoogle}
                 loading={authLoading}
                 label="Sign in with Google"
                 size="md"
               />
+              <NeumorphicButton
+                id="btn-open-login-modal-profile"
+                variant="primary"
+                size="md"
+                onClick={openLoginModal}
+                leftIcon={<Sparkles className="w-4 h-4 text-[#1a0f02]" />}
+              >
+                Email / ASA Login
+              </NeumorphicButton>
             </div>
           </div>
         )}
@@ -610,14 +635,16 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
             <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-[#2c333f]">
               <div className="flex items-center gap-3">
-                <button
+                <NeumorphicButton
                   id="pf-save-btn"
                   type="submit"
-                  disabled={isSaving}
-                  className="inline-flex items-center gap-2 font-bold text-xs sm:text-sm bg-[#e28b37] text-[#1b1103] hover:bg-[#eb9a4a] py-2.5 px-5 rounded-xs cursor-pointer transition-colors disabled:opacity-60"
+                  variant="primary"
+                  size="md"
+                  loading={isSaving}
+                  leftIcon={user ? <Cloud className="w-4 h-4 text-[#1a0f02]" /> : undefined}
                 >
-                  {isSaving ? 'Saving…' : user ? 'Save & Sync to Cloud' : 'Save Profile Changes'}
-                </button>
+                  {user ? 'Save & Sync to Cloud' : 'Save Profile Changes'}
+                </NeumorphicButton>
                 {showSavedToast && (
                   <span
                     id="pf-savemsg"

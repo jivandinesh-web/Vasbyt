@@ -1,6 +1,20 @@
 import React from 'react';
 import { PROVINCES, RACES, CLUBS, DIST_LABEL, formatRaceDate } from '../data/runningData';
-import { MapPin, Calendar, Users, ArrowRight, ExternalLink, X } from 'lucide-react';
+import { Discipline } from '../types';
+import {
+  MapPin,
+  Calendar,
+  Users,
+  ArrowRight,
+  ExternalLink,
+  X,
+  Footprints,
+  Trees,
+  Tent,
+  Mountain,
+  Activity,
+  Flag,
+} from 'lucide-react';
 
 interface ProvincesViewProps {
   selectedProvinceId: string | null;
@@ -17,10 +31,69 @@ export const ProvincesView: React.FC<ProvincesViewProps> = ({
 }) => {
   const getRaceCount = (provId: string) => RACES.filter((r) => r.prov === provId).length;
   const getClubCount = (provId: string) => CLUBS.filter((c) => c.prov === provId).length;
-  const getProvRaces = (provId: string) => RACES.filter((r) => r.prov === provId).slice(0, 3);
-  const getProvClubs = (provId: string) => CLUBS.filter((c) => c.prov === provId).slice(0, 3);
+  const getProvRaces = (provId: string) => RACES.filter((r) => r.prov === provId).slice(0, 4);
+  const getProvClubs = (provId: string) => CLUBS.filter((c) => c.prov === provId).slice(0, 4);
+
+  const getDisciplineBadge = (disc?: Discipline) => {
+    switch (disc) {
+      case 'walking':
+        return (
+          <span className="inline-flex items-center gap-1 text-[9.5px] uppercase tracking-wider bg-[#d8b34a]/15 text-[#d8b34a] border border-[#d8b34a]/40 px-1.5 py-0.5 rounded-xs font-semibold">
+            <Footprints className="w-2.5 h-2.5" />
+            Walk
+          </span>
+        );
+      case 'hiking':
+        return (
+          <span className="inline-flex items-center gap-1 text-[9.5px] uppercase tracking-wider bg-[#10b981]/15 text-[#10b981] border border-[#10b981]/40 px-1.5 py-0.5 rounded-xs font-semibold">
+            <Trees className="w-2.5 h-2.5" />
+            Hike
+          </span>
+        );
+      case 'trekking':
+        return (
+          <span className="inline-flex items-center gap-1 text-[9.5px] uppercase tracking-wider bg-[#c084fc]/15 text-[#c084fc] border border-[#c084fc]/40 px-1.5 py-0.5 rounded-xs font-semibold">
+            <Tent className="w-2.5 h-2.5" />
+            Trek
+          </span>
+        );
+      case 'trail':
+        return (
+          <span className="inline-flex items-center gap-1 text-[9.5px] uppercase tracking-wider bg-[#7c8f5c]/15 text-[#7c8f5c] border border-[#7c8f5c]/40 px-1.5 py-0.5 rounded-xs font-semibold">
+            <Mountain className="w-2.5 h-2.5" />
+            Trail
+          </span>
+        );
+      case 'track':
+        return (
+          <span className="inline-flex items-center gap-1 text-[9.5px] uppercase tracking-wider bg-[#4f8fb0]/15 text-[#4f8fb0] border border-[#4f8fb0]/40 px-1.5 py-0.5 rounded-xs font-semibold">
+            <Activity className="w-2.5 h-2.5" />
+            Track
+          </span>
+        );
+      case 'road':
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 text-[9.5px] uppercase tracking-wider bg-[#e28b37]/15 text-[#e28b37] border border-[#e28b37]/40 px-1.5 py-0.5 rounded-xs font-semibold">
+            <Flag className="w-2.5 h-2.5" />
+            Road
+          </span>
+        );
+    }
+  };
 
   const activeProv = PROVINCES.find((p) => p.id === selectedProvinceId);
+
+  // Discipline breakdown for active province
+  const provRaces = activeProv ? RACES.filter((r) => r.prov === activeProv.id) : [];
+  const disciplinesPresent: { disc: Discipline; label: string; count: number }[] = [
+    { disc: 'road' as Discipline, label: 'Road', count: provRaces.filter((r) => (r.discipline || 'road') === 'road').length },
+    { disc: 'trail' as Discipline, label: 'Trail', count: provRaces.filter((r) => r.discipline === 'trail').length },
+    { disc: 'walking' as Discipline, label: 'Walking', count: provRaces.filter((r) => r.discipline === 'walking').length },
+    { disc: 'hiking' as Discipline, label: 'Hiking', count: provRaces.filter((r) => r.discipline === 'hiking').length },
+    { disc: 'trekking' as Discipline, label: 'Trekking', count: provRaces.filter((r) => r.discipline === 'trekking').length },
+    { disc: 'track' as Discipline, label: 'Track', count: provRaces.filter((r) => r.discipline === 'track').length },
+  ].filter((d) => d.count > 0);
 
   return (
     <div id="view-provinces" className="space-y-6 pb-8 text-left">
@@ -34,7 +107,7 @@ export const ProvincesView: React.FC<ProvincesViewProps> = ({
         </h1>
         <p className="text-xs sm:text-sm text-[#9aa1ac] mt-1.5 max-w-2xl">
           South Africa&apos;s 9 provincial athletics bodies oversee official race sanctions, club
-          licencing, and cross-country fixtures under Athletics South Africa (ASA).
+          licencing, and walking, trekking, hiking &amp; running fixtures under Athletics South Africa (ASA).
         </p>
       </div>
 
@@ -95,7 +168,7 @@ export const ProvincesView: React.FC<ProvincesViewProps> = ({
           id="province-detail-box"
           className="mt-6 p-6 sm:p-7 bg-[#171c24] border border-[#a86526] rounded-xs text-left animate-in fade-in duration-200 shadow-xl"
         >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-5 border-b border-[#2c333f]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-4 border-b border-[#2c333f]">
             <div>
               <div className="flex items-center gap-3">
                 <span className="font-display font-black text-3xl text-[#d8b34a] leading-none">
@@ -119,6 +192,28 @@ export const ProvincesView: React.FC<ProvincesViewProps> = ({
             </button>
           </div>
 
+          {/* Disciplines active in this province */}
+          {disciplinesPresent.length > 0 && (
+            <div className="mb-5 pb-4 border-b border-[#2c333f]/60">
+              <span className="text-[10px] uppercase tracking-wider text-[#6d7580] font-semibold block mb-2">
+                Disciplines Hosted in {activeProv.name}
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {disciplinesPresent.map((d) => (
+                  <div
+                    key={d.disc}
+                    className="flex items-center gap-1.5 bg-[#12151b] border border-[#2c333f] px-2.5 py-1 rounded-xs text-xs"
+                  >
+                    {getDisciplineBadge(d.disc)}
+                    <span className="text-[#9aa1ac] font-mono text-[11px] font-bold">
+                      {d.count} event{d.count > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Quick Actions */}
           <div className="flex flex-wrap gap-3 mb-6">
             <button
@@ -127,7 +222,7 @@ export const ProvincesView: React.FC<ProvincesViewProps> = ({
               className="inline-flex items-center gap-2 font-semibold text-xs sm:text-sm bg-[#e28b37] text-[#1b1103] hover:bg-[#eb9a4a] py-2.5 px-4 rounded-xs cursor-pointer transition-colors"
             >
               <Calendar className="w-4 h-4" />
-              Explore all {getRaceCount(activeProv.id)} races in {activeProv.name}
+              Explore all {getRaceCount(activeProv.id)} events in {activeProv.name}
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
@@ -165,12 +260,15 @@ export const ProvincesView: React.FC<ProvincesViewProps> = ({
                     className="p-3 bg-[#12151b] border border-[#2c333f] rounded-xs flex items-center justify-between gap-3 text-xs"
                   >
                     <div>
-                      <b className="text-[#f5efe3] block">{race.name}</b>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <b className="text-[#f5efe3] block">{race.name}</b>
+                        {getDisciplineBadge(race.discipline)}
+                      </div>
                       <span className="text-[#9aa1ac]">
                         {race.city} · {formatRaceDate(race.date).day} {formatRaceDate(race.date).mon}
                       </span>
                     </div>
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 shrink-0">
                       {race.dist.map((d) => (
                         <span
                           key={d}
@@ -201,22 +299,30 @@ export const ProvincesView: React.FC<ProvincesViewProps> = ({
               </div>
 
               <div className="space-y-2">
-                {getProvClubs(activeProv.id).map((club) => (
-                  <div
-                    key={club.name}
-                    className="p-3 bg-[#12151b] border border-[#2c333f] rounded-xs flex items-center justify-between gap-3 text-xs"
-                  >
-                    <div>
-                      <b className="text-[#f5efe3] block">{club.name}</b>
-                      <span className="text-[#9aa1ac]">
-                        {club.city} {club.founded ? `· Est. ${club.founded}` : ''}
+                {getProvClubs(activeProv.id).map((club) => {
+                  const clubDisc: Discipline[] = club.disciplines && club.disciplines.length > 0 ? club.disciplines : ['road'];
+                  return (
+                    <div
+                      key={club.name}
+                      className="p-3 bg-[#12151b] border border-[#2c333f] rounded-xs flex items-center justify-between gap-3 text-xs"
+                    >
+                      <div>
+                        <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                          <b className="text-[#f5efe3] block">{club.name}</b>
+                          {clubDisc.slice(0, 2).map((d) => (
+                            <span key={d}>{getDisciplineBadge(d)}</span>
+                          ))}
+                        </div>
+                        <span className="text-[#9aa1ac]">
+                          {club.city} {club.founded ? `· Est. ${club.founded}` : ''}
+                        </span>
+                      </div>
+                      <span className="text-[10px] bg-[#242c38] text-[#e28b37] px-2 py-0.5 rounded-full font-bold shrink-0">
+                        Licensed
                       </span>
                     </div>
-                    <span className="text-[10px] bg-[#242c38] text-[#e28b37] px-2 py-0.5 rounded-full font-bold">
-                      Licensed
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
