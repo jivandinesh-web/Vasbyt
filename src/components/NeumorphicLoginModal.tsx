@@ -31,6 +31,7 @@ export const NeumorphicLoginModal: React.FC<NeumorphicLoginModalProps> = ({
   onClose,
 }) => {
   const {
+    user,
     loginWithGoogle,
     loginWithEmail,
     registerWithEmail,
@@ -39,6 +40,13 @@ export const NeumorphicLoginModal: React.FC<NeumorphicLoginModalProps> = ({
     loginError,
     clearLoginError,
   } = useAuth();
+
+  // Close modal when user is successfully authenticated
+  React.useEffect(() => {
+    if (user && isOpen) {
+      onClose();
+    }
+  }, [user, isOpen, onClose]);
 
   const [activeTab, setActiveTab] = useState<AuthMode>('google');
   const [email, setEmail] = useState('');

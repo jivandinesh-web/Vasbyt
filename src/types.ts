@@ -1,8 +1,8 @@
 export type TabType = 'home' | 'provinces' | 'races' | 'clubs' | 'profile';
 
-export type DistanceCode = 'M' | 'H' | 'T' | 'F' | 'U' | 'X' | 'TR' | 'WK' | 'HK' | 'TK';
+export type DistanceCode = 'M' | 'H' | 'T' | 'F' | 'U' | 'X' | 'TR' | 'WK' | 'HK' | 'TK' | 'CY';
 
-export type Discipline = 'road' | 'trail' | 'track' | 'walking' | 'trekking' | 'hiking';
+export type Discipline = 'road' | 'trail' | 'track' | 'walking' | 'trekking' | 'hiking' | 'cycling';
 
 export interface Province {
   id: string;
@@ -48,7 +48,7 @@ export interface RouteProfile {
   minEleM?: number;
   distanceKm?: number;
   cutoffTime?: string;
-  courseType?: 'Point-to-Point' | 'Loop' | 'Out & Back' | 'Stage Run';
+  courseType?: 'Point-to-Point' | 'Loop' | 'Out & Back' | 'Stage Run' | 'Stage Race';
   surface?:
     | 'Asphalt Road'
     | 'Mountain Singletrack'
@@ -67,6 +67,7 @@ export interface RouteProfile {
 export interface MajorRace {
   name: string;
   prov: string;
+  city?: string;
   dist: string;
   discipline: Discipline;
   since: number;
@@ -78,6 +79,7 @@ export interface MajorRace {
 }
 
 export interface Race {
+  id?: string;
   name: string;
   prov: string;
   city: string;
@@ -87,6 +89,28 @@ export interface Race {
   organiser?: string;
   site?: string;
   route: RouteProfile;
+  isCommunity?: boolean;
+  createdByUid?: string;
+  createdByName?: string;
+  createdAt?: string;
+}
+
+export interface CommunityRaceSubmission {
+  name: string;
+  prov: string;
+  city: string;
+  date: string;
+  dist: DistanceCode[];
+  discipline: Discipline;
+  organiser?: string;
+  site?: string;
+  totalAscentM?: number;
+  totalDescentM?: number;
+  courseType?: 'Loop' | 'Point-to-Point' | 'Out & Back' | 'Stage Run' | 'Stage Race';
+  surface?: string;
+  cutoffTime?: string;
+  waterTablesCount?: number;
+  notes?: string;
 }
 
 export interface ClubContact {

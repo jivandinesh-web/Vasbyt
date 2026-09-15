@@ -16,6 +16,11 @@ import {
   doc,
   getDoc,
   setDoc,
+  deleteDoc,
+  collection,
+  getDocs,
+  query,
+  where,
   onSnapshot,
   getDocFromServer,
 } from 'firebase/firestore';
@@ -104,6 +109,11 @@ export {
   doc,
   getDoc,
   setDoc,
+  deleteDoc,
+  collection,
+  getDocs,
+  query,
+  where,
   onSnapshot,
 };
 export type { FirebaseUser };

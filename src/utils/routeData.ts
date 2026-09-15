@@ -10,7 +10,7 @@ export interface EnrichedRaceRoute {
   minEleM: number;
   distanceKm: number;
   cutoffTime: string;
-  courseType: 'Point-to-Point' | 'Loop' | 'Out & Back' | 'Stage Run';
+  courseType: 'Point-to-Point' | 'Loop' | 'Out & Back' | 'Stage Run' | 'Stage Race';
   surface:
     | 'Asphalt Road'
     | 'Mountain Singletrack'
@@ -357,7 +357,165 @@ const PRESET_ROUTES: Record<string, EnrichedRaceRoute> = {
       { km: 100, ele: 1580, label: 'Wartrail Finish' },
     ],
   },
+
+  'Joburg Ride': {
+    distanceKm: 97.0,
+    cutoffTime: '5h 30m',
+    courseType: 'Point-to-Point',
+    surface: 'Asphalt Road',
+    waterTablesCount: 6,
+    qualifierFor: 'UCI Gran Fondo World Series / CTCT Seeding Event',
+    totalAscentM: 1180,
+    totalDescentM: 1320,
+    maxEleM: 1775,
+    minEleM: 1470,
+    coordinates: [
+      [-26.2348, 27.9825], // FNB Stadium Start
+      [-26.2185, 28.0124], // Soweto Highway
+      [-26.2081, 28.0321], // Crown Interchange / M1
+      [-26.1912, 28.0381], // Nelson Mandela Bridge
+      [-26.1682, 28.0351], // Jan Smuts / Parktown
+      [-26.1412, 28.0321], // Rosebank
+      [-26.1012, 28.0581], // M1 North / Sandton
+      [-26.0481, 28.0712], // Woodmead
+      [-25.9981, 28.0721], // Kyalami Grand Prix Circuit
+      [-25.9812, 28.0351], // Witkoppen / Kingfisher Drive
+      [-25.9612, 27.9981], // Steyn City / Riversands Finish
+    ],
+    waypoints: [
+      { name: 'FNB Stadium Start Line', km: 0, ele: 1680, lat: -26.2348, lng: 27.9825, type: 'start', cutoffTime: '06:00 Start' },
+      { name: 'Soweto Highway Sprint', km: 8, ele: 1695, lat: -26.2185, lng: 28.0124, type: 'water' },
+      { name: 'M1 Highway South/North Junction', km: 22, ele: 1720, lat: -26.2081, lng: 28.0321, type: 'landmark' },
+      { name: 'Nelson Mandela Bridge Landmark', km: 38, ele: 1765, lat: -26.1912, lng: 28.0381, type: 'climb', notes: 'Iconic crossing into Braamfontein' },
+      { name: 'Jan Smuts Avenue Climb', km: 48, ele: 1775, lat: -26.1682, lng: 28.0351, type: 'climb', notes: 'Sustained uphill drag through Rosebank @ 5.5%' },
+      { name: 'Kyalami Grand Prix Descent', km: 64, ele: 1530, lat: -25.9981, lng: 28.0721, type: 'water', notes: 'Fast downhill run before the northern hills' },
+      { name: 'Kingfisher Drive Undulations', km: 78, ele: 1590, lat: -25.9812, lng: 28.0351, type: 'climb', notes: 'Steep kicker climb testing tired legs' },
+      { name: 'Steyn City Boulevard Finish', km: 97.0, ele: 1490, lat: -25.9612, lng: 27.9981, type: 'finish', cutoffTime: '11:30 Final Gate' },
+    ],
+    detailedElevation: [
+      { km: 0, ele: 1680, label: 'FNB Stadium' },
+      { km: 12, ele: 1695, grade: 1.2 },
+      { km: 25, ele: 1720, grade: 1.8 },
+      { km: 38, ele: 1765, label: 'Mandela Bridge', grade: 4.2 },
+      { km: 48, ele: 1775, label: 'Jan Smuts Summit', grade: 5.5 },
+      { km: 64, ele: 1530, label: 'Kyalami Low Point', grade: -4.8 },
+      { km: 78, ele: 1590, label: 'Kingfisher Hill', grade: 6.4 },
+      { km: 90, ele: 1520, grade: -2.0 },
+      { km: 97, ele: 1490, label: 'Steyn City Finish' },
+    ],
+  },
+
+  'CTCT': {
+    distanceKm: 109.0,
+    cutoffTime: '7h 00m',
+    courseType: 'Loop',
+    surface: 'Asphalt Road',
+    waterTablesCount: 14,
+    qualifierFor: 'World’s Largest Timed Cycle Tour / Cape Town Cycle Tour Trust',
+    totalAscentM: 1240,
+    totalDescentM: 1235,
+    maxEleM: 175,
+    minEleM: 5,
+    coordinates: [
+      [-33.9249, 18.4241], // Grand Parade / Foreshore
+      [-33.9392, 18.4491], // Hospital Bend / M3
+      [-33.9851, 18.4552], // Edinburgh Drive
+      [-34.1082, 18.4719], // Muizenberg Sunrise Beach
+      [-34.1356, 18.4289], // Fish Hoek
+      [-34.1921, 18.4351], // Simon's Town Naval Dockyard
+      [-34.2251, 18.4682], // Smitswinkel Bay Climb
+      [-34.1852, 18.3751], // Scarborough / Misty Cliffs
+      [-34.1382, 18.3651], // Ocean View / Noordhoek
+      [-34.0812, 18.3582], // Chapman's Peak Drive ("Chappies")
+      [-34.0381, 18.3551], // Hout Bay
+      [-34.0182, 18.3681], // Suikerbossie Hill
+      [-33.9512, 18.3782], // Camps Bay / Victoria Road
+      [-33.9051, 18.4112], // Green Point Stadium Finish
+    ],
+    waypoints: [
+      { name: 'Grand Parade Foreshore Start', km: 0, ele: 12, lat: -33.9249, lng: 18.4241, type: 'start', cutoffTime: '06:00 First Wave' },
+      { name: 'Hospital Bend / M3', km: 6, ele: 65, lat: -33.9392, lng: 18.4491, type: 'landmark' },
+      { name: 'Edinburgh Drive ("Wynberg Hill")', km: 14, ele: 115, lat: -33.9851, lng: 18.4552, type: 'climb', notes: 'First test of the day (1.5km @ 5.8%)' },
+      { name: 'Muizenberg False Bay Coast', km: 25, ele: 8, lat: -34.1082, lng: 18.4719, type: 'water' },
+      { name: 'Simon’s Town Jubilee Square', km: 45, ele: 18, lat: -34.1921, lng: 18.4351, type: 'water' },
+      { name: 'Smitswinkel Bay Climb Crest', km: 55, ele: 162, lat: -34.2251, lng: 18.4682, type: 'climb', notes: 'Long drag into potential coastal crosswinds' },
+      { name: 'Misty Cliffs & Scarborough', km: 67, ele: 22, lat: -34.1852, lng: 18.3751, type: 'landmark', notes: 'Wild Atlantic ocean vistas' },
+      { name: 'Noordhoek Cutoff Point', km: 82, ele: 40, lat: -34.1382, lng: 18.3651, type: 'cutoff', cutoffTime: '13:15' },
+      { name: 'Chapman’s Peak Drive Summit', km: 89, ele: 168, lat: -34.0812, lng: 18.3582, type: 'climb', notes: 'Spectacular cliff-edge pass over Hout Bay' },
+      { name: 'Hout Bay Village', km: 94, ele: 20, lat: -34.0381, lng: 18.3551, type: 'water' },
+      { name: 'Suikerbossie Summit', km: 98, ele: 175, lat: -34.0182, lng: 18.3681, type: 'climb', notes: 'The iconic race decider (1.8km @ 8.2%)' },
+      { name: 'Camps Bay Boulevard', km: 104, ele: 30, lat: -33.9512, lng: 18.3782, type: 'landmark' },
+      { name: 'Green Point Stadium Finish', km: 109.0, ele: 15, lat: -33.9051, lng: 18.4112, type: 'finish', cutoffTime: '17:00 Final Gun' },
+    ],
+    detailedElevation: [
+      { km: 0, ele: 12, label: 'Grand Parade' },
+      { km: 6, ele: 65, grade: 4.0 },
+      { km: 14, ele: 115, label: 'Edinburgh Drive', grade: 5.8 },
+      { km: 25, ele: 8, label: 'Muizenberg', grade: -1.0 },
+      { km: 45, ele: 18, label: 'Simon’s Town', grade: 1.0 },
+      { km: 55, ele: 162, label: 'Smitswinkel Crest', grade: 5.2 },
+      { km: 67, ele: 22, label: 'Misty Cliffs', grade: -4.0 },
+      { km: 82, ele: 40, label: 'Noordhoek', grade: 2.0 },
+      { km: 89, ele: 168, label: 'Chapman’s Peak', grade: 6.1 },
+      { km: 94, ele: 20, label: 'Hout Bay', grade: -7.5 },
+      { km: 98, ele: 175, label: 'Suikerbossie', grade: 8.4 },
+      { km: 104, ele: 30, label: 'Camps Bay', grade: -3.5 },
+      { km: 109, ele: 15, label: 'Green Point Finish' },
+    ],
+  },
+
+  'Cape Epic': {
+    distanceKm: 650.0,
+    cutoffTime: '8-Day Stage Race',
+    courseType: 'Stage Race',
+    surface: 'Mountain Singletrack',
+    waterTablesCount: 32,
+    qualifierFor: 'UCI Mountain Bike Stage Race Hors Catégorie',
+    totalAscentM: 16200,
+    totalDescentM: 16150,
+    maxEleM: 1180,
+    minEleM: 45,
+    coordinates: [
+      [-33.7994, 18.6251], // Meerendal Prologue
+      [-34.0512, 18.8812], // Lourensford Estate
+      [-34.1251, 18.9812], // Gantouw Pass (Sir Lowry's Pass)
+      [-34.1812, 19.1251], // Groenlandberg Summit
+      [-34.3912, 19.2412], // Hermanus & Hemel-en-Aarde
+      [-34.0512, 19.6112], // Greyton & Riviersonderend
+      [-33.9182, 19.1251], // Franschhoek Pass
+      [-33.9612, 18.9212], // Jonkershoek / Stellenbosch
+      [-33.7994, 18.6251], // Meerendal Grand Finale
+    ],
+    waypoints: [
+      { name: 'Meerendal Wine Estate Prologue', km: 0, ele: 140, lat: -33.7994, lng: 18.6251, type: 'start', cutoffTime: 'Day 1 Prologue' },
+      { name: 'Lourensford Singletrack Hub', km: 85, ele: 260, lat: -34.0512, lng: 18.8812, type: 'water' },
+      { name: 'Gantouw Historical Ox-Wagon Pass', km: 160, ele: 520, lat: -34.1251, lng: 18.9812, type: 'climb', notes: 'Mandatory bike-portage on rugged historic pass' },
+      { name: 'Groenlandberg Mountain Peak', km: 240, ele: 1180, lat: -34.1812, lng: 19.1251, type: 'climb', notes: 'Highest and most punishing climb of the Epic' },
+      { name: 'Hemel-en-Aarde Valley Trails', km: 330, ele: 120, lat: -34.3912, lng: 19.2412, type: 'landmark' },
+      { name: 'Greyton Bushveld Singletrack', km: 420, ele: 340, lat: -34.0512, lng: 19.6112, type: 'water' },
+      { name: 'Franschhoek Pass Queen Stage Climb', km: 510, ele: 740, lat: -33.9182, lng: 19.1251, type: 'climb', notes: 'Stunning rocky switchbacks above the valley' },
+      { name: 'Jonkershoek Mountain Bike Network', km: 590, ele: 380, lat: -33.9612, lng: 18.9212, type: 'landmark' },
+      { name: 'Meerendal Grand Finale Arch', km: 650.0, ele: 140, lat: -33.7994, lng: 18.6251, type: 'finish', cutoffTime: 'Stage 7 Finish Gate' },
+    ],
+    detailedElevation: [
+      { km: 0, ele: 140, label: 'Prologue Meerendal' },
+      { km: 85, ele: 260, grade: 4.2 },
+      { km: 160, ele: 520, label: 'Gantouw Portage', grade: 12.5 },
+      { km: 240, ele: 1180, label: 'Groenlandberg Peak', grade: 14.8 },
+      { km: 330, ele: 120, label: 'Hemel-en-Aarde', grade: -5.0 },
+      { km: 420, ele: 340, label: 'Greyton Singletrack', grade: 3.5 },
+      { km: 510, ele: 740, label: 'Franschhoek Pass', grade: 9.2 },
+      { km: 590, ele: 380, label: 'Jonkershoek Trails', grade: -4.5 },
+      { km: 650, ele: 140, label: 'Grand Finale Finish' },
+    ],
+  },
 };
+
+// Aliases for cycling majors
+PRESET_ROUTES['Virgin Active 947 Ride Joburg (Joburg Ride)'] = PRESET_ROUTES['Joburg Ride'];
+PRESET_ROUTES['Cape Town Cycle Tour (CTCT)'] = PRESET_ROUTES['CTCT'];
+PRESET_ROUTES['Cape Town Cycle Tour'] = PRESET_ROUTES['CTCT'];
+PRESET_ROUTES['Absa Cape Epic'] = PRESET_ROUTES['Cape Epic'];
 
 /**
  * Returns enriched route information for any race. If not in the preset dictionary,
@@ -513,7 +671,9 @@ export function getEnrichedRaceRoute(
   const waterTablesCount = Math.max(3, Math.round(distKm / (isWalking ? 4 : isMountain ? 6 : 2.5)));
   
   let cutoffHours = '3h 30m';
-  if (discipline === 'trekking') {
+  if (discipline === 'cycling') {
+    cutoffHours = distKm > 200 ? '8 Days (Stage Tour)' : distKm > 90 ? '7h 00m' : '4h 30m';
+  } else if (discipline === 'trekking') {
     cutoffHours = distKm > 40 ? '24h 00m (Multi-Day)' : distKm > 25 ? '11h 00m' : '7h 00m';
   } else if (discipline === 'hiking') {
     cutoffHours = distKm > 25 ? '9h 30m' : distKm > 15 ? '6h 30m' : '4h 00m';
@@ -524,7 +684,8 @@ export function getEnrichedRaceRoute(
   }
 
   let surface: EnrichedRaceRoute['surface'] = 'Asphalt Road';
-  if (discipline === 'trail') surface = 'Mountain Singletrack';
+  if (discipline === 'cycling') surface = distKm > 150 ? 'Mountain Singletrack' : 'Asphalt Road';
+  else if (discipline === 'trail') surface = 'Mountain Singletrack';
   else if (discipline === 'track') surface = 'Track Oval';
   else if (discipline === 'walking') surface = 'Paved Footpath & Promenade';
   else if (discipline === 'hiking') surface = 'Mountain Hiking Trail & Rocky Path';

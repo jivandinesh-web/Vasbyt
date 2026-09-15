@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PROVINCES, getProvince } from '../data/runningData';
 import { UserProfile, UserFavorites } from '../types';
+import { StoredCommunityRace } from '../services/communityRaces';
 import {
   User,
   Award,
@@ -17,6 +18,7 @@ import {
   Hash,
   Activity,
   Sparkles,
+  Calendar,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { NeumorphicButton } from './NeumorphicButton';
@@ -37,6 +39,8 @@ interface ProfileViewProps {
   onSaveProfile: (profile: UserProfile) => void;
   onToggleRaceFavorite: (raceName: string) => void;
   onToggleClubFavorite: (clubName: string) => void;
+  communityRaces?: StoredCommunityRace[];
+  onDeleteCommunityRace?: (raceId: string) => Promise<void>;
 }
 
 export const ProfileView: React.FC<ProfileViewProps> = ({
@@ -45,6 +49,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   onSaveProfile,
   onToggleRaceFavorite,
   onToggleClubFavorite,
+  communityRaces = [],
+  onDeleteCommunityRace,
 }) => {
   const {
     user,
@@ -405,6 +411,58 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               </div>
             )}
           </div>
+
+          {/* My Published Community Races Card */}
+          {communityRaces.filter((r) => (user && r.createdByUid === user.uid) || r.createdByUid === 'local-runner').length > 0 && (
+            <div id="my-published-races-card" className="bg-[#171c24] border border-[#2c333f] rounded-xs p-5 shadow-sm">
+              <div className="flex items-center justify-between pb-3 border-b border-[#2c333f] mb-3">
+                <h3 className="font-display font-bold text-sm uppercase tracking-wider text-[#d8b34a] flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[#d8b34a]" />
+                  My Published Fixtures (
+                  {
+                    communityRaces.filter(
+                      (r) => (user && r.createdByUid === user.uid) || r.createdByUid === 'local-runner'
+                    ).length
+                  }
+                  )
+                </h3>
+              </div>
+
+              <div className="divide-y divide-[#2c333f] max-h-60 overflow-y-auto pr-1">
+                {communityRaces
+                  .filter((r) => (user && r.createdByUid === user.uid) || r.createdByUid === 'local-runner')
+                  .map((cr) => (
+                    <div
+                      key={cr.id}
+                      className="flex justify-between items-center py-2.5 text-xs hover:bg-[#12151b]/40 px-1 rounded-xs"
+                    >
+                      <div className="min-w-0 pr-2">
+                        <p className="text-[#f5efe3] font-bold truncate">{cr.name}</p>
+                        <p className="text-[11px] text-[#9aa1ac] flex items-center gap-1.5 mt-0.5">
+                          <span>{cr.date}</span>
+                          <span>·</span>
+                          <span>{cr.city}, {cr.prov.toUpperCase()}</span>
+                        </p>
+                      </div>
+                      {onDeleteCommunityRace && (
+                        <button
+                          id={`profile-delete-race-${cr.id}`}
+                          onClick={() => {
+                            if (window.confirm(`Remove your published fixture "${cr.name}"?`)) {
+                              onDeleteCommunityRace(cr.id);
+                            }
+                          }}
+                          title="Remove published fixture"
+                          className="text-[#6d7580] hover:text-red-400 p-1.5 rounded-xs transition-colors cursor-pointer shrink-0"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Column: Edit Profile Form (7 cols on lg) */}

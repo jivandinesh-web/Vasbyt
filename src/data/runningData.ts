@@ -70,6 +70,7 @@ export const MAJORS: MajorRace[] = [
   {
     name: 'Comrades Marathon',
     prov: 'kzn',
+    city: 'Durban',
     dist: '~90km Ultra',
     discipline: 'road',
     since: 1921,
@@ -98,6 +99,7 @@ export const MAJORS: MajorRace[] = [
   {
     name: 'Two Oceans Marathon',
     prov: 'wc',
+    city: 'Cape Town',
     dist: '56km Ultra + Half',
     discipline: 'road',
     since: 1970,
@@ -125,6 +127,7 @@ export const MAJORS: MajorRace[] = [
   {
     name: 'Cape Town Marathon',
     prov: 'wc',
+    city: 'Cape Town',
     dist: '42.2km',
     discipline: 'road',
     since: 1994,
@@ -152,6 +155,7 @@ export const MAJORS: MajorRace[] = [
   {
     name: 'Soweto Marathon',
     prov: 'gp',
+    city: 'Soweto',
     dist: '42.2 / 21 / 10km',
     discipline: 'road',
     since: 1991,
@@ -178,6 +182,7 @@ export const MAJORS: MajorRace[] = [
   {
     name: 'Big Five Marathon',
     prov: 'lp',
+    city: 'Mokopane',
     dist: '42.2km',
     discipline: 'road',
     since: 2005,
@@ -197,6 +202,96 @@ export const MAJORS: MajorRace[] = [
         { label: 'Riverbed', y: 30 },
         { label: 'Ridge', y: 60 },
         { label: 'Finish', y: 35 }
+      ]
+    }
+  },
+  {
+    name: 'Joburg Ride',
+    prov: 'gp',
+    city: 'Johannesburg',
+    dist: '97km / 50km MTB',
+    discipline: 'cycling',
+    since: 1997,
+    when: 'November',
+    blurb: 'The world’s second-largest timed cycling race (formerly 947 Ride Joburg). Over 20,000 riders race on completely closed highways, crossing the iconic Nelson Mandela Bridge, Jan Smuts, and Kyalami.',
+    organiser: 'Ride Joburg / Face First Events',
+    site: 'ridejoburg.co.za',
+    route: {
+      note: '97km high-speed cycling classic on 100% closed Johannesburg highways and arterial thoroughfares.',
+      directions: [
+        'Starts outside FNB Stadium / Nasrec, streaming onto the Soweto Highway and the M1 South.',
+        'Crosses the landmark Nelson Mandela Bridge into Braamfontein and climbs Jan Smuts Avenue.',
+        'Fast sweep past Kyalami and Woodmead before tackling the testing Kingfisher Drive undulations.',
+        'Grand finish through Steyn City / Riversands boulevard.'
+      ],
+      points: [
+        { label: 'FNB Stadium Start', y: 40 },
+        { label: 'Mandela Bridge', y: 65 },
+        { label: 'Jan Smuts Climb', y: 75 },
+        { label: 'Kyalami Drop', y: 35 },
+        { label: 'Kingfisher Hill', y: 60 },
+        { label: 'Steyn City Finish', y: 45 }
+      ]
+    }
+  },
+  {
+    name: 'CTCT',
+    prov: 'wc',
+    city: 'Cape Town',
+    dist: '109km / 42km',
+    discipline: 'cycling',
+    since: 1978,
+    when: 'March',
+    blurb: 'The world’s largest individually timed cycling race (Cape Town Cycle Tour) with 35,000 riders. A majestic 109km circumnavigation of the Cape Peninsula past Chapman’s Peak, False Bay, and Suikerbossie.',
+    organiser: 'Cape Town Cycle Tour Trust (Rotary & Pedal Power Association)',
+    site: 'capetowncycletour.com',
+    route: {
+      note: '109km iconic Cape Peninsula circumnavigation with 1,240m of coastal climbing and closed roads.',
+      directions: [
+        'Mass start on Cape Town Grand Parade / Foreshore heading over Hospital Bend.',
+        'Spins south along False Bay through Muizenberg, Kalk Bay, and naval Simon’s Town.',
+        'Ascends Smitswinkel Bay and sweeps past Misty Cliffs and Scarborough on the Atlantic coast.',
+        'Climbs the breathtaking sheer cliffs of Chapman’s Peak Drive ("Chappies") into Hout Bay.',
+        'Tackles the legendary 2km Suikerbossie wall before a flat-out sprint along Camps Bay to Green Point Stadium.'
+      ],
+      points: [
+        { label: 'Grand Parade', y: 15 },
+        { label: 'Edinburgh Drive', y: 45 },
+        { label: 'False Bay Flat', y: 12 },
+        { label: 'Smitswinkel', y: 65 },
+        { label: 'Chapman’s Peak', y: 70 },
+        { label: 'Hout Bay', y: 20 },
+        { label: 'Suikerbossie', y: 80 },
+        { label: 'Green Point', y: 15 }
+      ]
+    }
+  },
+  {
+    name: 'Cape Epic',
+    prov: 'wc',
+    city: 'Stellenbosch',
+    dist: '~650km (8-Day Stage Race)',
+    discipline: 'cycling',
+    since: 2004,
+    when: 'March',
+    blurb: 'The "Tour de France of Mountain Biking" and the world’s premier UCI Hors Catégorie stage race (Absa Cape Epic). Two-person teams conquer 8 brutal days and 16,000m of climbing across Western Cape peaks.',
+    organiser: 'IRONMAN Group / Absa Cape Epic',
+    site: 'epic-series.com/capeepic',
+    route: {
+      note: 'Grueling 8-day untamed mountain bike stage race through Western Cape fynbos, rugged mountains, and singletrack.',
+      directions: [
+        'Prologue time-trial through Meerendal or Lourensford wine estate singletrack.',
+        'High-altitude stages across the Overberg, scaling Groenlandberg and historic Gantouw Pass.',
+        'Punishing technical singletrack descents through Hermanus, Greyton, and Wellington.',
+        'Grand Finale stage conquering Franschhoek Pass and Jonkershoek into Stellenbosch / Meerendal.'
+      ],
+      points: [
+        { label: 'Prologue Meerendal', y: 25 },
+        { label: 'Gantouw Portage', y: 55 },
+        { label: 'Groenlandberg Peak', y: 95 },
+        { label: 'Overberg Trails', y: 50 },
+        { label: 'Franschhoek Pass', y: 80 },
+        { label: 'Grand Finale Finish', y: 30 }
       ]
     }
   },
@@ -1414,6 +1509,91 @@ export const RACES: Race[] = [
       ]
     }
   },
+  // --- CYCLING TOURS & MAJORS ---
+  {
+    name: 'Virgin Active 947 Ride Joburg (Joburg Ride)',
+    prov: 'gp',
+    city: 'Johannesburg',
+    date: '2026-11-15',
+    dist: ['CY'],
+    discipline: 'cycling',
+    organiser: 'Ride Joburg / Face First Events',
+    site: 'ridejoburg.co.za',
+    route: {
+      note: '97km road cycling classic on 100% closed Johannesburg highways and arterial thoroughfares.',
+      directions: [
+        'Starts outside FNB Stadium / Nasrec, streaming onto the Soweto Highway and the M1 South.',
+        'Crosses the landmark Nelson Mandela Bridge into Braamfontein and climbs Jan Smuts Avenue.',
+        'Fast sweep past Kyalami and Woodmead before tackling the testing Kingfisher Drive undulations.',
+        'Grand finish through Steyn City / Riversands boulevard.'
+      ],
+      points: [
+        { label: 'FNB Stadium Start', y: 40 },
+        { label: 'Mandela Bridge', y: 65 },
+        { label: 'Jan Smuts Climb', y: 75 },
+        { label: 'Kyalami Drop', y: 35 },
+        { label: 'Kingfisher Hill', y: 60 },
+        { label: 'Steyn City Finish', y: 45 }
+      ]
+    }
+  },
+  {
+    name: 'Cape Town Cycle Tour (CTCT)',
+    prov: 'wc',
+    city: 'Cape Town',
+    date: '2027-03-14',
+    dist: ['CY'],
+    discipline: 'cycling',
+    organiser: 'Cape Town Cycle Tour Trust (Rotary & Pedal Power Association)',
+    site: 'capetowncycletour.com',
+    route: {
+      note: '109km iconic Cape Peninsula circumnavigation with 1,240m of coastal climbing and closed roads.',
+      directions: [
+        'Mass start on Cape Town Grand Parade / Foreshore heading over Hospital Bend.',
+        'Spins south along False Bay through Muizenberg, Kalk Bay, and naval Simon’s Town.',
+        'Ascends Smitswinkel Bay and sweeps past Misty Cliffs and Scarborough on the Atlantic coast.',
+        'Climbs the breathtaking sheer cliffs of Chapman’s Peak Drive ("Chappies") into Hout Bay.',
+        'Tackles the legendary 2km Suikerbossie wall before a flat-out sprint along Camps Bay to Green Point Stadium.'
+      ],
+      points: [
+        { label: 'Grand Parade', y: 15 },
+        { label: 'Edinburgh Drive', y: 45 },
+        { label: 'False Bay Flat', y: 12 },
+        { label: 'Smitswinkel', y: 65 },
+        { label: 'Chapman’s Peak', y: 70 },
+        { label: 'Hout Bay', y: 20 },
+        { label: 'Suikerbossie', y: 80 },
+        { label: 'Green Point', y: 15 }
+      ]
+    }
+  },
+  {
+    name: 'Absa Cape Epic',
+    prov: 'wc',
+    city: 'Meerendal / Stellenbosch',
+    date: '2027-03-21',
+    dist: ['CY', 'X'],
+    discipline: 'cycling',
+    organiser: 'IRONMAN Group / Absa Cape Epic',
+    site: 'epic-series.com/capeepic',
+    route: {
+      note: 'Grueling 8-day untamed mountain bike stage race through Western Cape fynbos, rugged mountains, and singletrack.',
+      directions: [
+        'Prologue time-trial through Meerendal or Lourensford wine estate singletrack.',
+        'High-altitude stages across the Overberg, scaling Groenlandberg and historic Gantouw Pass.',
+        'Punishing technical singletrack descents through Hermanus, Greyton, and Wellington.',
+        'Grand Finale stage conquering Franschhoek Pass and Jonkershoek into Stellenbosch / Meerendal.'
+      ],
+      points: [
+        { label: 'Prologue Meerendal', y: 25 },
+        { label: 'Gantouw Portage', y: 55 },
+        { label: 'Groenlandberg Peak', y: 95 },
+        { label: 'Overberg Trails', y: 50 },
+        { label: 'Franschhoek Pass', y: 80 },
+        { label: 'Grand Finale Finish', y: 30 }
+      ]
+    }
+  },
 ];
 
 export const DIST_LABEL: Record<DistanceCode, string> = {
@@ -1427,9 +1607,55 @@ export const DIST_LABEL: Record<DistanceCode, string> = {
   WK: 'Walk',
   HK: 'Hike',
   TK: 'Trek',
+  CY: 'Cycling Tour',
 };
 
 export const CLUBS: Club[] = [
+  {
+    name: 'Pedal Power Association (PPA)',
+    prov: 'wc',
+    city: 'Cape Town',
+    founded: 1976,
+    affiliation: 'Cycling South Africa (CSA) / Cape Town Cycle Tour Trust',
+    blurb: 'South Africa’s largest cycling organisation (15,000+ members). Co-founders and organisers of the iconic Cape Town Cycle Tour (CTCT).',
+    disciplines: ['cycling'],
+    customContact: {
+      contactPerson: 'PPA Secretariat',
+      role: 'Cycling Membership & Events',
+      phoneOrEmail: 'info@pedalpower.org.za',
+      trainingSchedule: 'Weekly weekend social rides from Mouille Point & Southern Suburbs'
+    }
+  },
+  {
+    name: 'Ride Joburg Cycling Club',
+    prov: 'gp',
+    city: 'Johannesburg',
+    founded: 1997,
+    affiliation: 'Central Gauteng Cycling / Cycling South Africa',
+    blurb: 'The premier cycling guild behind the 947 Ride Joburg tour, hosting Saturday peloton training rides across the Northern Suburbs and Cradle of Humankind.',
+    disciplines: ['cycling'],
+    customContact: {
+      contactPerson: 'Ride Director',
+      role: 'Club Captain',
+      phoneOrEmail: 'info@ridejoburg.co.za',
+      trainingSchedule: 'Saturdays 06:00 from Steyn City & Cycle Lab Fourways'
+    }
+  },
+  {
+    name: 'Stellenbosch Trail & Cycle Collective',
+    prov: 'wc',
+    city: 'Stellenbosch',
+    founded: 2008,
+    affiliation: 'Western Province Mountain Biking',
+    blurb: 'Mountain biking and trail cycling collective maintaining the world-renowned Jonkershoek and Banhoek network, training ground for Cape Epic champions.',
+    disciplines: ['cycling'],
+    customContact: {
+      contactPerson: 'Trail Master',
+      role: 'Epic Training Lead',
+      phoneOrEmail: 'trails@stellenboschcycling.co.za',
+      trainingSchedule: 'Tuesday & Thursday singletrack intervals, Sunday Jonkershoek mountain rides'
+    }
+  },
   {
     name: 'Benoni Northerns AC',
     prov: 'gp',

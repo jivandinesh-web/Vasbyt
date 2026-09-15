@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { TabType, UserProfile, UserFavorites } from './types';
+import React, { useState, useCallback, useEffect } from 'react';
+import { TabType, UserProfile, UserFavorites, CommunityRaceSubmission } from './types';
 import { TopBar } from './components/TopBar';
 import { TabBar } from './components/TabBar';
 import { HomeView } from './components/HomeView';
@@ -12,6 +12,12 @@ import { SitemapModal } from './components/SitemapModal';
 import { PrivacyPolicyModal } from './components/PrivacyPolicyModal';
 import { NeumorphicLoginModal } from './components/NeumorphicLoginModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import {
+  subscribeToCommunityRaces,
+  createCommunityRace,
+  deleteCommunityRace,
+  StoredCommunityRace,
+} from './services/communityRaces';
 
 const DEFAULT_PROFILE: UserProfile = {
   name: '',
@@ -47,7 +53,7 @@ function AppLayout({
   onToggleRaceFavorite,
   onToggleClubFavorite,
 }: AppLayoutProps) {
-  const { isLoginModalOpen, closeLoginModal } = useAuth();
+  const { user, isLoginModalOpen, closeLoginModal } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [selectedProvinceId, setSelectedProvinceId] = useState<string | null>(null);
   const [raceFilterProv, setRaceFilterProv] = useState<string>('all');
@@ -56,6 +62,24 @@ function AppLayout({
   const [isHowToOpen, setIsHowToOpen] = useState<boolean>(false);
   const [isSitemapOpen, setIsSitemapOpen] = useState<boolean>(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState<boolean>(false);
+
+  // Live community races synced from Firestore and local cache
+  const [communityRaces, setCommunityRaces] = useState<StoredCommunityRace[]>([]);
+
+  useEffect(() => {
+    const unsub = subscribeToCommunityRaces((races) => {
+      setCommunityRaces(races);
+    });
+    return () => unsub();
+  }, []);
+
+  const handleAddRace = async (submission: CommunityRaceSubmission) => {
+    await createCommunityRace(submission, user);
+  };
+
+  const handleDeleteCommunityRace = async (raceId: string) => {
+    await deleteCommunityRace(raceId, user);
+  };
 
   // Navigation callbacks
   const handleHomeSelectProvince = (provId: string) => {
@@ -114,6 +138,7 @@ function AppLayout({
             onSelectProvince={handleHomeSelectProvince}
             onSelectRaceTab={handleHomeSelectRaceTab}
             onOpenHowTo={() => setIsHowToOpen(true)}
+            communityRaces={communityRaces}
           />
         )}
 
@@ -134,6 +159,9 @@ function AppLayout({
             onSelectDiscipline={setRaceFilterDiscipline}
             favorites={favorites.races}
             onToggleFavorite={onToggleRaceFavorite}
+            communityRaces={communityRaces}
+            onAddRace={handleAddRace}
+            onDeleteCommunityRace={handleDeleteCommunityRace}
           />
         )}
 
@@ -153,6 +181,8 @@ function AppLayout({
             onSaveProfile={onSaveProfile}
             onToggleRaceFavorite={onToggleRaceFavorite}
             onToggleClubFavorite={onToggleClubFavorite}
+            communityRaces={communityRaces}
+            onDeleteCommunityRace={handleDeleteCommunityRace}
           />
         )}
       </main>

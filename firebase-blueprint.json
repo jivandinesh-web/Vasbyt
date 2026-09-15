@@ -35,12 +35,46 @@
         "updatedAt": { "type": "string", "maxLength": 50 }
       },
       "required": ["uid"]
+    },
+    "CommunityRace": {
+      "title": "CommunityRace",
+      "description": "User or club submitted South African running, trail, or cycling race fixture",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 120 },
+        "prov": { "type": "string", "maxLength": 10 },
+        "city": { "type": "string", "maxLength": 80 },
+        "date": { "type": "string", "maxLength": 20 },
+        "dist": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "discipline": { "type": "string", "maxLength": 30 },
+        "organiser": { "type": "string", "maxLength": 120 },
+        "site": { "type": "string", "maxLength": 300 },
+        "totalAscentM": { "type": "number" },
+        "totalDescentM": { "type": "number" },
+        "courseType": { "type": "string", "maxLength": 50 },
+        "surface": { "type": "string", "maxLength": 80 },
+        "cutoffTime": { "type": "string", "maxLength": 30 },
+        "waterTablesCount": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 500 },
+        "createdByUid": { "type": "string", "maxLength": 128 },
+        "createdByName": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["name", "prov", "city", "date", "discipline", "createdByUid"]
     }
   },
   "firestore": {
     "/users/{userId}": {
       "schema": "UserProfile",
       "description": "Individual runner profile document keyed by authenticated Firebase user UID"
+    },
+    "/communityRaces/{raceId}": {
+      "schema": "CommunityRace",
+      "description": "Community and club submitted South African races and fixtures"
     }
   }
 }

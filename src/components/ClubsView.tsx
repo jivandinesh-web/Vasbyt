@@ -188,6 +188,11 @@ export const ClubsView: React.FC<ClubsViewProps> = ({
       count: allClubs.filter((c) => c.disciplines?.includes('trail')).length,
     },
     {
+      key: 'cycling',
+      label: 'Cycling',
+      count: allClubs.filter((c) => c.disciplines?.includes('cycling')).length,
+    },
+    {
       key: 'track',
       label: 'Track & Field',
       count: allClubs.filter((c) => c.disciplines?.includes('track')).length,
@@ -802,6 +807,7 @@ export const ClubsView: React.FC<ClubsViewProps> = ({
                   {[
                     { id: 'road' as Discipline, label: 'Road Running' },
                     { id: 'trail' as Discipline, label: 'Trail Running' },
+                    { id: 'cycling' as Discipline, label: 'Cycling & MTB' },
                     { id: 'track' as Discipline, label: 'Track & Field' },
                     { id: 'walking' as Discipline, label: 'Walking' },
                     { id: 'hiking' as Discipline, label: 'Hiking' },

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   PROVINCES,
   RACES,
@@ -6,11 +6,32 @@ import {
   daysUntil,
   formatRaceDate,
 } from '../data/runningData';
-import { DistanceCode, Discipline } from '../types';
+import { DistanceCode, Discipline, Race, CommunityRaceSubmission } from '../types';
 import { ElevationProfile } from './ElevationProfile';
 import { WatchSyncModal } from './WatchSyncModal';
+import { AddRaceModal } from './AddRaceModal';
 import { getEnrichedRaceRoute } from '../utils/routeData';
-import { Search, ChevronDown, ChevronUp, RotateCcw, Mountain, Activity, Flag, Watch, Compass, Footprints, Trees, Tent } from 'lucide-react';
+import { transformCommunityRaceToRace, StoredCommunityRace } from '../services/communityRaces';
+import { useAuth } from '../context/AuthContext';
+import {
+  Search,
+  ChevronDown,
+  ChevronUp,
+  RotateCcw,
+  Mountain,
+  Activity,
+  Flag,
+  Watch,
+  Compass,
+  Footprints,
+  Trees,
+  Tent,
+  CloudSun,
+  Plus,
+  Sparkles,
+  Trash2,
+  Users,
+} from 'lucide-react';
 
 interface RacesViewProps {
   activeProv: string;
@@ -19,6 +40,9 @@ interface RacesViewProps {
   onToggleFavorite: (raceName: string) => void;
   activeDiscipline?: string;
   onSelectDiscipline?: (disc: string) => void;
+  communityRaces?: StoredCommunityRace[];
+  onAddRace?: (submission: CommunityRaceSubmission) => Promise<void>;
+  onDeleteCommunityRace?: (raceId: string) => Promise<void>;
 }
 
 export const RacesView: React.FC<RacesViewProps> = ({
@@ -28,7 +52,11 @@ export const RacesView: React.FC<RacesViewProps> = ({
   onToggleFavorite,
   activeDiscipline: controlledDiscipline,
   onSelectDiscipline,
+  communityRaces = [],
+  onAddRace,
+  onDeleteCommunityRace,
 }) => {
+  const { user } = useAuth();
   const [internalDiscipline, setInternalDiscipline] = useState<string>('all');
   const activeDiscipline = controlledDiscipline !== undefined ? controlledDiscipline : internalDiscipline;
   const setActiveDiscipline = (disc: string) => {
@@ -38,9 +66,17 @@ export const RacesView: React.FC<RacesViewProps> = ({
     }
   };
   const [activeDist, setActiveDist] = useState<string>('all');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'official' | 'community'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedRaceKey, setExpandedRaceKey] = useState<string | null>(null);
   const [syncModalRace, setSyncModalRace] = useState<any | null>(null);
+  const [isAddRaceOpen, setIsAddRaceOpen] = useState(false);
+
+  // Merge static official races with dynamically fetched community races
+  const allRaces = useMemo(() => {
+    const customList = communityRaces.map(transformCommunityRaceToRace);
+    return [...customList, ...RACES];
+  }, [communityRaces]);
 
   const provChips = [
     { id: 'all', label: 'All Provinces' },
@@ -48,17 +84,19 @@ export const RacesView: React.FC<RacesViewProps> = ({
   ];
 
   const disciplineChips: { key: string; label: string; count: number }[] = [
-    { key: 'all', label: 'All Disciplines', count: RACES.length },
-    { key: 'road', label: 'Road Running', count: RACES.filter((r) => r.discipline === 'road').length },
-    { key: 'trail', label: 'Trail Running', count: RACES.filter((r) => r.discipline === 'trail').length },
-    { key: 'track', label: 'Track & Field', count: RACES.filter((r) => r.discipline === 'track').length },
-    { key: 'walking', label: 'Walking', count: RACES.filter((r) => r.discipline === 'walking').length },
-    { key: 'hiking', label: 'Hiking', count: RACES.filter((r) => r.discipline === 'hiking').length },
-    { key: 'trekking', label: 'Trekking', count: RACES.filter((r) => r.discipline === 'trekking').length },
+    { key: 'all', label: 'All Disciplines', count: allRaces.length },
+    { key: 'road', label: 'Road Running', count: allRaces.filter((r) => r.discipline === 'road').length },
+    { key: 'trail', label: 'Trail Running', count: allRaces.filter((r) => r.discipline === 'trail').length },
+    { key: 'cycling', label: 'Cycling Tours', count: allRaces.filter((r) => r.discipline === 'cycling').length },
+    { key: 'track', label: 'Track & Field', count: allRaces.filter((r) => r.discipline === 'track').length },
+    { key: 'walking', label: 'Walking', count: allRaces.filter((r) => r.discipline === 'walking').length },
+    { key: 'hiking', label: 'Hiking', count: allRaces.filter((r) => r.discipline === 'hiking').length },
+    { key: 'trekking', label: 'Trekking', count: allRaces.filter((r) => r.discipline === 'trekking').length },
   ];
 
   const distChips: { key: string; label: string }[] = [
     { key: 'all', label: 'All distances' },
+    { key: 'CY', label: 'Cycling Tour / Stage' },
     { key: 'X', label: 'Trail Ultra / Mountain' },
     { key: 'U', label: 'Ultra Marathon' },
     { key: 'M', label: 'Marathon (42.2k)' },
@@ -71,7 +109,7 @@ export const RacesView: React.FC<RacesViewProps> = ({
     { key: 'TK', label: 'Wilderness Trek' },
   ];
 
-  let filteredRaces = RACES.map((r) => ({
+  let filteredRaces = allRaces.map((r) => ({
     ...r,
     daysLeft: daysUntil(r.date),
   }));
@@ -91,6 +129,13 @@ export const RacesView: React.FC<RacesViewProps> = ({
     filteredRaces = filteredRaces.filter((r) => r.dist.includes(activeDist as DistanceCode));
   }
 
+  // Source filter (all vs official vs community submitted)
+  if (sourceFilter === 'community') {
+    filteredRaces = filteredRaces.filter((r) => r.isCommunity);
+  } else if (sourceFilter === 'official') {
+    filteredRaces = filteredRaces.filter((r) => !r.isCommunity);
+  }
+
   // Text search query
   if (searchQuery.trim()) {
     const q = searchQuery.toLowerCase().trim();
@@ -106,11 +151,16 @@ export const RacesView: React.FC<RacesViewProps> = ({
   filteredRaces.sort((a, b) => a.daysLeft - b.daysLeft);
 
   const hasActiveFilters =
-    activeProv !== 'all' || activeDiscipline !== 'all' || activeDist !== 'all' || searchQuery.trim() !== '';
+    activeProv !== 'all' ||
+    activeDiscipline !== 'all' ||
+    activeDist !== 'all' ||
+    sourceFilter !== 'all' ||
+    searchQuery.trim() !== '';
 
   const handleResetFilters = () => {
     setActiveDiscipline('all');
     setActiveDist('all');
+    setSourceFilter('all');
     onSelectProv('all');
     setSearchQuery('');
   };
@@ -188,29 +238,81 @@ export const RacesView: React.FC<RacesViewProps> = ({
           </p>
         </div>
 
-        {/* Quick Search */}
-        <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6d7580]" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search race, town, or mountain…"
-            className="w-full bg-[#1b212b] border border-[#2c333f] rounded-xs pl-9 pr-8 py-2 text-sm text-[#f5efe3] placeholder-[#6d7580] focus:outline-none focus:border-[#e28b37]"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#6d7580] hover:text-[#f5efe3] p-1"
-            >
-              ✕
-            </button>
-          )}
+        {/* Action Buttons & Search */}
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <button
+            id="open-add-race-modal-btn"
+            onClick={() => setIsAddRaceOpen(true)}
+            className="inline-flex items-center gap-2 bg-[#d8b34a] hover:bg-[#e28b37] text-[#12151b] font-bold text-xs sm:text-sm px-4 py-2.5 rounded-lg transition-all shadow-md cursor-pointer shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Race</span>
+          </button>
+
+          {/* Quick Search */}
+          <div className="relative flex-1 sm:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6d7580]" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search race, town, or mountain…"
+              className="w-full bg-[#1b212b] border border-[#2c333f] rounded-xs pl-9 pr-8 py-2 text-sm text-[#f5efe3] placeholder-[#6d7580] focus:outline-none focus:border-[#e28b37]"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#6d7580] hover:text-[#f5efe3] p-1 cursor-pointer"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Filter Control Box */}
       <div id="race-filters-card" className="bg-[#171c24] border border-[#2c333f] rounded-xs p-4 space-y-4">
+        {/* Source Filter (All / Official / Community Added) */}
+        <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-[#2c333f]/60">
+          <div className="text-[11px] uppercase tracking-wider text-[#6d7580] font-semibold">
+            Calendar Source
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setSourceFilter('all')}
+              className={`text-xs py-1 px-3 rounded-full border cursor-pointer transition-all ${
+                sourceFilter === 'all'
+                  ? 'bg-[#f5efe3] border-[#f5efe3] text-[#12151b] font-bold'
+                  : 'bg-[#1b212b] border-[#2c333f] text-[#9aa1ac] hover:text-[#f5efe3]'
+              }`}
+            >
+              All Fixtures ({allRaces.length})
+            </button>
+            <button
+              onClick={() => setSourceFilter('official')}
+              className={`text-xs py-1 px-3 rounded-full border cursor-pointer transition-all ${
+                sourceFilter === 'official'
+                  ? 'bg-[#e28b37] border-[#e28b37] text-[#12151b] font-bold'
+                  : 'bg-[#1b212b] border-[#2c333f] text-[#9aa1ac] hover:text-[#f5efe3]'
+              }`}
+            >
+              Official Major ({RACES.length})
+            </button>
+            <button
+              onClick={() => setSourceFilter('community')}
+              className={`text-xs py-1 px-3 rounded-full border cursor-pointer transition-all inline-flex items-center gap-1.5 ${
+                sourceFilter === 'community'
+                  ? 'bg-[#d8b34a] border-[#d8b34a] text-[#12151b] font-bold'
+                  : 'bg-[#1b212b] border-[#2c333f] text-[#d8b34a] hover:border-[#d8b34a]/60'
+              }`}
+            >
+              <Sparkles className="w-3 h-3" />
+              <span>Community Added ({communityRaces.length})</span>
+            </button>
+          </div>
+        </div>
+
         {/* Disciplines */}
         <div>
           <div className="text-[11px] uppercase tracking-wider text-[#6d7580] font-semibold mb-2">
@@ -318,12 +420,22 @@ export const RacesView: React.FC<RacesViewProps> = ({
             <p className="text-xs text-[#6d7580] mb-4">
               Try broadening your discipline, province, or search keyword filters.
             </p>
-            <button
-              onClick={handleResetFilters}
-              className="text-xs font-semibold bg-[#e28b37] text-[#1b1103] px-4 py-2 rounded-xs"
-            >
-              Clear filters
-            </button>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                onClick={handleResetFilters}
+                className="text-xs font-semibold bg-[#242c38] text-[#f5efe3] hover:bg-[#2c333f] px-4 py-2 rounded-xs border border-[#2c333f] cursor-pointer"
+              >
+                Clear filters
+              </button>
+              <button
+                id="empty-add-race-btn"
+                onClick={() => setIsAddRaceOpen(true)}
+                className="text-xs font-bold bg-[#d8b34a] hover:bg-[#e28b37] text-[#12151b] px-4 py-2 rounded-xs inline-flex items-center gap-1.5 cursor-pointer shadow-sm transition-all"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Submit a Race Fixture</span>
+              </button>
+            </div>
           </div>
         ) : (
           filteredRaces.map((r) => {
@@ -366,6 +478,12 @@ export const RacesView: React.FC<RacesViewProps> = ({
                           {r.name}
                         </h3>
                         {getDisciplineBadge(r.discipline)}
+                        {r.isCommunity && (
+                          <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider bg-[#d8b34a]/15 text-[#d8b34a] border border-[#d8b34a]/40 px-2 py-0.5 rounded-full font-bold">
+                            <Sparkles className="w-3 h-3" />
+                            Community Added
+                          </span>
+                        )}
                       </div>
 
                       <div className="text-xs sm:text-sm text-[#9aa1ac] flex items-center gap-2 flex-wrap mb-2">
@@ -383,6 +501,14 @@ export const RacesView: React.FC<RacesViewProps> = ({
                           <span>
                             in <b className="text-[#e28b37] font-semibold">{r.daysLeft} days</b>
                           </span>
+                        )}
+                        {r.isCommunity && r.createdByName && (
+                          <>
+                            <span>·</span>
+                            <span className="text-[#6d7580] text-[11px]">
+                              Host: <span className="text-[#d8b34a]">{r.createdByName}</span>
+                            </span>
+                          </>
                         )}
                       </div>
 
@@ -416,6 +542,22 @@ export const RacesView: React.FC<RacesViewProps> = ({
                       <span className="hidden sm:inline">Sync Watch</span>
                     </button>
 
+                    {/* 5-Day Open-Meteo Weather Quick Trigger */}
+                    <button
+                      id={`weather-btn-${r.name.replace(/\s+/g, '-').toLowerCase()}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isOpen) {
+                          toggleRaceExpand(key);
+                        }
+                      }}
+                      title="5-day Open-Meteo atmospheric forecast for this race"
+                      className="inline-flex items-center gap-1.5 bg-[#242c38] hover:bg-[#12161f] text-[#f5efe3] hover:text-[#d8b34a] border border-[#2c333f] hover:border-[#d8b34a]/50 px-2.5 py-1.5 rounded-xs text-xs font-semibold transition-all cursor-pointer group"
+                    >
+                      <CloudSun className="w-3.5 h-3.5 text-[#d8b34a] group-hover:scale-110 transition-transform" />
+                      <span className="hidden sm:inline">Weather</span>
+                    </button>
+
                     <button
                       id={`star-race-${r.name.replace(/\s+/g, '-').toLowerCase()}`}
                       onClick={(e) => {
@@ -432,9 +574,37 @@ export const RacesView: React.FC<RacesViewProps> = ({
                       {isFav ? '★' : '☆'}
                     </button>
 
-                    <div className="flex items-center gap-1 text-xs text-[#6d7580] hover:text-[#f5efe3] font-medium bg-[#12151b] px-3 py-2 rounded-xs border border-[#2c333f]">
-                      <span>{isOpen ? 'Hide Profile' : 'Route Profile'}</span>
-                      {isOpen ? <ChevronUp className="w-4 h-4 text-[#e28b37]" /> : <ChevronDown className="w-4 h-4" />}
+                    {/* Delete button if user authored this community fixture */}
+                    {r.isCommunity && onDeleteCommunityRace && r.id && (user?.uid === r.createdByUid || r.createdByUid === 'local-runner') && (
+                      <button
+                        id={`delete-race-${r.id}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (window.confirm(`Are you sure you want to remove your fixture "${r.name}"?`)) {
+                            onDeleteCommunityRace(r.id!);
+                          }
+                        }}
+                        title="Delete your submitted fixture"
+                        className="w-9 h-9 flex items-center justify-center rounded-xs border text-xs bg-[#12151b] border-[#2c333f] text-[#6d7580] hover:text-red-400 hover:border-red-800/60 hover:bg-red-950/30 transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+
+                    <div
+                      className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xs border transition-colors ${
+                        isOpen
+                          ? 'bg-[#e28b37] text-[#1b1103] border-[#e28b37] shadow-xs'
+                          : 'bg-[#12151b] text-[#d8b34a] border-[#2c333f] hover:border-[#d8b34a] hover:bg-[#1a202c]'
+                      }`}
+                    >
+                      <Mountain className={`w-3.5 h-3.5 ${isOpen ? 'text-[#1b1103]' : 'text-[#e28b37]'}`} />
+                      <span>{isOpen ? 'Hide Details' : 'Elevation & Route'}</span>
+                      {isOpen ? (
+                        <ChevronUp className={`w-3.5 h-3.5 ${isOpen ? 'text-[#1b1103]' : 'text-[#e28b37]'}`} />
+                      ) : (
+                        <ChevronDown className="w-3.5 h-3.5 text-[#6d7580]" />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -455,6 +625,7 @@ export const RacesView: React.FC<RacesViewProps> = ({
                       discipline={r.discipline}
                       organiser={r.organiser}
                       site={r.site}
+                      raceDate={r.date}
                       idPrefix={`race-${r.name.replace(/\s+/g, '-').toLowerCase()}`}
                     />
                   </div>
@@ -482,6 +653,19 @@ export const RacesView: React.FC<RacesViewProps> = ({
           defaultBrand="garmin"
         />
       )}
+
+      {/* Add Race / Submit Fixture Modal */}
+      <AddRaceModal
+        isOpen={isAddRaceOpen}
+        onClose={() => setIsAddRaceOpen(false)}
+        onSubmit={async (sub) => {
+          if (onAddRace) {
+            await onAddRace(sub);
+          }
+        }}
+        defaultProv={activeProv !== 'all' ? activeProv : 'gp'}
+        defaultDiscipline={activeDiscipline !== 'all' ? activeDiscipline : 'road'}
+      />
     </div>
   );
 };

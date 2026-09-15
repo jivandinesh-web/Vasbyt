@@ -51,10 +51,11 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
       ],
     },
     {
-      group: '6 Disciplines of Sport',
+      group: '7 Disciplines of Sport',
       items: [
         { title: 'Road Running (Marathons, Half Marathons & 10ks)', loc: '/#races?discipline=road', tab: 'races' as TabType, priority: '0.90', freq: 'Daily' },
         { title: 'Trail Running (Mountain Ultras & Nature Reserves)', loc: '/#races?discipline=trail', tab: 'races' as TabType, priority: '0.90', freq: 'Daily' },
+        { title: 'Cycling Tours (Road Classics & Mountain Bike Stage Races)', loc: '/#races?discipline=cycling', tab: 'races' as TabType, priority: '0.90', freq: 'Daily' },
         { title: 'Walking (Sanctioned Race Walking & Walking Leagues)', loc: '/#races?discipline=walking', tab: 'races' as TabType, priority: '0.90', freq: 'Daily' },
         { title: 'Hiking (Scenic Day Hikes & Mountain Summits)', loc: '/#races?discipline=hiking', tab: 'races' as TabType, priority: '0.85', freq: 'Weekly' },
         { title: 'Trekking (Multi-Day Wilderness Expeditions)', loc: '/#races?discipline=trekking', tab: 'races' as TabType, priority: '0.85', freq: 'Weekly' },
@@ -76,13 +77,16 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
       ],
     },
     {
-      group: 'Iconic Major Races & Ultras',
+      group: 'The South African Majors (Running & Cycling Classics)',
       items: [
         { title: 'Comrades Marathon (The Ultimate Human Race)', loc: '/#major/comrades-marathon', tab: 'home' as TabType, priority: '0.90', freq: 'Monthly' },
         { title: 'Two Oceans Marathon (The World’s Most Beautiful Marathon)', loc: '/#major/two-oceans-marathon', tab: 'home' as TabType, priority: '0.90', freq: 'Monthly' },
         { title: 'Sanlam Cape Town Marathon (Abbott World Marathon Major)', loc: '/#major/cape-town-marathon', tab: 'home' as TabType, priority: '0.90', freq: 'Monthly' },
         { title: 'African Bank Soweto Marathon (The People’s Race)', loc: '/#major/soweto-marathon', tab: 'home' as TabType, priority: '0.90', freq: 'Monthly' },
         { title: 'Entabeni Big Five Marathon (Limpopo Bushveld)', loc: '/#major/big-five-marathon', tab: 'home' as TabType, priority: '0.85', freq: 'Monthly' },
+        { title: 'Joburg Ride (Virgin Active 947 Ride Joburg)', loc: '/#major/joburg-ride', tab: 'home' as TabType, priority: '0.90', freq: 'Monthly' },
+        { title: 'CTCT (Cape Town Cycle Tour)', loc: '/#major/ctct', tab: 'home' as TabType, priority: '0.90', freq: 'Monthly' },
+        { title: 'Cape Epic (Absa Cape Epic MTB Stage Race)', loc: '/#major/cape-epic', tab: 'home' as TabType, priority: '0.90', freq: 'Monthly' },
       ],
     },
   ];

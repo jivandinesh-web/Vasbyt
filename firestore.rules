@@ -38,12 +38,40 @@ service cloud.firestore {
              (!('favorites' in data) || data.favorites is map);
     }
 
+    function isValidCommunityRace(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 120 &&
+             data.prov is string && data.prov.size() <= 10 &&
+             data.city is string && data.city.size() <= 80 &&
+             data.date is string && data.date.size() <= 20 &&
+             data.discipline is string && data.discipline.size() <= 30 &&
+             data.createdByUid is string && data.createdByUid == request.auth.uid &&
+             (!('dist' in data) || (data.dist is list && data.dist.size() <= 10)) &&
+             (!('organiser' in data) || (data.organiser is string && data.organiser.size() <= 120)) &&
+             (!('site' in data) || (data.site is string && data.site.size() <= 300)) &&
+             (!('totalAscentM' in data) || (data.totalAscentM is number)) &&
+             (!('totalDescentM' in data) || (data.totalDescentM is number)) &&
+             (!('courseType' in data) || (data.courseType is string && data.courseType.size() <= 50)) &&
+             (!('surface' in data) || (data.surface is string && data.surface.size() <= 80)) &&
+             (!('cutoffTime' in data) || (data.cutoffTime is string && data.cutoffTime.size() <= 30)) &&
+             (!('waterTablesCount' in data) || (data.waterTablesCount is number)) &&
+             (!('notes' in data) || (data.notes is string && data.notes.size() <= 500)) &&
+             (!('createdByName' in data) || (data.createdByName is string && data.createdByName.size() <= 100)) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50));
+    }
+
     match /users/{userId} {
       allow get: if isOwner(userId) && isValidId(userId);
       allow create: if isOwner(userId) && isValidId(userId) && isValidUserProfile(incoming());
       allow update: if isOwner(userId) && isValidId(userId) && isValidUserProfile(incoming());
       allow delete: if isOwner(userId) && isValidId(userId);
       allow list: if false;
+    }
+
+    match /communityRaces/{raceId} {
+      allow get, list: if true;
+      allow create: if isSignedIn() && isValidId(raceId) && isValidCommunityRace(incoming());
+      allow update: if isSignedIn() && isValidId(raceId) && incoming().createdByUid == resource.data.createdByUid && isOwner(resource.data.createdByUid) && isValidCommunityRace(incoming());
+      allow delete: if isSignedIn() && isValidId(raceId) && isOwner(resource.data.createdByUid);
     }
 
     match /test/{docId} {

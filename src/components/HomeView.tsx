@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   PROVINCES,
   MAJORS,
@@ -11,6 +11,7 @@ import {
 import { MajorRace, Discipline } from '../types';
 import { ElevationProfile } from './ElevationProfile';
 import { NeumorphicButton } from './NeumorphicButton';
+import { StoredCommunityRace, transformCommunityRaceToRace } from '../services/communityRaces';
 import {
   Calendar,
   ArrowRight,
@@ -26,23 +27,33 @@ import {
   Mountain,
   Activity,
   Flag,
+  Bike,
 } from 'lucide-react';
 
 interface HomeViewProps {
   onSelectProvince: (provId: string) => void;
   onSelectRaceTab: (disc?: string) => void;
   onOpenHowTo?: () => void;
+  communityRaces?: StoredCommunityRace[];
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({
   onSelectProvince,
   onSelectRaceTab,
   onOpenHowTo,
+  communityRaces = [],
 }) => {
   const [selectedMajor, setSelectedMajor] = useState<MajorRace | null>(null);
+  const [majorsFilter, setMajorsFilter] = useState<'all' | 'running' | 'cycling'>('all');
+
+  // Compute all merged races for upcoming fixtures
+  const allRaces = useMemo(() => {
+    const customList = communityRaces.map(transformCommunityRaceToRace);
+    return [...customList, ...RACES];
+  }, [communityRaces]);
 
   // Compute next upcoming race
-  const upcomingRaces = RACES.map((r) => ({
+  const upcomingRaces = allRaces.map((r) => ({
     ...r,
     daysLeft: daysUntil(r.date),
   }))
@@ -55,7 +66,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
     setSelectedMajor((prev) => (prev?.name === major.name ? null : major));
   };
 
-  const getRaceCount = (provId: string) => RACES.filter((r) => r.prov === provId).length;
+  const getRaceCount = (provId: string) => allRaces.filter((r) => r.prov === provId).length;
   const getClubCount = (provId: string) => CLUBS.filter((c) => c.prov === provId).length;
 
   const disciplines = [
@@ -74,6 +85,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
       count: RACES.filter((r) => r.discipline === 'trail').length,
       icon: Mountain,
       color: '#7c8f5c',
+    },
+    {
+      id: 'cycling',
+      label: 'Cycling Tours',
+      desc: 'Road races & MTB stage epics',
+      count: RACES.filter((r) => r.discipline === 'cycling').length,
+      icon: Bike,
+      color: '#06b6d4',
     },
     {
       id: 'walking',
@@ -292,15 +311,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </div>
 
-      {/* 6 Disciplines of Sport Showcase */}
+      {/* 7 Disciplines of Sport Showcase */}
       <div id="home-disciplines-section" className="space-y-3">
         <div className="flex items-baseline justify-between">
           <div>
             <h2 className="font-display font-black text-xl sm:text-2xl uppercase tracking-wider text-[#f5efe3]">
-              6 Disciplines of Sport
+              7 Disciplines of Sport
             </h2>
             <p className="text-xs sm:text-sm text-[#9aa1ac] mt-0.5">
-              Explore events, trails, and clubs across all supported sporting categories throughout South Africa.
+              Explore events, trails, and clubs across all supported endurance and sporting categories throughout South Africa.
             </p>
           </div>
           <button
@@ -311,7 +330,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
           {disciplines.map((item) => {
             const IconComponent = item.icon;
             return (
@@ -351,26 +370,61 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
       {/* The Majors Grid - 4 Columns on Desktop */}
       <div id="home-majors">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-4">
           <div>
             <h2 className="text-xs uppercase tracking-widest text-[#6d7580] font-bold">
-              Heritage Running
+              National Endurance Classics
             </h2>
             <h3 className="text-xl sm:text-2xl font-bold font-display uppercase tracking-wider text-[#f5efe3] mt-0.5">
               The South African Majors
             </h3>
           </div>
-          <span className="text-xs text-[#6d7580]">
-            Tap any major for full profile &amp; elevation
-          </span>
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+            <button
+              onClick={() => setMajorsFilter('all')}
+              className={`text-xs px-3 py-1 rounded-xs font-semibold transition-colors cursor-pointer ${
+                majorsFilter === 'all'
+                  ? 'bg-[#e28b37] text-black font-bold'
+                  : 'bg-[#171c24] text-[#9aa1ac] border border-[#2c333f] hover:border-[#6d7580]'
+              }`}
+            >
+              All Majors ({MAJORS.length})
+            </button>
+            <button
+              onClick={() => setMajorsFilter('running')}
+              className={`text-xs px-3 py-1 rounded-xs font-semibold transition-colors cursor-pointer ${
+                majorsFilter === 'running'
+                  ? 'bg-[#e28b37] text-black font-bold'
+                  : 'bg-[#171c24] text-[#9aa1ac] border border-[#2c333f] hover:border-[#6d7580]'
+              }`}
+            >
+              Running Classics ({MAJORS.filter((m) => m.discipline !== 'cycling').length})
+            </button>
+            <button
+              onClick={() => setMajorsFilter('cycling')}
+              className={`text-xs px-3 py-1 rounded-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
+                majorsFilter === 'cycling'
+                  ? 'bg-[#06b6d4] text-black font-bold'
+                  : 'bg-[#171c24] text-[#9aa1ac] border border-[#2c333f] hover:border-[#06b6d4]'
+              }`}
+            >
+              <Bike className="w-3.5 h-3.5" />
+              Cycling Tours ({MAJORS.filter((m) => m.discipline === 'cycling').length})
+            </button>
+          </div>
         </div>
 
         <div
           id="majors-grid"
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
         >
-          {MAJORS.map((m) => {
+          {MAJORS.filter((m) => {
+            if (majorsFilter === 'running') return m.discipline !== 'cycling';
+            if (majorsFilter === 'cycling') return m.discipline === 'cycling';
+            return true;
+          }).map((m) => {
             const isSelected = selectedMajor?.name === m.name;
+            const isCycling = m.discipline === 'cycling';
             return (
               <div
                 key={m.name}
@@ -378,18 +432,38 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 onClick={() => handleMajorClick(m)}
                 className={`bg-[#171c24] border rounded-xs p-5 text-left cursor-pointer transition-all flex flex-col justify-between ${
                   isSelected
-                    ? 'border-[#e28b37] bg-[#221c17] ring-1 ring-[#e28b37]'
+                    ? isCycling
+                      ? 'border-[#06b6d4] bg-[#13222a] ring-1 ring-[#06b6d4]'
+                      : 'border-[#e28b37] bg-[#221c17] ring-1 ring-[#e28b37]'
+                    : isCycling
+                    ? 'border-[#2c333f] hover:border-[#06b6d4] hover:bg-[#1b222d]'
                     : 'border-[#2c333f] hover:border-[#6d7580] hover:bg-[#1b222d]'
                 }`}
               >
                 <div>
                   <div className="flex items-baseline justify-between mb-2">
-                    <span className="font-display font-black text-3xl sm:text-4xl text-[#b5502f] leading-none">
+                    <span
+                      className={`font-display font-black text-3xl sm:text-4xl leading-none ${
+                        isCycling ? 'text-[#06b6d4]' : 'text-[#b5502f]'
+                      }`}
+                    >
                       {m.since}
                     </span>
-                    <span className="text-[11px] uppercase tracking-wider px-2 py-0.5 rounded-full border border-[#a86526] text-[#e28b37] bg-[#242c38] font-bold">
-                      {m.prov.toUpperCase()}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {isCycling ? (
+                        <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full border border-[#06b6d4]/40 text-[#06b6d4] bg-[#06b6d4]/10 font-bold flex items-center gap-1">
+                          <Bike className="w-3 h-3" />
+                          Cycling
+                        </span>
+                      ) : (
+                        <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full border border-[#e28b37]/30 text-[#e28b37] bg-[#e28b37]/10 font-bold">
+                          Running
+                        </span>
+                      )}
+                      <span className="text-[11px] uppercase tracking-wider px-2 py-0.5 rounded-full border border-[#a86526] text-[#e28b37] bg-[#242c38] font-bold">
+                        {m.prov.toUpperCase()}
+                      </span>
+                    </div>
                   </div>
 
                   <h4 className="text-base sm:text-lg font-bold text-[#f5efe3] mb-2 leading-snug">
@@ -402,7 +476,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 </div>
 
                 <div className="pt-3 border-t border-[#2c333f]/70 flex flex-wrap gap-1.5 items-center justify-between text-xs">
-                  <span className="font-bold text-[#d8b34a]">{m.dist}</span>
+                  <span className={`font-bold ${isCycling ? 'text-[#06b6d4]' : 'text-[#d8b34a]'}`}>
+                    {m.dist}
+                  </span>
                   <span className="text-[#6d7580]">{m.when}</span>
                 </div>
               </div>
@@ -445,10 +521,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <ElevationProfile
                 route={selectedMajor.route}
                 raceName={selectedMajor.name}
+                city={selectedMajor.city}
                 prov={selectedMajor.prov}
                 discipline={selectedMajor.discipline}
                 organiser={selectedMajor.organiser}
                 site={selectedMajor.site}
+                raceDate={selectedMajor.when}
                 idPrefix="major-profile"
               />
             )}

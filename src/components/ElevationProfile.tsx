@@ -3,6 +3,8 @@ import { RouteProfile } from '../types';
 import { getEnrichedRaceRoute, generateGPX, downloadFile } from '../utils/routeData';
 import { RouteMap } from './RouteMap';
 import { WatchSyncModal, WatchBrand } from './WatchSyncModal';
+import { InteractiveElevationChart } from './InteractiveElevationChart';
+import { RaceWeatherForecast } from './RaceWeatherForecast';
 import {
   ExternalLink,
   Compass,
@@ -17,6 +19,8 @@ import {
   ShieldCheck,
   Flame,
   Info,
+  BarChart2,
+  CloudSun,
 } from 'lucide-react';
 
 interface ElevationProfileProps {
@@ -28,6 +32,7 @@ interface ElevationProfileProps {
   discipline?: string;
   organiser?: string;
   site?: string;
+  raceDate?: string;
   idPrefix?: string;
 }
 
@@ -40,9 +45,11 @@ export const ElevationProfile: React.FC<ElevationProfileProps> = ({
   discipline = 'road',
   organiser,
   site,
+  raceDate = '',
   idPrefix = 'elevation',
 }) => {
-  const [viewMode, setViewMode] = useState<'both' | 'elevation' | 'map' | 'cues'>('both');
+  const [viewMode, setViewMode] = useState<'both' | 'elevation' | 'map' | 'cues' | 'weather'>('both');
+  const [chartDisplayMode, setChartDisplayMode] = useState<'interactive' | 'classic'>('interactive');
   const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null);
   const [isWatchModalOpen, setIsWatchModalOpen] = useState<boolean>(false);
   const [selectedWatchBrand, setSelectedWatchBrand] = useState<WatchBrand>('garmin');
@@ -320,6 +327,17 @@ export const ElevationProfile: React.FC<ElevationProfileProps> = ({
           >
             Course Cues ({waypoints.length})
           </button>
+          <button
+            onClick={() => setViewMode('weather')}
+            className={`px-3 py-1 text-xs font-semibold rounded-xs transition-colors cursor-pointer flex items-center gap-1.5 ${
+              viewMode === 'weather'
+                ? 'bg-[#e28b37] text-[#1b1103]'
+                : 'text-[#9aa1ac] hover:text-[#f5efe3]'
+            }`}
+          >
+            <CloudSun className="w-3.5 h-3.5" />
+            <span>5-Day Weather</span>
+          </button>
         </div>
 
         <div className="text-[11px] text-[#6d7580] hidden sm:flex items-center gap-1">
@@ -356,7 +374,7 @@ export const ElevationProfile: React.FC<ElevationProfileProps> = ({
         {/* Split or Elevation View */}
         {(viewMode === 'both' || viewMode === 'elevation') && (
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-2">
                 <span className="text-[11px] uppercase tracking-wider font-bold text-[#d8b34a] flex items-center gap-1.5">
                   <Mountain className="w-3.5 h-3.5 text-[#e28b37]" />
@@ -370,169 +388,216 @@ export const ElevationProfile: React.FC<ElevationProfileProps> = ({
                 )}
               </div>
 
-              <span className="text-[10px] text-[#6d7580]">
-                Range: {minEle}m — {maxEle}m ASL
-              </span>
+              {/* View Switcher: Interactive DataVis vs Compact SVG */}
+              <div className="flex items-center gap-1.5 bg-[#12151b] p-0.5 rounded-xs border border-[#2c333f]">
+                <button
+                  type="button"
+                  onClick={() => setChartDisplayMode('interactive')}
+                  className={`text-[10.5px] px-2.5 py-1 rounded-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 ${
+                    chartDisplayMode === 'interactive'
+                      ? 'bg-[#e28b37] text-[#1b1103] font-bold'
+                      : 'text-[#9aa1ac] hover:text-[#f5efe3]'
+                  }`}
+                >
+                  <BarChart2 className="w-3 h-3" />
+                  <span>Interactive Recharts</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setChartDisplayMode('classic')}
+                  className={`text-[10.5px] px-2.5 py-1 rounded-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 ${
+                    chartDisplayMode === 'classic'
+                      ? 'bg-[#e28b37] text-[#1b1103] font-bold'
+                      : 'text-[#9aa1ac] hover:text-[#f5efe3]'
+                  }`}
+                >
+                  <Layers className="w-3 h-3" />
+                  <span>Compact Vector</span>
+                </button>
+              </div>
             </div>
 
-            {/* SVG Elevation Profile Chart */}
-            <div
-              id={`${idPrefix}-chart-container`}
-              className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs p-3 overflow-hidden relative select-none"
-            >
-              <svg
-                viewBox={`0 0 ${w} ${h}`}
-                className="w-full h-auto block cursor-crosshair"
-                onMouseMove={handleChartMouseMove}
-                onMouseLeave={() => setHoveredPointIndex(null)}
-                role="img"
-                aria-label={`${raceName} elevation profile chart`}
+            {/* Render Interactive Recharts Chart or Classic SVG */}
+            {chartDisplayMode === 'interactive' ? (
+              <InteractiveElevationChart
+                data={detailedElevation}
+                waypoints={waypoints}
+                totalDistanceKm={enriched.distanceKm}
+                minElevationM={enriched.minEleM}
+                maxElevationM={enriched.maxEleM}
+                totalAscentM={enriched.totalAscentM}
+                totalDescentM={enriched.totalDescentM}
+                discipline={discipline}
+                raceName={raceName}
+                onHoverPoint={(pt) => {
+                  if (pt) {
+                    setHoveredPointIndex(pt.index);
+                  } else {
+                    setHoveredPointIndex(null);
+                  }
+                }}
+                idPrefix={idPrefix}
+              />
+            ) : (
+              /* SVG Elevation Profile Chart */
+              <div
+                id={`${idPrefix}-chart-container`}
+                className="w-full bg-[#12151b] border border-[#2c333f] rounded-xs p-3 overflow-hidden relative select-none"
               >
-                <defs>
-                  <linearGradient id={`${idPrefix}-chart-grad`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#e28b37" stopOpacity="0.45" />
-                    <stop offset="60%" stopColor="#e28b37" stopOpacity="0.12" />
-                    <stop offset="100%" stopColor="#e28b37" stopOpacity="0.01" />
-                  </linearGradient>
-                </defs>
-
-                {/* Horizontal Grid lines */}
-                {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
-                  const yVal = padTop + chartH * (1 - ratio);
-                  const eleVal = Math.round(minEle + ratio * eleRange);
-                  return (
-                    <g key={ratio}>
-                      <line
-                        x1={padLeft}
-                        y1={yVal}
-                        x2={w - padRight}
-                        y2={yVal}
-                        stroke="#242c38"
-                        strokeWidth="1"
-                        strokeDasharray="2 3"
-                      />
-                      <text
-                        x={padLeft - 6}
-                        y={yVal + 3}
-                        fontSize="8.5"
-                        fill="#6d7580"
-                        textAnchor="end"
-                        fontFamily="'Work Sans', sans-serif"
-                      >
-                        {eleVal}m
-                      </text>
-                    </g>
-                  );
-                })}
-
-                {/* Vertical distance grid lines */}
-                {[0.25, 0.5, 0.75, 1].map((ratio) => {
-                  const xVal = padLeft + chartW * ratio;
-                  const kmVal = Math.round(totalDist * ratio);
-                  return (
-                    <g key={ratio}>
-                      <line
-                        x1={xVal}
-                        y1={padTop}
-                        x2={xVal}
-                        y2={padTop + chartH}
-                        stroke="#242c38"
-                        strokeWidth="1"
-                        strokeDasharray="2 3"
-                      />
-                      <text
-                        x={xVal}
-                        y={h - 8}
-                        fontSize="9"
-                        fill="#6d7580"
-                        textAnchor="middle"
-                        fontFamily="'Work Sans', sans-serif"
-                      >
-                        {kmVal} km
-                      </text>
-                    </g>
-                  );
-                })}
-
-                {/* Start km label */}
-                <text
-                  x={padLeft}
-                  y={h - 8}
-                  fontSize="9"
-                  fill="#6d7580"
-                  textAnchor="start"
-                  fontFamily="'Work Sans', sans-serif"
+                <svg
+                  viewBox={`0 0 ${w} ${h}`}
+                  className="w-full h-auto block cursor-crosshair"
+                  onMouseMove={handleChartMouseMove}
+                  onMouseLeave={() => setHoveredPointIndex(null)}
+                  role="img"
+                  aria-label={`${raceName} elevation profile chart`}
                 >
-                  0 km
-                </text>
+                  <defs>
+                    <linearGradient id={`${idPrefix}-chart-grad`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#e28b37" stopOpacity="0.45" />
+                      <stop offset="60%" stopColor="#e28b37" stopOpacity="0.12" />
+                      <stop offset="100%" stopColor="#e28b37" stopOpacity="0.01" />
+                    </linearGradient>
+                  </defs>
 
-                {/* Area under curve */}
-                <path d={areaD} fill={`url(#${idPrefix}-chart-grad)`} />
-
-                {/* Main elevation line */}
-                <path
-                  d={pathD}
-                  fill="none"
-                  stroke="#e28b37"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-
-                {/* Waypoint markers on curve */}
-                {svgPoints.map((p, i) => {
-                  if (p.label && (i === 0 || i === svgPoints.length - 1 || p.grade! > 5 || p.grade! < -5)) {
+                  {/* Horizontal Grid lines */}
+                  {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+                    const yVal = padTop + chartH * (1 - ratio);
+                    const eleVal = Math.round(minEle + ratio * eleRange);
                     return (
-                      <g key={`pt-${i}`}>
-                        <circle
-                          cx={p.x}
-                          cy={p.y}
-                          r="4"
-                          fill="#d8b34a"
-                          stroke="#12151b"
-                          strokeWidth="2"
+                      <g key={ratio}>
+                        <line
+                          x1={padLeft}
+                          y1={yVal}
+                          x2={w - padRight}
+                          y2={yVal}
+                          stroke="#242c38"
+                          strokeWidth="1"
+                          strokeDasharray="2 3"
                         />
                         <text
-                          x={p.x}
-                          y={p.y - 8}
-                          fontSize="8"
-                          fontWeight="700"
-                          fill="#f5efe3"
-                          textAnchor={i === 0 ? 'start' : i === svgPoints.length - 1 ? 'end' : 'middle'}
+                          x={padLeft - 6}
+                          y={yVal + 3}
+                          fontSize="8.5"
+                          fill="#6d7580"
+                          textAnchor="end"
                           fontFamily="'Work Sans', sans-serif"
                         >
-                          {p.label}
+                          {eleVal}m
                         </text>
                       </g>
                     );
-                  }
-                  return null;
-                })}
+                  })}
 
-                {/* Active Hover vertical line & circle */}
-                {activePt && (
-                  <g>
-                    <line
-                      x1={activePt.x}
-                      y1={padTop}
-                      x2={activePt.x}
-                      y2={padTop + chartH}
-                      stroke="#f5efe3"
-                      strokeWidth="1.5"
-                      strokeDasharray="3 3"
-                    />
-                    <circle
-                      cx={activePt.x}
-                      cy={activePt.y}
-                      r="6"
-                      fill="#e28b37"
-                      stroke="#f5efe3"
-                      strokeWidth="2"
-                    />
-                  </g>
-                )}
-              </svg>
-            </div>
+                  {/* Vertical distance grid lines */}
+                  {[0.25, 0.5, 0.75, 1].map((ratio) => {
+                    const xVal = padLeft + chartW * ratio;
+                    const kmVal = Math.round(totalDist * ratio);
+                    return (
+                      <g key={ratio}>
+                        <line
+                          x1={xVal}
+                          y1={padTop}
+                          x2={xVal}
+                          y2={padTop + chartH}
+                          stroke="#242c38"
+                          strokeWidth="1"
+                          strokeDasharray="2 3"
+                        />
+                        <text
+                          x={xVal}
+                          y={h - 8}
+                          fontSize="9"
+                          fill="#6d7580"
+                          textAnchor="middle"
+                          fontFamily="'Work Sans', sans-serif"
+                        >
+                          {kmVal} km
+                        </text>
+                      </g>
+                    );
+                  })}
+
+                  {/* Start km label */}
+                  <text
+                    x={padLeft}
+                    y={h - 8}
+                    fontSize="9"
+                    fill="#6d7580"
+                    textAnchor="start"
+                    fontFamily="'Work Sans', sans-serif"
+                  >
+                    0 km
+                  </text>
+
+                  {/* Area under curve */}
+                  <path d={areaD} fill={`url(#${idPrefix}-chart-grad)`} />
+
+                  {/* Main elevation line */}
+                  <path
+                    d={pathD}
+                    fill="none"
+                    stroke="#e28b37"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+
+                  {/* Waypoint markers on curve */}
+                  {svgPoints.map((p, i) => {
+                    if (p.label && (i === 0 || i === svgPoints.length - 1 || (p.grade && (p.grade > 5 || p.grade < -5)))) {
+                      return (
+                        <g key={`pt-${i}`}>
+                          <circle
+                            cx={p.x}
+                            cy={p.y}
+                            r="4"
+                            fill="#d8b34a"
+                            stroke="#12151b"
+                            strokeWidth="2"
+                          />
+                          <text
+                            x={p.x}
+                            y={p.y - 8}
+                            fontSize="8"
+                            fontWeight="700"
+                            fill="#f5efe3"
+                            textAnchor={i === 0 ? 'start' : i === svgPoints.length - 1 ? 'end' : 'middle'}
+                            fontFamily="'Work Sans', sans-serif"
+                          >
+                            {p.label}
+                          </text>
+                        </g>
+                      );
+                    }
+                    return null;
+                  })}
+
+                  {/* Active Hover vertical line & circle */}
+                  {activePt && (
+                    <g>
+                      <line
+                        x1={activePt.x}
+                        y1={padTop}
+                        x2={activePt.x}
+                        y2={padTop + chartH}
+                        stroke="#f5efe3"
+                        strokeWidth="1.5"
+                        strokeDasharray="3 3"
+                      />
+                      <circle
+                        cx={activePt.x}
+                        cy={activePt.y}
+                        r="6"
+                        fill="#e28b37"
+                        stroke="#f5efe3"
+                        strokeWidth="2"
+                      />
+                    </g>
+                  )}
+                </svg>
+              </div>
+            )}
 
             {/* Profile Note */}
             {route.note && (
@@ -561,45 +626,67 @@ export const ElevationProfile: React.FC<ElevationProfileProps> = ({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
-              {waypoints.map((wp, idx) => (
-                <div
-                  key={idx}
-                  className="bg-[#171c24] border border-[#2c333f] p-2.5 rounded-xs flex items-start justify-between text-xs"
-                >
-                  <div className="flex items-start gap-2 min-w-0 pr-2">
-                    <span className="text-sm shrink-0 mt-0.5">
-                      {wp.type === 'start'
-                        ? '🏁'
-                        : wp.type === 'finish'
-                        ? '🏆'
-                        : wp.type === 'water'
-                        ? '💧'
-                        : wp.type === 'climb'
-                        ? '⛰️'
-                        : wp.type === 'cutoff'
-                        ? '⏱️'
-                        : '📍'}
-                    </span>
-                    <div className="truncate">
-                      <b className="text-[#f5efe3] block truncate">{wp.name}</b>
-                      <span className="text-[11px] text-[#9aa1ac]">
-                        Km {wp.km} · Altitude: <b>{wp.ele}m ASL</b>
+              {waypoints.map((wp, idx) => {
+                const isSelected =
+                  activePt && Math.abs(activePt.km - wp.km) < 1.0;
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      // Find nearest elevation point index
+                      let closestIdx = 0;
+                      let minD = Infinity;
+                      svgPoints.forEach((p, i) => {
+                        const diff = Math.abs(p.km - wp.km);
+                        if (diff < minD) {
+                          minD = diff;
+                          closestIdx = i;
+                        }
+                      });
+                      setHoveredPointIndex(closestIdx);
+                    }}
+                    className={`border p-2.5 rounded-xs flex items-start justify-between text-xs cursor-pointer transition-all ${
+                      isSelected
+                        ? 'bg-[#221c17] border-[#e28b37] ring-1 ring-[#e28b37]'
+                        : 'bg-[#171c24] border-[#2c333f] hover:border-[#6d7580] hover:bg-[#1c222c]'
+                    }`}
+                    title="Click to locate on interactive elevation chart & geospatial map"
+                  >
+                    <div className="flex items-start gap-2 min-w-0 pr-2">
+                      <span className="text-sm shrink-0 mt-0.5">
+                        {wp.type === 'start'
+                          ? '🏁'
+                          : wp.type === 'finish'
+                          ? '🏆'
+                          : wp.type === 'water'
+                          ? '💧'
+                          : wp.type === 'climb'
+                          ? '⛰️'
+                          : wp.type === 'cutoff'
+                          ? '⏱️'
+                          : '📍'}
                       </span>
-                      {wp.notes && (
-                        <span className="text-[10px] text-[#6d7580] block truncate mt-0.5">
-                          {wp.notes}
+                      <div className="truncate">
+                        <b className="text-[#f5efe3] block truncate">{wp.name}</b>
+                        <span className="text-[11px] text-[#9aa1ac]">
+                          Km {wp.km} · Altitude: <b className="text-[#d8b34a]">{wp.ele}m ASL</b>
                         </span>
-                      )}
+                        {wp.notes && (
+                          <span className="text-[10px] text-[#6d7580] block truncate mt-0.5">
+                            {wp.notes}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
-                  {wp.cutoffTime && (
-                    <span className="text-[9.5px] uppercase font-bold text-[#b5502f] bg-[#b5502f]/15 border border-[#b5502f]/30 px-1.5 py-0.5 rounded-xs shrink-0">
-                      {wp.cutoffTime}
-                    </span>
-                  )}
-                </div>
-              ))}
+                    {wp.cutoffTime && (
+                      <span className="text-[9.5px] uppercase font-bold text-[#b5502f] bg-[#b5502f]/15 border border-[#b5502f]/30 px-1.5 py-0.5 rounded-xs shrink-0">
+                        {wp.cutoffTime}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             {/* Course Directions */}
@@ -615,6 +702,22 @@ export const ElevationProfile: React.FC<ElevationProfileProps> = ({
                 </ul>
               </div>
             )}
+          </div>
+        )}
+
+        {/* 5-Day Open-Meteo Weather Forecast */}
+        {(viewMode === 'both' || viewMode === 'weather') && (
+          <div id={`${idPrefix}-weather-section`} className="w-full">
+            <RaceWeatherForecast
+              raceName={raceName}
+              city={city}
+              province={prov}
+              latitude={coordinates[0]?.[0]}
+              longitude={coordinates[0]?.[1]}
+              raceDate={raceDate}
+              discipline={discipline}
+              idPrefix={`${idPrefix}-forecast`}
+            />
           </div>
         )}
       </div>
