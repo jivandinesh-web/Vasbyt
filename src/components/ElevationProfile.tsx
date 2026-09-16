@@ -34,6 +34,7 @@ interface ElevationProfileProps {
   site?: string;
   raceDate?: string;
   idPrefix?: string;
+  initialViewMode?: 'both' | 'elevation' | 'map' | 'cues' | 'weather';
 }
 
 export const ElevationProfile: React.FC<ElevationProfileProps> = ({
@@ -47,8 +48,17 @@ export const ElevationProfile: React.FC<ElevationProfileProps> = ({
   site,
   raceDate = '',
   idPrefix = 'elevation',
+  initialViewMode = 'both',
 }) => {
-  const [viewMode, setViewMode] = useState<'both' | 'elevation' | 'map' | 'cues' | 'weather'>('both');
+  const [viewMode, setViewMode] = useState<'both' | 'elevation' | 'map' | 'cues' | 'weather'>(
+    initialViewMode
+  );
+
+  React.useEffect(() => {
+    if (initialViewMode) {
+      setViewMode(initialViewMode);
+    }
+  }, [initialViewMode]);
   const [chartDisplayMode, setChartDisplayMode] = useState<'interactive' | 'classic'>('interactive');
   const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null);
   const [isWatchModalOpen, setIsWatchModalOpen] = useState<boolean>(false);

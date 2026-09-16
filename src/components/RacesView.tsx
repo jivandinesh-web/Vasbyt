@@ -69,6 +69,7 @@ export const RacesView: React.FC<RacesViewProps> = ({
   const [sourceFilter, setSourceFilter] = useState<'all' | 'official' | 'community'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedRaceKey, setExpandedRaceKey] = useState<string | null>(null);
+  const [expandedRaceTab, setExpandedRaceTab] = useState<Record<string, 'both' | 'elevation' | 'map' | 'cues' | 'weather'>>({});
   const [syncModalRace, setSyncModalRace] = useState<any | null>(null);
   const [isAddRaceOpen, setIsAddRaceOpen] = useState(false);
 
@@ -547,9 +548,8 @@ export const RacesView: React.FC<RacesViewProps> = ({
                       id={`weather-btn-${r.name.replace(/\s+/g, '-').toLowerCase()}`}
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (!isOpen) {
-                          toggleRaceExpand(key);
-                        }
+                        setExpandedRaceTab((prev) => ({ ...prev, [key]: 'weather' }));
+                        setExpandedRaceKey(key);
                       }}
                       title="5-day Open-Meteo atmospheric forecast for this race"
                       className="inline-flex items-center gap-1.5 bg-[#242c38] hover:bg-[#12161f] text-[#f5efe3] hover:text-[#d8b34a] border border-[#2c333f] hover:border-[#d8b34a]/50 px-2.5 py-1.5 rounded-xs text-xs font-semibold transition-all cursor-pointer group"
@@ -627,6 +627,7 @@ export const RacesView: React.FC<RacesViewProps> = ({
                       site={r.site}
                       raceDate={r.date}
                       idPrefix={`race-${r.name.replace(/\s+/g, '-').toLowerCase()}`}
+                      initialViewMode={expandedRaceTab[key] || 'both'}
                     />
                   </div>
                 )}
