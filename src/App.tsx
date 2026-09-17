@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { TabType, UserProfile, UserFavorites, CommunityRaceSubmission } from './types';
+import { TabType, UserProfile, UserFavorites, CommunityRaceSubmission, Race } from './types';
 import { TopBar } from './components/TopBar';
 import { TabBar } from './components/TabBar';
 import { HomeView } from './components/HomeView';
@@ -11,11 +11,17 @@ import { HowToModal } from './components/HowToModal';
 import { SitemapModal } from './components/SitemapModal';
 import { PrivacyPolicyModal } from './components/PrivacyPolicyModal';
 import { NeumorphicLoginModal } from './components/NeumorphicLoginModal';
+import { AdminPortalView } from './components/AdminPortalView';
+import { WatchSyncModal } from './components/WatchSyncModal';
+import { getEnrichedRaceRoute } from './utils/routeData';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { Shield } from 'lucide-react';
 import {
   subscribeToCommunityRaces,
   createCommunityRace,
   deleteCommunityRace,
+  saveOrUpdateRace,
   StoredCommunityRace,
 } from './services/communityRaces';
 
@@ -53,7 +59,7 @@ function AppLayout({
   onToggleRaceFavorite,
   onToggleClubFavorite,
 }: AppLayoutProps) {
-  const { user, isLoginModalOpen, closeLoginModal } = useAuth();
+  const { user, isAdmin, isLoginModalOpen, closeLoginModal } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [selectedProvinceId, setSelectedProvinceId] = useState<string | null>(null);
   const [raceFilterProv, setRaceFilterProv] = useState<string>('all');
@@ -62,6 +68,7 @@ function AppLayout({
   const [isHowToOpen, setIsHowToOpen] = useState<boolean>(false);
   const [isSitemapOpen, setIsSitemapOpen] = useState<boolean>(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState<boolean>(false);
+  const [syncModalRace, setSyncModalRace] = useState<Race | null>(null);
 
   // Live community races synced from Firestore and local cache
   const [communityRaces, setCommunityRaces] = useState<StoredCommunityRace[]>([]);
@@ -74,18 +81,47 @@ function AppLayout({
   }, []);
 
   const handleAddRace = async (submission: CommunityRaceSubmission) => {
-    await createCommunityRace(submission, user);
+    const newRecord = await createCommunityRace(submission, user);
+    // Optimistically update community races immediately so it appears on the calendar instantly
+    setCommunityRaces((prev) => {
+      const filtered = prev.filter((r) => r.id !== newRecord.id);
+      const updated = [newRecord, ...filtered];
+      updated.sort((a, b) => a.date.localeCompare(b.date));
+      return updated;
+    });
+    // Automatically switch to the race calendar tab and clear restrictive filters
+    setRaceFilterProv('all');
+    setRaceFilterDiscipline('all');
+    setActiveTab('races');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDeleteCommunityRace = async (raceId: string) => {
     await deleteCommunityRace(raceId, user);
+    setCommunityRaces((prev) => prev.filter((r) => r.id !== raceId));
+  };
+
+  const handleUpdateRace = async (submission: CommunityRaceSubmission, originalRace: Race) => {
+    const updatedRecord = await saveOrUpdateRace(submission, originalRace, user);
+    setCommunityRaces((prev) => {
+      const filtered = prev.filter((r) => r.id !== updatedRecord.id);
+      const updated = [updatedRecord, ...filtered];
+      updated.sort((a, b) => a.date.localeCompare(b.date));
+      return updated;
+    });
   };
 
   // Navigation callbacks
   const handleHomeSelectProvince = (provId: string) => {
-    setSelectedProvinceId(provId);
-    setActiveTab('provinces');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    handleNavigateToRaces(provId);
+  };
+
+  const handleSelectProvinceId = (provId: string | null) => {
+    if (provId) {
+      handleNavigateToRaces(provId);
+    } else {
+      setSelectedProvinceId(null);
+    }
   };
 
   const handleNavigateToRaces = (provId: string, disc?: string) => {
@@ -139,15 +175,19 @@ function AppLayout({
             onSelectRaceTab={handleHomeSelectRaceTab}
             onOpenHowTo={() => setIsHowToOpen(true)}
             communityRaces={communityRaces}
+            favorites={favorites.races}
+            onToggleFavorite={onToggleRaceFavorite}
+            onOpenSyncModal={setSyncModalRace}
           />
         )}
 
         {activeTab === 'provinces' && (
           <ProvincesView
             selectedProvinceId={selectedProvinceId}
-            onSelectProvinceId={setSelectedProvinceId}
+            onSelectProvinceId={handleSelectProvinceId}
             onNavigateToRaces={handleNavigateToRaces}
             onNavigateToClubs={handleNavigateToClubs}
+            communityRaces={communityRaces}
           />
         )}
 
@@ -182,21 +222,31 @@ function AppLayout({
             onToggleRaceFavorite={onToggleRaceFavorite}
             onToggleClubFavorite={onToggleClubFavorite}
             communityRaces={communityRaces}
+            onDeleteCommunityRace={isAdmin ? handleDeleteCommunityRace : undefined}
+          />
+        )}
+
+        {activeTab === 'admin' && (
+          <AdminPortalView
+            communityRaces={communityRaces}
+            onAddRace={handleAddRace}
+            onUpdateRace={handleUpdateRace}
             onDeleteCommunityRace={handleDeleteCommunityRace}
+            onNavigateTab={handleTabSwitch}
           />
         )}
       </main>
 
-      {/* Desktop Footer with HOW TO action link */}
-      <footer id="app-footer" className="hidden md:block border-t border-[#2c333f]/70 bg-[#12151b] py-6 text-center text-xs text-[#6d7580]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+      {/* Global Application Footer with Admin Portal, Privacy Policy & Sitemap */}
+      <footer id="app-footer" className="border-t border-[#2c333f]/70 bg-[#12151b] py-6 text-center text-xs text-[#6d7580]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="font-display font-black tracking-wider text-[#f5efe3] text-sm mr-1">
               VAS<span className="text-[#e28b37]">BYT</span>
             </span>
             <span>South Africa&apos;s Road, Trail, Walking, Hiking &amp; Trekking Fixture Guide</span>
           </div>
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[11px] text-[#6d7580]">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[11px] text-[#6d7580]">
             <button
               id="footer-privacy-btn"
               onClick={() => setIsPrivacyOpen(true)}
@@ -213,7 +263,19 @@ function AppLayout({
               XML Sitemap
             </button>
             <span>•</span>
-            <span>Athletics South Africa (ASA) Provincial Calendars</span>
+            <button
+              id="footer-admin-portal-btn"
+              onClick={() => handleTabSwitch('admin')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer shadow-sm ${
+                activeTab === 'admin'
+                  ? 'bg-[#d8b34a] text-[#12151b] border-[#d8b34a]'
+                  : 'bg-[#171c24] text-[#d8b34a] border-[#d8b34a]/40 hover:border-[#d8b34a] hover:bg-[#d8b34a]/10'
+              }`}
+              title="Access the Administrator Race Fixture Management Portal"
+            >
+              <Shield className="w-3.5 h-3.5" />
+              <span>Admin Portal</span>
+            </button>
           </div>
         </div>
       </footer>
@@ -256,6 +318,24 @@ function AppLayout({
         isOpen={isLoginModalOpen}
         onClose={closeLoginModal}
       />
+
+      {/* Global Watch Sync Modal (for Dashboard target countdown & fixtures) */}
+      {syncModalRace && (
+        <WatchSyncModal
+          raceName={syncModalRace.name}
+          route={getEnrichedRaceRoute(
+            syncModalRace.name,
+            syncModalRace.city,
+            syncModalRace.prov,
+            syncModalRace.route,
+            syncModalRace.dist[0],
+            syncModalRace.discipline
+          )}
+          isOpen={true}
+          onClose={() => setSyncModalRace(null)}
+          defaultBrand="garmin"
+        />
+      )}
     </div>
   );
 }
@@ -338,18 +418,20 @@ export default function App() {
   };
 
   return (
-    <AuthProvider
-      currentLocalProfile={profile}
-      currentLocalFavorites={favorites}
-      onProfileSyncedFromCloud={handleProfileSyncedFromCloud}
-    >
-      <AppLayout
-        profile={profile}
-        favorites={favorites}
-        onSaveProfile={handleSaveProfile}
-        onToggleRaceFavorite={handleToggleRaceFavorite}
-        onToggleClubFavorite={handleToggleClubFavorite}
-      />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider
+        currentLocalProfile={profile}
+        currentLocalFavorites={favorites}
+        onProfileSyncedFromCloud={handleProfileSyncedFromCloud}
+      >
+        <AppLayout
+          profile={profile}
+          favorites={favorites}
+          onSaveProfile={handleSaveProfile}
+          onToggleRaceFavorite={handleToggleRaceFavorite}
+          onToggleClubFavorite={handleToggleClubFavorite}
+        />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

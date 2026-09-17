@@ -7,11 +7,18 @@ import {
   DIST_LABEL,
   daysUntil,
   formatRaceDate,
+  RUNNING_SERIES_LIST,
 } from '../data/runningData';
-import { MajorRace, Discipline } from '../types';
+import { MajorRace, Discipline, Race } from '../types';
 import { ElevationProfile } from './ElevationProfile';
 import { NeumorphicButton } from './NeumorphicButton';
-import { StoredCommunityRace, transformCommunityRaceToRace } from '../services/communityRaces';
+import { FavoritedRacesCountdown } from './FavoritedRacesCountdown';
+import {
+  StoredCommunityRace,
+  transformCommunityRaceToRace,
+  getRaceDeduplicationKey,
+  mergeRacesWithOverrides,
+} from '../services/communityRaces';
 import {
   Calendar,
   ArrowRight,
@@ -21,6 +28,7 @@ import {
   ChevronRight,
   X,
   HelpCircle,
+  BookOpen,
   Footprints,
   Trees,
   Tent,
@@ -28,6 +36,12 @@ import {
   Activity,
   Flag,
   Bike,
+  AlertTriangle,
+  CalendarX,
+  CloudRain,
+  RefreshCw,
+  Award,
+  Briefcase,
 } from 'lucide-react';
 
 interface HomeViewProps {
@@ -35,6 +49,9 @@ interface HomeViewProps {
   onSelectRaceTab: (disc?: string) => void;
   onOpenHowTo?: () => void;
   communityRaces?: StoredCommunityRace[];
+  favorites?: string[];
+  onToggleFavorite?: (raceName: string) => void;
+  onOpenSyncModal?: (race: Race) => void;
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({
@@ -42,14 +59,16 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onSelectRaceTab,
   onOpenHowTo,
   communityRaces = [],
+  favorites = [],
+  onToggleFavorite,
+  onOpenSyncModal,
 }) => {
   const [selectedMajor, setSelectedMajor] = useState<MajorRace | null>(null);
   const [majorsFilter, setMajorsFilter] = useState<'all' | 'running' | 'cycling'>('all');
 
-  // Compute all merged races for upcoming fixtures
+  // Compute all merged races for upcoming fixtures with strict deduplication
   const allRaces = useMemo(() => {
-    const customList = communityRaces.map(transformCommunityRaceToRace);
-    return [...customList, ...RACES];
+    return mergeRacesWithOverrides(communityRaces, RACES);
   }, [communityRaces]);
 
   // Compute next upcoming race
@@ -65,9 +84,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const handleMajorClick = (major: MajorRace) => {
     setSelectedMajor((prev) => (prev?.name === major.name ? null : major));
   };
-
-  const getRaceCount = (provId: string) => allRaces.filter((r) => r.prov === provId).length;
-  const getClubCount = (provId: string) => CLUBS.filter((c) => c.prov === provId).length;
 
   const disciplines = [
     {
@@ -181,10 +197,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   variant="default"
                   size="md"
                   onClick={onOpenHowTo}
-                  leftIcon={<HelpCircle className="w-4 h-4 text-[#d8b34a]" />}
-                  className="text-[#d8b34a] hover:text-[#f5efe3] border-[#d8b34a]/40"
+                  leftIcon={<BookOpen className="w-4 h-4 text-[#d8b34a]" />}
+                  className="text-[#d8b34a] hover:text-[#f5efe3] border-[#d8b34a]/40 group"
+                  title="How Vasbyt Works — Platform Guide & Features"
                 >
-                  How To Use Vasbyt
+                  <span>How Vasbyt Works</span>
+                  <span className="text-[10px] uppercase font-bold tracking-wider bg-[#d8b34a]/15 text-[#d8b34a] px-1.5 py-0.5 rounded-full border border-[#d8b34a]/30 ml-1">
+                    Guide
+                  </span>
                 </NeumorphicButton>
               )}
             </div>
@@ -193,7 +213,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <div id="hero-stats" className="flex flex-wrap gap-6 sm:gap-8 pt-4 border-t border-[#2c333f]/70">
               <div>
                 <b className="font-display text-3xl sm:text-4xl text-[#d8b34a] leading-none block">
-                  6
+                  7
                 </b>
                 <span className="text-[11px] text-[#6d7580] uppercase tracking-wider block mt-1 font-semibold">
                   Disciplines
@@ -264,16 +284,56 @@ export const HomeView: React.FC<HomeViewProps> = ({
                       Days to Start
                     </span>
                     <span className="text-xs text-[#6d7580]">
-                      {formatRaceDate(nextRace.date).day} {formatRaceDate(nextRace.date).mon} 2026
+                      {formatRaceDate(nextRace.date).day} {formatRaceDate(nextRace.date).mon} {formatRaceDate(nextRace.date).year}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
                   <h3 className="text-xl sm:text-2xl font-bold text-[#f5efe3] group-hover:text-[#e28b37] transition-colors leading-tight">
                     {nextRace.name}
                   </h3>
+
+                  {nextRace.status === 'cancelled' && (
+                    <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 inline-flex items-center gap-1">
+                      <AlertTriangle className="w-3 h-3" />
+                      Cancelled
+                    </span>
+                  )}
+                  {nextRace.status === 'postponed' && (
+                    <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 inline-flex items-center gap-1">
+                      <CalendarX className="w-3 h-3" />
+                      Postponed
+                    </span>
+                  )}
+                  {nextRace.status === 'weather_delay' && (
+                    <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded bg-orange-500/20 text-orange-300 border border-orange-500/40 inline-flex items-center gap-1">
+                      <CloudRain className="w-3 h-3" />
+                      Weather Delay
+                    </span>
+                  )}
+                  {nextRace.status === 'rescheduled' && (
+                    <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/40 inline-flex items-center gap-1">
+                      <RefreshCw className="w-3 h-3" />
+                      Rescheduled
+                    </span>
+                  )}
                 </div>
+
+                {nextRace.status && nextRace.status !== 'scheduled' && nextRace.statusNotice && (
+                  <div className="mb-3 p-2 rounded-xs bg-[#12151b] border border-[#2c333f] text-xs">
+                    <p className="text-[#e28b37] font-semibold flex items-center gap-1">
+                      <AlertTriangle className="w-3 h-3 shrink-0" />
+                      <span>Advisory:</span>
+                    </p>
+                    <p className="text-[#9aa1ac] mt-0.5">{nextRace.statusNotice}</p>
+                    {nextRace.newDate && (
+                      <p className="text-[11px] text-[#d8b34a] mt-1 font-mono">
+                        Target Date: <b>{nextRace.newDate}</b>
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 <p className="text-xs sm:text-sm text-[#9aa1ac] flex items-center gap-1.5 mb-3">
                   <MapPin className="w-3.5 h-3.5 text-[#e28b37] shrink-0" />
@@ -310,6 +370,21 @@ export const HomeView: React.FC<HomeViewProps> = ({
           )}
         </div>
       </div>
+
+      {/* Favorited Races Live Countdown Tracker */}
+      <FavoritedRacesCountdown
+        favorites={favorites}
+        allRaces={allRaces}
+        onToggleFavorite={onToggleFavorite || (() => {})}
+        onNavigateToRaces={(prov, disc) => {
+          if (prov && prov !== 'all') {
+            onSelectProvince(prov);
+          } else {
+            onSelectRaceTab(disc);
+          }
+        }}
+        onOpenSyncModal={onOpenSyncModal}
+      />
 
       {/* 7 Disciplines of Sport Showcase */}
       <div id="home-disciplines-section" className="space-y-3">
@@ -534,53 +609,86 @@ export const HomeView: React.FC<HomeViewProps> = ({
         )}
       </div>
 
-      {/* Nine Provinces, One Long Road */}
-      <div id="home-provinces-section">
-        <div className="flex items-center justify-between mb-4">
+      {/* 14 Signature Corporate & Popular Running Series */}
+      <div id="home-series-section" className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h2 className="text-xs uppercase tracking-widest text-[#6d7580] font-bold">
-              Provincial Federations
-            </h2>
+            <div className="flex items-center gap-1.5">
+              <Award className="w-4 h-4 text-[#d8b34a]" />
+              <h2 className="text-xs uppercase tracking-widest text-[#6d7580] font-bold">
+                Master Running Series &amp; Corporate Logistics
+              </h2>
+            </div>
             <h3 className="text-xl sm:text-2xl font-bold font-display uppercase tracking-wider text-[#f5efe3] mt-0.5">
-              Nine Provinces, One Long Road
+              Corporate Challenges &amp; Popular Series
             </h3>
           </div>
           <button
-            onClick={() => onSelectProvince('all')}
-            className="text-xs text-[#e28b37] hover:underline font-semibold"
+            onClick={() => onSelectRaceTab('all')}
+            className="text-xs text-[#e28b37] hover:underline font-semibold self-start sm:self-auto inline-flex items-center gap-1"
           >
-            Explore all provinces →
+            <span>View All Series on Race Calendar</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <div
-          id="home-prov-grid"
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4"
-        >
-          {PROVINCES.map((p) => (
-            <button
-              key={p.id}
-              id={`home-prov-${p.id}`}
-              onClick={() => onSelectProvince(p.id)}
-              className="bg-[#171c24] border border-[#2c333f] rounded-xs p-4 sm:p-5 text-left cursor-pointer hover:border-[#e28b37] hover:bg-[#201a14] transition-all group"
-            >
-              <div className="flex items-baseline justify-between mb-1.5">
-                <span className="font-display font-black text-3xl text-[#d8b34a] leading-none group-hover:text-[#e28b37] transition-colors">
-                  {p.ab}
-                </span>
-                <span className="text-[10px] text-[#6d7580] uppercase tracking-wider font-mono">
-                  ASA
-                </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {RUNNING_SERIES_LIST.map((seriesName) => {
+            const seriesRaces = allRaces.filter((r) => r.series === seriesName);
+            const isCorp = seriesRaces.some((r) => r.isCorporate);
+            const primaryDisc = seriesRaces[0]?.discipline || 'road';
+            const upcomingRaces = seriesRaces.filter((r) => daysUntil(r.date) >= 0);
+            const nextEvent = upcomingRaces[0] || seriesRaces[0];
+
+            return (
+              <div
+                key={seriesName}
+                className="bg-[#171c24] border border-[#2c333f] hover:border-[#d8b34a]/60 rounded-xs p-4 flex flex-col justify-between transition-all group"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span
+                      className={`inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border ${
+                        isCorp
+                          ? 'bg-sky-500/15 text-sky-300 border-sky-500/40'
+                          : 'bg-[#d8b34a]/15 text-[#d8b34a] border-[#d8b34a]/40'
+                      }`}
+                    >
+                      {isCorp ? <Briefcase className="w-3 h-3 text-sky-400" /> : <Award className="w-3 h-3 text-[#d8b34a]" />}
+                      {isCorp ? 'Corporate Challenge' : 'Signature Series'}
+                    </span>
+                    <span className="text-[11px] text-[#6d7580] font-mono capitalize">
+                      {primaryDisc} running
+                    </span>
+                  </div>
+
+                  <h4 className="font-bold text-sm sm:text-base text-[#f5efe3] group-hover:text-[#d8b34a] transition-colors leading-snug">
+                    {seriesName}
+                  </h4>
+
+                  {nextEvent && (
+                    <p className="text-xs text-[#9aa1ac] mt-2 line-clamp-2">
+                      <span className="text-[#6d7580]">Next: </span>
+                      <span className="text-[#f5efe3] font-medium">{nextEvent.name}</span> · {nextEvent.city}
+                    </p>
+                  )}
+                </div>
+
+                <div className="mt-3 pt-3 border-t border-[#2c333f]/70 flex items-center justify-between text-xs">
+                  <span className="text-[#9aa1ac]">
+                    <b className="text-[#f5efe3]">{seriesRaces.length}</b> fixtures
+                  </span>
+                  <button
+                    onClick={() => onSelectRaceTab(primaryDisc)}
+                    className="text-[#e28b37] hover:underline font-semibold inline-flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Inspect</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
-              <span className="text-sm font-bold text-[#f5efe3] block leading-snug">
-                {p.name}
-              </span>
-              <span className="text-xs text-[#6d7580] block mt-1.5">
-                <b className="text-[#9aa1ac]">{getRaceCount(p.id)}</b> races ·{' '}
-                <b className="text-[#9aa1ac]">{getClubCount(p.id)}</b> clubs
-              </span>
-            </button>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

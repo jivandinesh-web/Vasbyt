@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Discipline, DistanceCode, CommunityRaceSubmission } from '../types';
-import { PROVINCES } from '../data/runningData';
+import { PROVINCES, RUNNING_SERIES_LIST } from '../data/runningData';
 import { useAuth } from '../context/AuthContext';
 import {
   X,
@@ -17,11 +17,17 @@ import {
   Globe,
   Sparkles,
   CheckCircle,
+  Check,
   Flag,
   Compass,
   Layers,
   ChevronDown,
   ChevronUp,
+  ShieldCheck,
+  ShieldAlert,
+  Lock,
+  Award,
+  Briefcase,
 } from 'lucide-react';
 
 interface AddRaceModalProps {
@@ -74,7 +80,7 @@ export const AddRaceModal: React.FC<AddRaceModalProps> = ({
   defaultProv = 'gp',
   defaultDiscipline = 'road',
 }) => {
-  const { user, openLoginModal } = useAuth();
+  const { user, isAdmin, openLoginModal } = useAuth();
 
   // Form states
   const [name, setName] = useState('');
@@ -86,12 +92,17 @@ export const AddRaceModal: React.FC<AddRaceModalProps> = ({
     d.setDate(d.getDate() + 14);
     return d.toISOString().split('T')[0];
   });
-  const [discipline, setDiscipline] = useState<Discipline>(
-    (defaultDiscipline !== 'all' ? defaultDiscipline : 'road') as Discipline
-  );
+  const [selectedDisciplines, setSelectedDisciplines] = useState<Discipline[]>(() => {
+    if (defaultDiscipline && defaultDiscipline !== 'all') {
+      return [defaultDiscipline as Discipline];
+    }
+    return ['road'];
+  });
   const [selectedDistances, setSelectedDistances] = useState<DistanceCode[]>(['H', 'T']);
   const [organiser, setOrganiser] = useState('');
   const [site, setSite] = useState('');
+  const [series, setSeries] = useState('');
+  const [isCorporate, setIsCorporate] = useState(false);
 
   // Course Details (advanced section)
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
@@ -110,6 +121,16 @@ export const AddRaceModal: React.FC<AddRaceModalProps> = ({
 
   if (!isOpen) return null;
 
+  const toggleDiscipline = (code: Discipline) => {
+    setSelectedDisciplines((prev) => {
+      if (prev.includes(code)) {
+        if (prev.length <= 1) return prev; // keep at least one discipline
+        return prev.filter((d) => d !== code);
+      }
+      return [...prev, code];
+    });
+  };
+
   const toggleDistance = (code: DistanceCode) => {
     setSelectedDistances((prev) => {
       if (prev.includes(code)) {
@@ -123,6 +144,12 @@ export const AddRaceModal: React.FC<AddRaceModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+
+    // Administrative permission check
+    if (!isAdmin) {
+      setErrorMsg('Administrator Access Required: Only authorized administrators (jivandinesh@gmail.com) can publish race fixtures to the calendar.');
+      return;
+    }
 
     // Form validations
     if (!name.trim()) {
@@ -141,6 +168,10 @@ export const AddRaceModal: React.FC<AddRaceModalProps> = ({
       setErrorMsg('Please select at least one distance category.');
       return;
     }
+    if (selectedDisciplines.length === 0) {
+      setErrorMsg('Please select at least one discipline (e.g. Road, Trail, Walking).');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -150,11 +181,20 @@ export const AddRaceModal: React.FC<AddRaceModalProps> = ({
         city: city.trim(),
         date,
         dist: selectedDistances,
-        discipline,
+        discipline: selectedDisciplines[0] || 'road',
+        disciplines: selectedDisciplines,
         organiser: organiser.trim() || undefined,
         site: site.trim() || undefined,
+        series: series.trim() || undefined,
+        isCorporate: isCorporate || undefined,
         courseType,
-        surface: surface || (discipline === 'trail' ? 'Mountain Singletrack' : 'Asphalt Road'),
+        surface:
+          surface ||
+          (selectedDisciplines.includes('trail')
+            ? 'Mountain Singletrack'
+            : selectedDisciplines.includes('cycling')
+            ? 'Tar & Gravel'
+            : 'Asphalt Road'),
         totalAscentM: typeof totalAscentM === 'number' ? totalAscentM : 200,
         totalDescentM: typeof totalDescentM === 'number' ? totalDescentM : 200,
         cutoffTime: cutoffTime.trim() || '05:00:00',
@@ -230,32 +270,40 @@ export const AddRaceModal: React.FC<AddRaceModalProps> = ({
             </div>
           )}
 
-          {/* Sync / Account state notice */}
-          <div className="p-3 bg-[#12151b] border border-[#2c333f] rounded-lg text-xs flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-[#9aa1ac]">
-              <Sparkles className="w-4 h-4 text-[#d8b34a] shrink-0" />
-              <span>
-                {user ? (
-                  <>
-                    Publishing as <strong className="text-[#f5efe3]">{user.displayName || user.email}</strong> to community cloud
-                  </>
-                ) : (
-                  <>
-                    Saving locally to your fixtures. <strong className="text-[#f5efe3]">Sign in</strong> to publish across SA clubs.
-                  </>
-                )}
-              </span>
+          {/* Administrative Authorization Notice */}
+          {isAdmin ? (
+            <div className="p-3 bg-emerald-950/40 border border-emerald-700/50 rounded-lg text-xs flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-emerald-300">
+                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>
+                  Admin Mode: Verified as <strong className="text-[#f5efe3]">{user?.email}</strong>. This fixture will be published live to the official South African calendar.
+                </span>
+              </div>
             </div>
-            {!user && (
-              <button
-                type="button"
-                onClick={openLoginModal}
-                className="text-xs font-semibold text-[#d8b34a] hover:underline shrink-0 cursor-pointer"
-              >
-                Sign In
-              </button>
-            )}
-          </div>
+          ) : (
+            <div className="p-3 bg-amber-950/40 border border-amber-600/50 rounded-lg text-xs flex items-start justify-between gap-3 text-amber-200">
+              <div className="flex items-start gap-2">
+                <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="block text-amber-300 font-semibold mb-0.5">Administrator Access Required</strong>
+                  <p className="text-amber-200/80 leading-relaxed text-[11px]">
+                    Only administrators (<span className="font-mono text-amber-200">jivandinesh@gmail.com</span>) can add and publish race fixtures to the calendar.
+                  </p>
+                </div>
+              </div>
+              {!user && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    openLoginModal();
+                  }}
+                  className="px-2.5 py-1 bg-[#d8b34a] hover:bg-[#e28b37] text-[#12151b] font-bold rounded text-xs transition-colors cursor-pointer shrink-0"
+                >
+                  Admin Sign In
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Race Name */}
           <div>
@@ -273,28 +321,38 @@ export const AddRaceModal: React.FC<AddRaceModalProps> = ({
             />
           </div>
 
-          {/* Discipline Selector */}
+          {/* Discipline Selector (Supports 2 or more disciplines) */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#9aa1ac] mb-1.5">
-              Discipline *
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#9aa1ac]">
+                Disciplines * <span className="text-[11px] normal-case text-[#6e7787] font-normal">(Select 2 or more if applicable, e.g. Road + Walking)</span>
+              </label>
+              <span className="text-[11px] font-semibold text-[#d8b34a] bg-[#d8b34a]/10 px-2 py-0.5 rounded-full border border-[#d8b34a]/30">
+                {selectedDisciplines.length} {selectedDisciplines.length === 1 ? 'discipline' : 'disciplines'} selected
+              </span>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {DISCIPLINE_OPTIONS.map((disc) => {
                 const Icon = disc.icon;
-                const isSelected = discipline === disc.id;
+                const isSelected = selectedDisciplines.includes(disc.id);
                 return (
                   <button
                     key={disc.id}
                     type="button"
-                    onClick={() => setDiscipline(disc.id)}
-                    className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
+                    onClick={() => toggleDiscipline(disc.id)}
+                    className={`flex items-center justify-between p-2.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-[#d8b34a]/15 border-[#d8b34a] text-[#f5efe3] shadow-sm'
+                        ? 'bg-[#d8b34a]/15 border-[#d8b34a] text-[#f5efe3] shadow-xs ring-1 ring-[#d8b34a]/40'
                         : 'bg-[#12151b] border-[#2c333f] text-[#9aa1ac] hover:text-[#f5efe3] hover:border-[#3d4655]'
                     }`}
                   >
-                    <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-[#d8b34a]' : 'text-[#6e7787]'}`} />
-                    <span className="truncate">{disc.label}</span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isSelected ? 'text-[#d8b34a]' : 'text-[#6e7787]'}`} />
+                      <span className="truncate">{disc.label}</span>
+                    </div>
+                    {isSelected && (
+                      <Check className="w-3.5 h-3.5 text-[#d8b34a] flex-shrink-0 ml-1" />
+                    )}
                   </button>
                 );
               })}
@@ -440,6 +498,56 @@ export const AddRaceModal: React.FC<AddRaceModalProps> = ({
             </div>
           </div>
 
+          {/* Running Series & Corporate Event Options */}
+          <div className="p-3 bg-[#151922] border border-[#2c333f] rounded-lg space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#d8b34a] flex items-center gap-1.5">
+                <Award className="w-4 h-4" />
+                Series &amp; Corporate Classification (Optional)
+              </span>
+              <label className="inline-flex items-center gap-2 cursor-pointer text-xs text-[#9aa1ac]">
+                <input
+                  type="checkbox"
+                  checked={isCorporate}
+                  onChange={(e) => setIsCorporate(e.target.checked)}
+                  className="rounded border-[#2c333f] text-[#d8b34a] focus:ring-0 cursor-pointer"
+                />
+                <span className="flex items-center gap-1 font-semibold text-[#f5efe3]">
+                  <Briefcase className="w-3.5 h-3.5 text-sky-400" />
+                  Corporate Event
+                </span>
+              </label>
+            </div>
+
+            <div>
+              <label className="block text-[11px] text-[#9aa1ac] mb-1 font-medium">
+                Part of a Running Series? (Select or type custom series)
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <select
+                  value={RUNNING_SERIES_LIST.includes(series as any) ? series : ''}
+                  onChange={(e) => setSeries(e.target.value)}
+                  className="w-full bg-[#12151b] border border-[#2c333f] focus:border-[#d8b34a] rounded-lg px-3 py-2 text-xs text-[#f5efe3] outline-none"
+                >
+                  <option value="">Select from Master 14 Series...</option>
+                  {RUNNING_SERIES_LIST.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+
+                <input
+                  type="text"
+                  value={series}
+                  onChange={(e) => setSeries(e.target.value)}
+                  placeholder="Or enter custom series name..."
+                  className="w-full bg-[#12151b] border border-[#2c333f] focus:border-[#d8b34a] rounded-lg px-3 py-2 text-xs text-[#f5efe3] placeholder-[#535c6a] outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Advanced Course & Elevation Section (Collapsible) */}
           <div className="border border-[#2c333f] rounded-lg overflow-hidden bg-[#151922]">
             <button
@@ -549,14 +657,20 @@ export const AddRaceModal: React.FC<AddRaceModalProps> = ({
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !isAdmin}
               id="submit-race-btn"
+              title={isAdmin ? "Publish race fixture to calendar" : "Administrator permissions required"}
               className="inline-flex items-center gap-2 bg-[#d8b34a] hover:bg-[#e28b37] text-[#12151b] font-bold px-5 py-2.5 rounded-lg text-xs transition-all shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
                   <div className="w-3.5 h-3.5 border-2 border-[#12151b] border-t-transparent rounded-full animate-spin" />
                   <span>Publishing...</span>
+                </>
+              ) : !isAdmin ? (
+                <>
+                  <Lock className="w-4 h-4" />
+                  <span>Admin Only</span>
                 </>
               ) : (
                 <>

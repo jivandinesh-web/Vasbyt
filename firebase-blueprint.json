@@ -51,6 +51,10 @@
           "items": { "type": "string" }
         },
         "discipline": { "type": "string", "maxLength": 30 },
+        "disciplines": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
         "organiser": { "type": "string", "maxLength": 120 },
         "site": { "type": "string", "maxLength": 300 },
         "totalAscentM": { "type": "number" },
@@ -62,7 +66,14 @@
         "notes": { "type": "string", "maxLength": 500 },
         "createdByUid": { "type": "string", "maxLength": 128 },
         "createdByName": { "type": "string", "maxLength": 100 },
-        "createdAt": { "type": "string", "maxLength": 50 }
+        "createdAt": { "type": "string", "maxLength": 50 },
+        "updatedAt": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "maxLength": 30 },
+        "statusNotice": { "type": "string", "maxLength": 500 },
+        "newDate": { "type": "string", "maxLength": 20 },
+        "originalName": { "type": "string", "maxLength": 120 },
+        "originalDate": { "type": "string", "maxLength": 20 },
+        "originalProv": { "type": "string", "maxLength": 10 }
       },
       "required": ["name", "prov", "city", "date", "discipline", "createdByUid"]
     }

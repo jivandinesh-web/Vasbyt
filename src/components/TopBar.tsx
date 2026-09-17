@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Home, Map, Calendar, Users, User, Star, LogIn, HelpCircle, Sparkles } from 'lucide-react';
+import { Home, Map, Calendar, Users, User, Star, LogIn, HelpCircle, Sparkles, BookOpen, Sun, Moon } from 'lucide-react';
 import { TabType } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { NeumorphicButton } from './NeumorphicButton';
 
 interface TopBarProps {
@@ -18,6 +19,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   onOpenHowTo,
 }) => {
   const { user, openLoginModal, authLoading } = useAuth();
+  const { toggleTheme, isLight } = useTheme();
 
   const [clockText, setClockText] = useState<{ day: string; time: string }>({
     day: '',
@@ -115,18 +117,43 @@ export const TopBar: React.FC<TopBarProps> = ({
 
         {/* Right Section: Clock & Google Auth Status */}
         <div id="vasbyt-topbar-right" className="flex items-center gap-2 sm:gap-3">
-          {/* Neumorphic How To Button */}
+          {/* Neumorphic How It Works Guide Button */}
           <NeumorphicButton
             id="btn-topbar-howto"
             variant="default"
             size="sm"
             onClick={onOpenHowTo}
-            title="How to use Vasbyt SA Running guide"
-            leftIcon={<HelpCircle className="w-3.5 h-3.5 text-[#d8b34a]" />}
-            className="text-[#d8b34a] hover:text-[#f5efe3] border-[#d8b34a]/30 hover:border-[#d8b34a]/60 text-xs tracking-wider uppercase font-bold"
+            title="How Vasbyt Works — Platform Guide & Race Features"
+            leftIcon={<BookOpen className="w-3.5 h-3.5 text-[#d8b34a]" />}
+            className="text-[#d8b34a] hover:text-[#f5efe3] border-[#d8b34a]/40 hover:border-[#d8b34a] text-xs tracking-wider uppercase font-bold inline-flex items-center gap-1.5"
           >
-            How To
+            <span>How It Works</span>
+            <span className="hidden xl:inline-block text-[9px] bg-[#d8b34a]/20 text-[#d8b34a] px-1.5 py-0.2 rounded-full font-mono">
+              Guide
+            </span>
           </NeumorphicButton>
+
+          {/* Light / Dark Mode Toggle */}
+          <button
+            id="theme-toggle-btn"
+            type="button"
+            onClick={toggleTheme}
+            title={isLight ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            aria-label={isLight ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            className="neu-btn flex items-center gap-1.5 px-2.5 py-1.5 rounded-xs text-xs font-semibold cursor-pointer transition-all border border-[#2c333f] text-[#f5efe3] hover:text-[#e28b37]"
+          >
+            {isLight ? (
+              <>
+                <Sun className="w-3.5 h-3.5 text-[#e28b37]" />
+                <span className="hidden sm:inline">Light</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-3.5 h-3.5 text-[#d8b34a]" />
+                <span className="hidden sm:inline">Dark</span>
+              </>
+            )}
+          </button>
 
           {/* SAST Live Clock */}
           <div

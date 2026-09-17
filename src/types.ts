@@ -1,4 +1,4 @@
-export type TabType = 'home' | 'provinces' | 'races' | 'clubs' | 'profile';
+export type TabType = 'home' | 'provinces' | 'races' | 'clubs' | 'profile' | 'admin';
 
 export type DistanceCode = 'M' | 'H' | 'T' | 'F' | 'U' | 'X' | 'TR' | 'WK' | 'HK' | 'TK' | 'CY';
 
@@ -70,6 +70,7 @@ export interface MajorRace {
   city?: string;
   dist: string;
   discipline: Discipline;
+  disciplines?: Discipline[];
   since: number;
   when: string;
   blurb: string;
@@ -77,6 +78,14 @@ export interface MajorRace {
   site?: string;
   route?: RouteProfile;
 }
+
+export type RaceStatus =
+  | 'scheduled'
+  | 'cancelled'
+  | 'postponed'
+  | 'weather_delay'
+  | 'rescheduled'
+  | 'sold_out';
 
 export interface Race {
   id?: string;
@@ -86,6 +95,7 @@ export interface Race {
   date: string; // ISO YYYY-MM-DD
   dist: DistanceCode[];
   discipline: Discipline;
+  disciplines?: Discipline[];
   organiser?: string;
   site?: string;
   route: RouteProfile;
@@ -93,15 +103,26 @@ export interface Race {
   createdByUid?: string;
   createdByName?: string;
   createdAt?: string;
+  updatedAt?: string;
+  status?: RaceStatus;
+  statusNotice?: string;
+  newDate?: string;
+  originalName?: string;
+  originalDate?: string;
+  originalProv?: string;
+  series?: string;
+  isCorporate?: boolean;
 }
 
 export interface CommunityRaceSubmission {
+  id?: string;
   name: string;
   prov: string;
   city: string;
   date: string;
   dist: DistanceCode[];
   discipline: Discipline;
+  disciplines?: Discipline[];
   organiser?: string;
   site?: string;
   totalAscentM?: number;
@@ -111,6 +132,14 @@ export interface CommunityRaceSubmission {
   cutoffTime?: string;
   waterTablesCount?: number;
   notes?: string;
+  status?: RaceStatus;
+  statusNotice?: string;
+  newDate?: string;
+  originalName?: string;
+  originalDate?: string;
+  originalProv?: string;
+  series?: string;
+  isCorporate?: boolean;
 }
 
 export interface ClubContact {
@@ -147,6 +176,7 @@ export interface UserProfile {
   pbFull: string;
   pbUltra?: string;
   goal: string;
+  isAdmin?: boolean;
   updatedAt?: string;
 }
 

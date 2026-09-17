@@ -19,9 +19,11 @@ import {
   FirebaseUser,
 } from '../lib/firebase';
 import { UserProfile, UserFavorites } from '../types';
+import { isAdminUser } from '../utils/admin';
 
 interface AuthContextType {
   user: FirebaseUser | null;
+  isAdmin: boolean;
   authLoading: boolean;
   loginError: string | null;
   syncState: 'saved' | 'saving' | 'offline' | 'error';
@@ -364,10 +366,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     }
   };
 
+  const isAdmin = isAdminUser(user, currentLocalProfile);
+
   return (
     <AuthContext.Provider
       value={{
         user,
+        isAdmin,
         authLoading,
         loginError,
         syncState,

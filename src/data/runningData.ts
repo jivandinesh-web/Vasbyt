@@ -1594,7 +1594,552 @@ export const RACES: Race[] = [
       ]
     }
   },
+  // --- 14 Corporate & Popular Running Series Fixtures ---
+  {
+    name: 'J.P. Morgan Corporate Challenge Johannesburg',
+    prov: 'gp',
+    city: 'Johannesburg (Illovo & Melrose)',
+    date: '2026-10-22',
+    dist: ['F', 'T'],
+    discipline: 'road',
+    series: 'JPMorganChase Corporate Challenge',
+    isCorporate: true,
+    organiser: 'J.P. Morgan & Central Gauteng Athletics',
+    site: 'jpmorganchasecc.com',
+    route: {
+      note: 'South Africa’s premier corporate team footrace (5.6km / 3.5 miles) promoting workplace fitness, executive networking, and community giving with hospitality chalets at The Wanderers.',
+      directions: [
+        'Mass corporate team start on Corlett Drive outside The Wanderers Club.',
+        'Rolling asphalt circuit winding through leafy Melrose Estate and Birdhaven avenues.',
+        'Fast undulating section alongside James & Ethel Gray Park toward Rudd Road.',
+        'Triumphant sprint finish onto the hallowed turf of the Wanderers Club oval.'
+      ],
+      points: [
+        { label: 'Corlett Drive', y: 30 },
+        { label: 'Birdhaven Climb', y: 55 },
+        { label: 'Melrose Turn', y: 40 },
+        { label: 'Ethel Gray Rise', y: 60 },
+        { label: 'Wanderers Finish', y: 35 }
+      ],
+      totalAscentM: 85,
+      totalDescentM: 85,
+      distanceKm: 5.6,
+      surface: 'Asphalt Road',
+      courseType: 'Loop',
+      cutoffTime: '01:30:00',
+      waterTablesCount: 3
+    }
+  },
+  {
+    name: 'Absa RUN YOUR CITY Joburg 10K',
+    prov: 'gp',
+    city: 'Johannesburg CBD',
+    date: '2026-09-24',
+    dist: ['T', 'F'],
+    discipline: 'road',
+    series: 'Absa RUN YOUR CITY Series',
+    isCorporate: true,
+    organiser: 'Stillwater Sports / Absa',
+    site: 'runyourcityseries.com',
+    route: {
+      note: 'World Athletics Elite Label Heritage Day road race celebrating Johannesburg’s heritage landmarks, the iconic Nelson Mandela Bridge, and live music stations.',
+      directions: [
+        'Electrifying start at Mary Fitzgerald Square in historic Newtown.',
+        'Climb through Braamfontein toward Constitution Hill.',
+        'Cross the iconic Nelson Mandela Bridge with sweeping city skyline panoramas.',
+        'Fly down Marshalltown financial precinct into the festival finish at Newtown.'
+      ],
+      points: [
+        { label: 'Mary Fitzgerald', y: 30 },
+        { label: 'Constitution Hill', y: 68 },
+        { label: 'Mandela Bridge', y: 50 },
+        { label: 'Marshalltown', y: 35 },
+        { label: 'Newtown Finish', y: 30 }
+      ],
+      totalAscentM: 110,
+      totalDescentM: 110,
+      distanceKm: 10,
+      surface: 'Asphalt Road',
+      courseType: 'Loop',
+      cutoffTime: '02:00:00',
+      waterTablesCount: 4
+    }
+  },
+  {
+    name: 'Absa RUN YOUR CITY Cape Town 10K',
+    prov: 'wc',
+    city: 'Cape Town',
+    date: '2027-05-16',
+    dist: ['T', 'F'],
+    discipline: 'road',
+    series: 'Absa RUN YOUR CITY Series',
+    isCorporate: true,
+    organiser: 'Stillwater Sports / Absa',
+    site: 'runyourcityseries.com',
+    route: {
+      note: 'World Athletics Elite Label point-to-point flat coastal 10k from Woodbridge Island along Table Bay coast into Cape Town CBD Grand Parade.',
+      directions: [
+        'Fast sea-level start at Woodbridge Island, Milnerton.',
+        'Flat sprint along Marine Drive with sweeping Table Mountain panorama.',
+        'Pass Paarden Eiland maritime corridor into Adderley Street.',
+        'Grand finish outside City Hall at the historic Grand Parade.'
+      ],
+      points: [
+        { label: 'Woodbridge Island', y: 15 },
+        { label: 'Marine Drive', y: 20 },
+        { label: 'Paarden Eiland', y: 22 },
+        { label: 'Adderley St', y: 28 },
+        { label: 'Grand Parade Finish', y: 25 }
+      ],
+      totalAscentM: 35,
+      totalDescentM: 30,
+      distanceKm: 10,
+      surface: 'Asphalt Road',
+      courseType: 'Point-to-Point',
+      cutoffTime: '02:00:00',
+      waterTablesCount: 4
+    }
+  },
+  {
+    name: 'Barron Corporate Run4Good',
+    prov: 'gp',
+    city: 'Sandton, Johannesburg',
+    date: '2026-10-15',
+    dist: ['T', 'F'],
+    discipline: 'road',
+    series: 'Barron Corporate Run4Good',
+    isCorporate: true,
+    organiser: 'Barron Corporate Sports & Inanda Club',
+    site: 'barronrun4good.co.za',
+    route: {
+      note: 'High-energy Sandton corporate team relay and running challenge supporting charity initiatives, executive wellness, and inter-firm networking.',
+      directions: [
+        'Mass corporate start on Inanda Club polo grounds.',
+        'Paved circuit through Sandhurst and Atholl leafy residential avenues.',
+        'Steady incline along Forrest Road before descending back toward Rivonia arterial.',
+        'Corporate cheer finish line with team relays and hospitality marquee.'
+      ],
+      points: [
+        { label: 'Inanda Grounds', y: 35 },
+        { label: 'Sandhurst Rise', y: 55 },
+        { label: 'Atholl Turn', y: 40 },
+        { label: 'Forrest Climb', y: 62 },
+        { label: 'Inanda Finish', y: 35 }
+      ],
+      totalAscentM: 95,
+      totalDescentM: 95,
+      distanceKm: 10,
+      surface: 'Asphalt Road',
+      courseType: 'Loop',
+      cutoffTime: '02:15:00',
+      waterTablesCount: 3
+    }
+  },
+  {
+    name: 'Discovery Vitality Run Series: Wanderers Road Race',
+    prov: 'gp',
+    city: 'Johannesburg (Illovo & Sandton)',
+    date: '2026-10-04',
+    dist: ['H', 'T', 'F'],
+    discipline: 'road',
+    series: 'Discovery Vitality Run Series',
+    isCorporate: true,
+    organiser: 'Discovery Vitality & Wanderers Athletics Club',
+    site: 'vitality.discovery.co.za',
+    route: {
+      note: 'High-energy fixture in Gauteng’s premier 5-event road running series. Features thousands of runners chasing Vitality fitness points and series medals.',
+      directions: [
+        'Start outside Wanderers Stadium on Corlett Drive.',
+        'Challenging rolling hills through Melrose North, Birdhaven and Oaklands.',
+        'Steep climb up Venus Street testing road runner pacing.',
+        'Fast descent down Rudd Road into the grand stadium tunnel finish.'
+      ],
+      points: [
+        { label: 'Wanderers Start', y: 40 },
+        { label: 'Melrose Rise', y: 60 },
+        { label: 'Venus St Climb', y: 85 },
+        { label: 'Oaklands Dip', y: 50 },
+        { label: 'Rudd Descent', y: 42 },
+        { label: 'Stadium Finish', y: 40 }
+      ],
+      totalAscentM: 260,
+      totalDescentM: 260,
+      distanceKm: 21.1,
+      surface: 'Asphalt Road',
+      courseType: 'Loop',
+      cutoffTime: '03:30:00',
+      waterTablesCount: 7
+    }
+  },
+  {
+    name: 'SPAR Women’s Challenge Johannesburg',
+    prov: 'gp',
+    city: 'Johannesburg (Marks Park, Emmarentia)',
+    date: '2026-10-11',
+    dist: ['T', 'F'],
+    discipline: 'road',
+    series: 'SPAR Women\'s Challenge Series',
+    isCorporate: true,
+    organiser: 'SPAR South Africa & Central Gauteng Athletics',
+    site: 'sparwomensrun.co.za',
+    route: {
+      note: 'South Africa’s most celebrated women’s road running festival and Elite Grand Prix with 15,000+ runners supporting breast cancer awareness and community causes.',
+      directions: [
+        'Spirited mass start at Marks Park Sports Club in Judith Road.',
+        'Scenic tree-lined course along Emmarentia Dam and the Johannesburg Botanical Gardens.',
+        'Lively musical water stations and cheering zones through Greenside.',
+        'Festive finish on Marks Park sports fields with live entertainment and lucky draw prizes.'
+      ],
+      points: [
+        { label: 'Marks Park Start', y: 35 },
+        { label: 'Emmarentia Dam', y: 30 },
+        { label: 'Botanical Gardens', y: 45 },
+        { label: 'Greenside Rise', y: 60 },
+        { label: 'Marks Park Finish', y: 35 }
+      ],
+      totalAscentM: 105,
+      totalDescentM: 105,
+      distanceKm: 10,
+      surface: 'Asphalt Road',
+      courseType: 'Loop',
+      cutoffTime: '02:00:00',
+      waterTablesCount: 4
+    }
+  },
+  {
+    name: 'Balwin Sport Jeppe Marathon & Half Series',
+    prov: 'gp',
+    city: 'Bedfordview, Ekurhuleni',
+    date: '2027-02-14',
+    dist: ['M', 'H', 'T', 'F'],
+    discipline: 'road',
+    series: 'Balwin Run Series',
+    isCorporate: true,
+    organiser: 'Balwin Properties & Jeppe Athletics Club',
+    site: 'balwin.co.za/sport',
+    route: {
+      note: 'Premier Highveld Comrades and Two Oceans qualifier presented by Balwin Sport, featuring double-loop marathon and half marathon courses across Bedfordview.',
+      directions: [
+        'Start outside Saheti School and Jeppe Quondam Club.',
+        'Navigate undulating residential tree-lined avenues of Senderwood and St Andrews.',
+        'Climb past Gillooly’s Farm ridge with panoramic vistas of Linksfield.',
+        'Fast rolling finish straight back onto Saheti sports grounds.'
+      ],
+      points: [
+        { label: 'Saheti Start', y: 40 },
+        { label: 'Senderwood', y: 50 },
+        { label: 'Gilloolys Ridge', y: 75 },
+        { label: 'St Andrews Dip', y: 45 },
+        { label: 'Jeppe Finish', y: 40 }
+      ],
+      totalAscentM: 380,
+      totalDescentM: 380,
+      distanceKm: 42.2,
+      surface: 'Asphalt Road',
+      courseType: 'Loop',
+      cutoffTime: '06:00:00',
+      waterTablesCount: 14,
+      qualifierFor: 'Comrades 2027 Qualifier / Two Oceans'
+    }
+  },
+  {
+    name: 'parkrun South Africa: Delta Park 5k & National Series',
+    prov: 'gp',
+    city: 'Johannesburg (Delta Park & 200+ National Venues)',
+    date: '2026-09-26',
+    dist: ['F', 'WK'],
+    discipline: 'road',
+    series: 'parkrun Series',
+    isCorporate: false,
+    organiser: 'parkrun Global & parkrun South Africa',
+    site: 'parkrun.co.za',
+    route: {
+      note: 'The birthplace of South African parkrun where Bruce Fordyce launched the SA movement. Free, weekly, timed 5km gathering hosted every Saturday at 8:00am across 200+ venues nationwide.',
+      directions: [
+        'Gather at the Delta Environmental Centre meadow.',
+        'Undulating path crossing park grass, dirt trails, and paved avenues.',
+        'Loop around Top Lake and Florence Bloom Bird Sanctuary.',
+        'Finish funnel with barcode scanning and post-run coffee clubhouse.'
+      ],
+      points: [
+        { label: 'Delta Centre', y: 30 },
+        { label: 'Meadow Climb', y: 48 },
+        { label: 'Bird Sanctuary', y: 35 },
+        { label: 'Top Dam Loop', y: 40 },
+        { label: 'Finish Funnel', y: 32 }
+      ],
+      totalAscentM: 65,
+      totalDescentM: 65,
+      distanceKm: 5,
+      surface: 'Asphalt Road',
+      courseType: 'Loop',
+      cutoffTime: '01:30:00',
+      waterTablesCount: 1
+    }
+  },
+  {
+    name: 'The City Run: Cape Town Twilight 10K & 5K',
+    prov: 'wc',
+    city: 'Cape Town (Green Point & Atlantic Seaboard)',
+    date: '2026-12-04',
+    dist: ['T', 'F'],
+    discipline: 'road',
+    series: 'The City Runs / Night Series',
+    isCorporate: true,
+    organiser: 'The City Run Series South Africa',
+    site: 'thecityrun.co.za',
+    route: {
+      note: 'Electrifying illuminated twilight urban race along the Atlantic Seaboard promenade with live DJs, neon glow stations, and corporate team spirit.',
+      directions: [
+        'Sunset start under DHL Stadium arches in Green Point.',
+        'Head onto the Sea Point Promenade oceanfront path.',
+        'Turn around at Saunders Rock sunset viewing point.',
+        'Neon-lit finish tunnel back at Green Point Urban Park precinct.'
+      ],
+      points: [
+        { label: 'Stadium Forecourt', y: 20 },
+        { label: 'Sea Point Prom', y: 15 },
+        { label: 'Saunders Rock', y: 18 },
+        { label: 'Mouille Point', y: 16 },
+        { label: 'Neon Finish', y: 20 }
+      ],
+      totalAscentM: 25,
+      totalDescentM: 25,
+      distanceKm: 10,
+      surface: 'Asphalt Road',
+      courseType: 'Out & Back',
+      cutoffTime: '02:00:00',
+      waterTablesCount: 3
+    }
+  },
+  {
+    name: 'Wildseries Golden Gate Challenge',
+    prov: 'fs',
+    city: 'Clarens (Golden Gate Highlands National Park)',
+    date: '2026-10-23',
+    dist: ['U', 'X'],
+    discipline: 'trail',
+    series: 'Wildseries Trail Running',
+    isCorporate: false,
+    organiser: 'WILDTRUST / Wildlands Conservation Trust',
+    site: 'wildseries.co.za',
+    route: {
+      note: 'Legendary 3-day wilderness stage trail run (70km total: 27km, 29km, 14km) through the iconic Maluti mountain escarpment, sandstone cliffs, and high alpine grasslands.',
+      directions: [
+        'Stage 1: Ascend Brandwag buttress and Ribbok trail to 2,500m ASL.',
+        'Stage 2: Traverse cathedral sandstone rock caves and Oribi ridge crest.',
+        'Stage 3: Fast descent down Generaalskop valley towards Glen Reenen camp.',
+        'Conservation finisher celebration funding bearded vulture preservation.'
+      ],
+      points: [
+        { label: 'Glen Reenen Start', y: 40 },
+        { label: 'Brandwag Rock', y: 80 },
+        { label: 'Ribbok Pass', y: 95 },
+        { label: 'Oribi Basin', y: 65 },
+        { label: 'Camp Finish', y: 42 }
+      ],
+      totalAscentM: 2450,
+      totalDescentM: 2450,
+      distanceKm: 70,
+      surface: 'Mountain Singletrack',
+      courseType: 'Stage Race',
+      cutoffTime: '10:00:00',
+      waterTablesCount: 6
+    }
+  },
+  {
+    name: 'Rosemary Hill Farm Trail Series',
+    prov: 'gp',
+    city: 'Pretoria East (Rosemary Hill Organic Farm)',
+    date: '2026-11-07',
+    dist: ['X', 'H', 'T', 'F'],
+    discipline: 'trail',
+    series: 'Rosemary Hill & Farm Trail Series',
+    isCorporate: false,
+    organiser: 'Rosemary Hill Events & Advendurance',
+    site: 'rosemaryhill.co.za',
+    route: {
+      note: 'Pretoria’s premier farm trail network weaving through organic rosemary fields, pine forests, wooden bridges, and flowing singletrack.',
+      directions: [
+        'Start at the Rosemary Hill Farm coffee barn amphitheater.',
+        'Flowing singletrack through aromatic rosemary plantation rows.',
+        'Technical forested singletrack section alongside the stream.',
+        'Farm road loop over rolling hills with craft beer and food stall finish.'
+      ],
+      points: [
+        { label: 'Barn Start', y: 30 },
+        { label: 'Rosemary Fields', y: 40 },
+        { label: 'Pine Forest', y: 55 },
+        { label: 'Stream Bridges', y: 35 },
+        { label: 'Barnyard Finish', y: 30 }
+      ],
+      totalAscentM: 240,
+      totalDescentM: 240,
+      distanceKm: 21.1,
+      surface: 'Mountain Singletrack',
+      courseType: 'Loop',
+      cutoffTime: '04:00:00',
+      waterTablesCount: 4
+    }
+  },
+  {
+    name: 'SuperSani Trail Series & Sani Stagger',
+    prov: 'kzn',
+    city: 'Underberg & Sani Pass, Southern Drakensberg',
+    date: '2026-11-28',
+    dist: ['X', 'H'],
+    discipline: 'trail',
+    series: 'SuperSani Trail Series',
+    isCorporate: false,
+    organiser: 'Sani Sports & Underberg Harriers',
+    site: 'supersani.co.za',
+    route: {
+      note: 'The ultimate mountain trail pass conquest, scaling the UNESCO World Heritage Drakensberg pass from Sani Pass Hotel up to the Lesotho border at 2,874m ASL.',
+      directions: [
+        'Start at Sani Pass Hotel grounds in Underberg.',
+        'Gravel switchbacks climbing relentlessly through South African border post.',
+        'Punishing final 8km of mountain hairpins up to the Highest Pub in Africa.',
+        'Electrifying technical downhill descent back to the hotel lawn finish.'
+      ],
+      points: [
+        { label: 'Sani Hotel (1560m)', y: 25 },
+        { label: 'SA Border Post', y: 50 },
+        { label: 'The Switchbacks', y: 80 },
+        { label: 'Sani Top (2874m)', y: 100 },
+        { label: 'Descent Run', y: 45 },
+        { label: 'Hotel Lawn Finish', y: 25 }
+      ],
+      totalAscentM: 1400,
+      totalDescentM: 1400,
+      distanceKm: 42.2,
+      surface: 'Mountain Singletrack',
+      courseType: 'Out & Back',
+      cutoffTime: '07:00:00',
+      waterTablesCount: 6
+    }
+  },
+  {
+    name: 'South Africa Backyard Ultra Series: Clarens Edition',
+    prov: 'fs',
+    city: 'Clarens, Free State',
+    date: '2026-10-16',
+    dist: ['U', 'X'],
+    discipline: 'trail',
+    series: 'Backyard Ultra Series',
+    isCorporate: false,
+    organiser: 'Backyard Ultra South Africa',
+    site: 'backyardultra.co.za',
+    route: {
+      note: 'Official Big’s Backyard Ultra affiliate. Runners must complete exactly 6.706 km (4.167 miles) on the hour, every hour, until only one lone finisher remains.',
+      directions: [
+        'Start in Clarens corral on the exact tolling of the bell.',
+        'Singletrack trail winding through Clarens Conservancy foothills.',
+        'Return to starting corral before minute 59 or face disqualification (DNF).',
+        'Repeat hourly until the final Last Person Standing survives.'
+      ],
+      points: [
+        { label: 'Corral Bell', y: 35 },
+        { label: 'Conservancy Singletrack', y: 55 },
+        { label: 'River Loop', y: 40 },
+        { label: 'Corral Gate', y: 35 }
+      ],
+      totalAscentM: 120,
+      totalDescentM: 120,
+      distanceKm: 6.7,
+      surface: 'Mountain Singletrack',
+      courseType: 'Loop',
+      cutoffTime: '01:00:00',
+      waterTablesCount: 2
+    }
+  },
+  {
+    name: 'TinMan Series: Durban Beachfront 10K & Multi-Sport',
+    prov: 'kzn',
+    city: 'Durban (Suncoast Casino Promenade)',
+    date: '2026-11-01',
+    dist: ['T', 'F'],
+    discipline: 'road',
+    series: 'TinMan Series',
+    isCorporate: true,
+    organiser: 'B-Active Sports',
+    site: 'bactive.com',
+    route: {
+      note: 'Iconic KwaZulu-Natal endurance series staged on Durban’s Suncoast promenade featuring 10km and 5km road run challenges alongside sprint triathlons.',
+      directions: [
+        'Fast sea-level start outside Suncoast Casino lawns.',
+        'Sprint north towards Moses Mabhida Stadium and Blue Lagoon.',
+        'Turn at Umgeni river mouth along paved beachfront promenade.',
+        'Flat coastal finish straight with ocean spray and spectator grandstands.'
+      ],
+      points: [
+        { label: 'Suncoast Start', y: 15 },
+        { label: 'Moses Mabhida', y: 18 },
+        { label: 'Blue Lagoon Turn', y: 15 },
+        { label: 'Promenade Sprint', y: 16 },
+        { label: 'Suncoast Finish', y: 15 }
+      ],
+      totalAscentM: 18,
+      totalDescentM: 18,
+      distanceKm: 10,
+      surface: 'Asphalt Road',
+      courseType: 'Out & Back',
+      cutoffTime: '02:00:00',
+      waterTablesCount: 3
+    }
+  },
+  {
+    name: 'Jackal Night Run: Bushveld Moonlit Trail Series',
+    prov: 'gp',
+    city: 'Roodepoort (Jackal Creek Estate & Cradle Nature Reserve)',
+    date: '2026-10-28',
+    dist: ['X', 'T', 'F'],
+    discipline: 'trail',
+    series: 'Jackal Night Run / Bushveld Night Series',
+    isCorporate: false,
+    organiser: 'Revolution Trails & Bushveld Series',
+    site: 'revolutiontrails.co.za',
+    route: {
+      note: 'Thrilling moonlit headlamp trail series navigating bushveld trails, golf cart paths, wildlife corridors, and illuminated bridges under the Highveld night sky.',
+      directions: [
+        'Night-time mass start under spotlight arches at Jackal Creek Clubhouse.',
+        'Headlamp beam singletrack crossing wooden bridges and creek trails.',
+        'Navigate undulating fairways and indigenous bushveld reserves.',
+        'Finish under floodlit festival canopy with craft beer and live entertainment.'
+      ],
+      points: [
+        { label: 'Clubhouse Start', y: 30 },
+        { label: 'Creek Bridge', y: 25 },
+        { label: 'Bushveld Ridge', y: 52 },
+        { label: 'Fairway Berm', y: 40 },
+        { label: 'Floodlit Finish', y: 30 }
+      ],
+      totalAscentM: 115,
+      totalDescentM: 115,
+      distanceKm: 10,
+      surface: 'Mountain Singletrack',
+      courseType: 'Loop',
+      cutoffTime: '02:15:00',
+      waterTablesCount: 3
+    }
+  }
 ];
+
+export const RUNNING_SERIES_LIST = [
+  'JPMorganChase Corporate Challenge',
+  'Absa RUN YOUR CITY Series',
+  'Barron Corporate Run4Good',
+  'Discovery Vitality Run Series',
+  'SPAR Women\'s Challenge Series',
+  'Balwin Run Series',
+  'parkrun Series',
+  'The City Runs / Night Series',
+  'Wildseries Trail Running',
+  'Rosemary Hill & Farm Trail Series',
+  'SuperSani Trail Series',
+  'Backyard Ultra Series',
+  'TinMan Series',
+  'Jackal Night Run / Bushveld Night Series'
+] as const;
 
 export const DIST_LABEL: Record<DistanceCode, string> = {
   M: 'Marathon',
@@ -1970,7 +2515,21 @@ export function getProvince(id: string): Province | undefined {
 }
 
 export function formatRaceDate(iso: string): { day: number; mon: string; year: number } {
-  const d = new Date(iso + 'T00:00:00');
+  if (!iso) {
+    const now = new Date();
+    return {
+      day: now.getDate(),
+      mon: now.toLocaleString('en-GB', { month: 'short' }).toUpperCase(),
+      year: now.getFullYear(),
+    };
+  }
+  let d = new Date(iso + 'T00:00:00');
+  if (isNaN(d.getTime())) {
+    d = new Date(iso);
+  }
+  if (isNaN(d.getTime())) {
+    d = new Date();
+  }
   const day = d.getDate();
   const mon = d.toLocaleString('en-GB', { month: 'short' }).toUpperCase();
   const year = d.getFullYear();
@@ -1978,9 +2537,17 @@ export function formatRaceDate(iso: string): { day: number; mon: string; year: n
 }
 
 export function daysUntil(iso: string): number {
+  if (!iso) return 0;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const target = new Date(iso + 'T00:00:00');
+  let target = new Date(iso + 'T00:00:00');
+  if (isNaN(target.getTime())) {
+    target = new Date(iso);
+  }
+  if (isNaN(target.getTime())) {
+    return 0;
+  }
+  target.setHours(0, 0, 0, 0);
   return Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 }
 

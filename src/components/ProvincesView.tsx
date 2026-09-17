@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { PROVINCES, RACES, CLUBS, DIST_LABEL, formatRaceDate } from '../data/runningData';
 import { Discipline } from '../types';
+import { StoredCommunityRace, mergeRacesWithOverrides } from '../services/communityRaces';
 import {
   MapPin,
   Calendar,
@@ -21,6 +22,7 @@ interface ProvincesViewProps {
   onSelectProvinceId: (id: string | null) => void;
   onNavigateToRaces: (provId: string) => void;
   onNavigateToClubs: (provId: string) => void;
+  communityRaces?: StoredCommunityRace[];
 }
 
 export const ProvincesView: React.FC<ProvincesViewProps> = ({
@@ -28,10 +30,15 @@ export const ProvincesView: React.FC<ProvincesViewProps> = ({
   onSelectProvinceId,
   onNavigateToRaces,
   onNavigateToClubs,
+  communityRaces = [],
 }) => {
-  const getRaceCount = (provId: string) => RACES.filter((r) => r.prov === provId).length;
+  const allRaces = useMemo(() => {
+    return mergeRacesWithOverrides(communityRaces, RACES);
+  }, [communityRaces]);
+
+  const getRaceCount = (provId: string) => allRaces.filter((r) => r.prov === provId).length;
   const getClubCount = (provId: string) => CLUBS.filter((c) => c.prov === provId).length;
-  const getProvRaces = (provId: string) => RACES.filter((r) => r.prov === provId).slice(0, 4);
+  const getProvRaces = (provId: string) => allRaces.filter((r) => r.prov === provId).slice(0, 4);
   const getProvClubs = (provId: string) => CLUBS.filter((c) => c.prov === provId).slice(0, 4);
 
   const getDisciplineBadge = (disc?: Discipline) => {
@@ -114,7 +121,6 @@ export const ProvincesView: React.FC<ProvincesViewProps> = ({
       {/* Grid of 9 Provinces */}
       <div id="provinces-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {PROVINCES.map((p) => {
-          const isSelected = selectedProvinceId === p.id;
           const raceCount = getRaceCount(p.id);
           const clubCount = getClubCount(p.id);
 
@@ -122,16 +128,13 @@ export const ProvincesView: React.FC<ProvincesViewProps> = ({
             <div
               key={p.id}
               id={`prov-tile-${p.id}`}
-              onClick={() => onSelectProvinceId(isSelected ? null : p.id)}
-              className={`bg-[#171c24] border rounded-xs p-5 text-left cursor-pointer transition-all flex flex-col justify-between ${
-                isSelected
-                  ? 'border-[#e28b37] bg-[#221c17] ring-1 ring-[#e28b37] shadow-lg'
-                  : 'border-[#2c333f] hover:border-[#6d7580] hover:bg-[#1b222d]'
-              }`}
+              onClick={() => onNavigateToRaces(p.id)}
+              title={`Open ${p.name} Race Calendar (${raceCount} events)`}
+              className="bg-[#171c24] border border-[#2c333f] hover:border-[#e28b37] hover:bg-[#201a14] rounded-xs p-5 text-left cursor-pointer transition-all flex flex-col justify-between group shadow-sm hover:shadow-md"
             >
               <div>
                 <div className="flex items-baseline justify-between mb-2">
-                  <span className="font-display font-black text-3xl sm:text-4xl text-[#d8b34a] leading-none">
+                  <span className="font-display font-black text-3xl sm:text-4xl text-[#d8b34a] group-hover:text-[#e28b37] transition-colors leading-none">
                     {p.ab}
                   </span>
                   <span className="text-[10px] uppercase tracking-wider text-[#7c8f5c] bg-[#7c8f5c]/10 border border-[#7c8f5c]/30 px-2 py-0.5 rounded-full font-bold">
@@ -151,10 +154,20 @@ export const ProvincesView: React.FC<ProvincesViewProps> = ({
               <div className="pt-3 border-t border-[#2c333f]/70 flex items-center justify-between text-xs">
                 <span className="text-[#6d7580]">
                   <b className="text-[#f5efe3]">{raceCount}</b> races ·{' '}
-                  <b className="text-[#f5efe3]">{clubCount}</b> clubs
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onNavigateToClubs(p.id);
+                    }}
+                    className="text-[#9aa1ac] hover:text-[#d8b34a] underline ml-0.5"
+                    title={`View ${clubCount} clubs in ${p.name}`}
+                  >
+                    {clubCount} clubs
+                  </button>
                 </span>
-                <span className="text-[#e28b37] font-semibold text-xs inline-flex items-center gap-1">
-                  {isSelected ? 'Selected' : 'View →'}
+                <span className="text-[#e28b37] font-semibold text-xs inline-flex items-center gap-1 group-hover:underline">
+                  Race Calendar ({raceCount}) →
                 </span>
               </div>
             </div>
@@ -265,7 +278,7 @@ export const ProvincesView: React.FC<ProvincesViewProps> = ({
                         {getDisciplineBadge(race.discipline)}
                       </div>
                       <span className="text-[#9aa1ac]">
-                        {race.city} · {formatRaceDate(race.date).day} {formatRaceDate(race.date).mon}
+                        {race.city} · {formatRaceDate(race.date).day} {formatRaceDate(race.date).mon} {formatRaceDate(race.date).year}
                       </span>
                     </div>
                     <div className="flex gap-1 shrink-0">

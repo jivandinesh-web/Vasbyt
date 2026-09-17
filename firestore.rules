@@ -10,6 +10,10 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    function isAdmin() {
+      return isSignedIn() && (request.auth.token.email == 'jivandinesh@gmail.com');
+    }
+
     function isValidId(id) {
       return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
@@ -44,7 +48,8 @@ service cloud.firestore {
              data.city is string && data.city.size() <= 80 &&
              data.date is string && data.date.size() <= 20 &&
              data.discipline is string && data.discipline.size() <= 30 &&
-             data.createdByUid is string && data.createdByUid == request.auth.uid &&
+             (!('disciplines' in data) || (data.disciplines is list && data.disciplines.size() <= 10)) &&
+             data.createdByUid is string && (data.createdByUid == request.auth.uid || isAdmin()) &&
              (!('dist' in data) || (data.dist is list && data.dist.size() <= 10)) &&
              (!('organiser' in data) || (data.organiser is string && data.organiser.size() <= 120)) &&
              (!('site' in data) || (data.site is string && data.site.size() <= 300)) &&
@@ -56,7 +61,14 @@ service cloud.firestore {
              (!('waterTablesCount' in data) || (data.waterTablesCount is number)) &&
              (!('notes' in data) || (data.notes is string && data.notes.size() <= 500)) &&
              (!('createdByName' in data) || (data.createdByName is string && data.createdByName.size() <= 100)) &&
-             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50));
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50)) &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 50)) &&
+             (!('status' in data) || (data.status is string && data.status.size() <= 30)) &&
+             (!('statusNotice' in data) || (data.statusNotice is string && data.statusNotice.size() <= 500)) &&
+             (!('newDate' in data) || (data.newDate is string && data.newDate.size() <= 20)) &&
+             (!('originalName' in data) || (data.originalName is string && data.originalName.size() <= 120)) &&
+             (!('originalDate' in data) || (data.originalDate is string && data.originalDate.size() <= 20)) &&
+             (!('originalProv' in data) || (data.originalProv is string && data.originalProv.size() <= 10));
     }
 
     match /users/{userId} {
@@ -69,9 +81,9 @@ service cloud.firestore {
 
     match /communityRaces/{raceId} {
       allow get, list: if true;
-      allow create: if isSignedIn() && isValidId(raceId) && isValidCommunityRace(incoming());
-      allow update: if isSignedIn() && isValidId(raceId) && incoming().createdByUid == resource.data.createdByUid && isOwner(resource.data.createdByUid) && isValidCommunityRace(incoming());
-      allow delete: if isSignedIn() && isValidId(raceId) && isOwner(resource.data.createdByUid);
+      allow create: if isAdmin() && isValidId(raceId) && isValidCommunityRace(incoming());
+      allow update: if (isAdmin() || (isSignedIn() && isOwner(resource.data.createdByUid))) && isValidId(raceId) && isValidCommunityRace(incoming());
+      allow delete: if (isAdmin() || (isSignedIn() && isOwner(resource.data.createdByUid))) && isValidId(raceId);
     }
 
     match /test/{docId} {

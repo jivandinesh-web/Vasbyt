@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Map, Calendar, Users, User, HelpCircle } from 'lucide-react';
+import { Home, Map, Calendar, Users, User, HelpCircle, BookOpen } from 'lucide-react';
 import { TabType } from '../types';
 import { useAuth } from '../context/AuthContext';
 
@@ -86,12 +86,12 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange, onOpenHo
             id="tab-btn-howto"
             type="button"
             onClick={onOpenHowTo}
-            title="How to use Vasbyt Guide"
+            title="How Vasbyt Works — Platform Guide"
             className="flex-1 flex flex-col items-center justify-center gap-1 pt-2.5 pb-2 cursor-pointer transition-colors bg-transparent border-none text-[#d8b34a] hover:text-[#f5efe3]"
           >
-            <HelpCircle className="w-5 h-5 text-[#d8b34a]" strokeWidth={1.8} />
+            <BookOpen className="w-5 h-5 text-[#d8b34a]" strokeWidth={1.8} />
             <span className="text-[10px] uppercase tracking-wider font-bold text-[#d8b34a]">
-              How To
+              How It Works
             </span>
           </button>
         )}

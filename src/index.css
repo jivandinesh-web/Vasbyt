@@ -234,3 +234,473 @@ body {
   background: linear-gradient(145deg, #ea9642, #cf7723);
   box-shadow: 2px 2px 5px #07090d, -1.5px -1.5px 4px rgba(255, 200, 140, 0.3);
 }
+
+/* ==========================================================================
+   LIGHT MODE DESIGN SYSTEM
+   Clean, high-contrast, tactile athletic aesthetic
+   ========================================================================== */
+
+html.light,
+:root.light,
+[data-theme="light"] {
+  --ink: #f8fafc;
+  --ink-2: #ffffff;
+  --ink-3: #f1f5f9;
+  --paper: #ffffff;
+  --paper-dim: #f1f5f9;
+  --amber: #c26117;
+  --amber-dim: #9a4b0d;
+  --rust: #b5502f;
+  --veld: #15803d;
+  --gold: #b45309;
+  --text-hi: #0f172a;
+  --text-lo: #475569;
+  --text-lo-2: #64748b;
+  --line: #e2e8f0;
+}
+
+html.light,
+.light {
+  color-scheme: light;
+}
+
+html.light body,
+.light body {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* Light Neumorphic Surfaces */
+html.light .neu-card,
+.light .neu-card {
+  background: #ffffff;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+}
+
+html.light .neu-card-sm,
+.light .neu-card-sm {
+  background: #ffffff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+html.light .neu-inset,
+.light .neu-inset {
+  background: #f8fafc;
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.05), inset -1px -1px 2px rgba(255, 255, 255, 0.8);
+  border: 1px solid #e2e8f0;
+}
+
+html.light .neu-inset-sm,
+.light .neu-inset-sm {
+  background: #f1f5f9;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #cbd5e1;
+}
+
+html.light .neu-btn,
+.light .neu-btn {
+  background: #ffffff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+}
+
+html.light .neu-btn:hover,
+.light .neu-btn:hover {
+  background: #f8fafc;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  border-color: #94a3b8;
+  color: #020617;
+  transform: translateY(-1px);
+}
+
+html.light .neu-btn:active,
+html.light .neu-btn.active,
+html.light .neu-btn-pressed,
+.light .neu-btn:active,
+.light .neu-btn.active,
+.light .neu-btn-pressed {
+  background: #f1f5f9 !important;
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.08) !important;
+  border-color: rgba(194, 97, 23, 0.5) !important;
+  color: #c26117 !important;
+}
+
+html.light .neu-btn-amber,
+.light .neu-btn-amber {
+  background: linear-gradient(145deg, #d97706, #c26117);
+  box-shadow: 0 2px 4px rgba(217, 119, 6, 0.25);
+  color: #ffffff;
+  border: 1px solid #b45309;
+}
+
+html.light .neu-btn-amber:hover,
+.light .neu-btn-amber:hover {
+  background: linear-gradient(145deg, #ea8a14, #cf6e1f);
+  color: #ffffff;
+  box-shadow: 0 3px 6px rgba(217, 119, 6, 0.35);
+}
+
+html.light .neu-btn-amber:active,
+html.light .neu-btn-amber.active,
+.light .neu-btn-amber:active,
+.light .neu-btn-amber.active {
+  background: #9a4b0d !important;
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
+html.light .neu-btn-gold,
+.light .neu-btn-gold {
+  background: linear-gradient(145deg, #d97706, #b45309);
+  color: #ffffff;
+  border: 1px solid #92400e;
+}
+
+html.light .neu-btn-gold:hover,
+.light .neu-btn-gold:hover {
+  background: linear-gradient(145deg, #b45309, #92400e);
+  color: #ffffff;
+}
+
+html.light .neu-input,
+.light .neu-input {
+  background: #ffffff;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+}
+
+html.light .neu-input:focus,
+.light .neu-input:focus {
+  border-color: #c26117;
+  box-shadow: 0 0 0 2px rgba(194, 97, 23, 0.2);
+}
+
+html.light .neu-segment-track,
+.light .neu-segment-track {
+  background: #f1f5f9;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+html.light .neu-segment-tab-active,
+.light .neu-segment-tab-active {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: #c26117;
+  border: 1px solid #cbd5e1;
+}
+
+html.light .neu-icon-btn,
+.light .neu-icon-btn {
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+}
+
+html.light .neu-icon-btn:hover,
+.light .neu-icon-btn:hover {
+  background: #f8fafc;
+  color: #020617;
+}
+
+html.light .neu-switch-track,
+.light .neu-switch-track {
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+}
+
+html.light .neu-switch-thumb,
+.light .neu-switch-thumb {
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+html.light .neu-switch-thumb-active,
+.light .neu-switch-thumb-active {
+  background: #c26117;
+}
+
+/* OpenStreetMap Light Mode (Standard natural clean tiles) */
+html.light .map-tiles-dark,
+.light .map-tiles-dark {
+  filter: none !important;
+}
+
+/* Base Canvas & Container Backgrounds */
+html.light .bg-\[\#12151b\],
+html.light .bg-\[\#11151c\],
+html.light .bg-\[\#0e1117\],
+html.light .bg-\[\#10141a\],
+html.light .bg-\[\#12161f\],
+html.light .bg-\[\#12161e\],
+html.light .bg-\[\#07090d\],
+html.light .bg-\[\#0a0d12\],
+html.light .bg-\[\#080a0e\],
+html.light .bg-\[\#080a0f\],
+html.light .bg-\[\#090c10\],
+html.light .bg-\[\#0b0e13\],
+.light .bg-\[\#12151b\],
+.light .bg-\[\#11151c\],
+.light .bg-\[\#0e1117\],
+.light .bg-\[\#10141a\],
+.light .bg-\[\#12161f\],
+.light .bg-\[\#12161e\],
+.light .bg-\[\#07090d\],
+.light .bg-\[\#0a0d12\],
+.light .bg-\[\#080a0e\],
+.light .bg-\[\#080a0f\],
+.light .bg-\[\#090c10\],
+.light .bg-\[\#0b0e13\] {
+  background-color: #f8fafc !important;
+}
+
+/* Semi-transparent Header / Navbar / Backdrop Backgrounds */
+html.light .bg-\[\#12151b\]\/95,
+.light .bg-\[\#12151b\]\/95 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+html.light .bg-\[\#12151b\]\/90,
+.light .bg-\[\#12151b\]\/90 {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+html.light .bg-\[\#12151b\]\/80,
+.light .bg-\[\#12151b\]\/80 {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
+html.light .bg-\[\#12151b\]\/60,
+.light .bg-\[\#12151b\]\/60 {
+  background-color: rgba(255, 255, 255, 0.6) !important;
+}
+html.light .bg-\[\#12151b\]\/40,
+.light .bg-\[\#12151b\]\/40 {
+  background-color: rgba(255, 255, 255, 0.4) !important;
+}
+html.light .bg-\[\#12151b\]\/20,
+.light .bg-\[\#12151b\]\/20 {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+html.light .bg-\[\#12151b\]\/10,
+.light .bg-\[\#12151b\]\/10 {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Card & Surface Backgrounds */
+html.light .bg-\[\#1b212b\],
+html.light .bg-\[\#171c24\],
+html.light .bg-\[\#151922\],
+html.light .bg-\[\#1a202c\],
+html.light .bg-\[\#191f2a\],
+html.light .bg-\[\#141822\],
+html.light .bg-\[\#161c26\],
+html.light .bg-\[\#1b222d\],
+html.light .bg-\[\#1a1f29\],
+html.light .bg-\[\#141922\],
+html.light .bg-\[\#1c222c\],
+html.light .bg-\[\#13222a\],
+html.light .bg-\[\#141820\],
+html.light .bg-\[\#171b23\],
+html.light .bg-\[\#191f2b\],
+html.light .bg-\[\#1a202a\],
+html.light .bg-\[\#1a212d\],
+html.light .bg-\[\#1f1a14\],
+html.light .bg-\[\#201a14\],
+html.light .bg-\[\#221c17\],
+html.light .bg-\[\#241a10\],
+html.light .bg-\[\#241c14\],
+.light .bg-\[\#1b212b\],
+.light .bg-\[\#171c24\],
+.light .bg-\[\#151922\],
+.light .bg-\[\#1a202c\],
+.light .bg-\[\#191f2a\],
+.light .bg-\[\#141822\],
+.light .bg-\[\#161c26\],
+.light .bg-\[\#1b222d\],
+.light .bg-\[\#1a1f29\],
+.light .bg-\[\#141922\],
+.light .bg-\[\#1c222c\],
+.light .bg-\[\#13222a\],
+.light .bg-\[\#141820\],
+.light .bg-\[\#171b23\],
+.light .bg-\[\#191f2b\],
+.light .bg-\[\#1a202a\],
+.light .bg-\[\#1a212d\],
+.light .bg-\[\#1f1a14\],
+.light .bg-\[\#201a14\],
+.light .bg-\[\#221c17\],
+.light .bg-\[\#241a10\],
+.light .bg-\[\#241c14\] {
+  background-color: #ffffff !important;
+}
+
+/* Secondary Panels, Filter Chips, Inset Containers */
+html.light .bg-\[\#242c38\],
+html.light .bg-\[\#1f2634\],
+html.light .bg-\[\#202735\],
+html.light .bg-\[\#2c3645\],
+html.light .bg-\[\#1c222e\],
+html.light .bg-\[\#232b38\],
+html.light .bg-\[\#202733\],
+html.light .bg-\[\#1f2633\],
+html.light .bg-\[\#3d4756\],
+html.light .bg-\[\#3d4655\],
+html.light .bg-\[\#2e3747\],
+html.light .bg-\[\#2f394a\],
+html.light .bg-\[\#2b3545\],
+html.light .bg-\[\#1f2632\],
+html.light .bg-\[\#1c2230\],
+.light .bg-\[\#242c38\],
+.light .bg-\[\#1f2634\],
+.light .bg-\[\#202735\],
+.light .bg-\[\#2c3645\],
+.light .bg-\[\#1c222e\],
+.light .bg-\[\#232b38\],
+.light .bg-\[\#202733\],
+.light .bg-\[\#1f2633\],
+.light .bg-\[\#3d4756\],
+.light .bg-\[\#3d4655\],
+.light .bg-\[\#2e3747\],
+.light .bg-\[\#2f394a\],
+.light .bg-\[\#2b3545\],
+.light .bg-\[\#1f2632\],
+.light .bg-\[\#1c2230\] {
+  background-color: #f1f5f9 !important;
+}
+
+/* Text Colors */
+html.light .text-\[\#f5efe3\],
+.light .text-\[\#f5efe3\] {
+  color: #0f172a !important;
+}
+
+html.light .text-\[\#9aa1ac\],
+.light .text-\[\#9aa1ac\] {
+  color: #475569 !important;
+}
+
+html.light .text-\[\#6d7580\],
+.light .text-\[\#6d7580\] {
+  color: #64748b !important;
+}
+
+html.light .text-\[\#e28b37\],
+.light .text-\[\#e28b37\] {
+  color: #c26117 !important;
+}
+
+html.light .text-\[\#d8b34a\],
+.light .text-\[\#d8b34a\] {
+  color: #b45309 !important;
+}
+
+html.light .text-\[\#7c8f5c\],
+.light .text-\[\#7c8f5c\] {
+  color: #15803d !important;
+}
+
+html.light .text-\[\#38bdf8\],
+.light .text-\[\#38bdf8\] {
+  color: #0284c7 !important;
+}
+
+html.light .text-\[\#4f8fb0\],
+.light .text-\[\#4f8fb0\] {
+  color: #0369a1 !important;
+}
+
+html.light .text-\[\#c084fc\],
+.light .text-\[\#c084fc\] {
+  color: #7e22ce !important;
+}
+
+html.light .text-\[\#10b981\],
+.light .text-\[\#10b981\] {
+  color: #047857 !important;
+}
+
+/* Dividers & Borders */
+html.light .border-\[\#2c333f\],
+html.light .border-\[\#242c38\],
+html.light .border-\[\#202735\],
+html.light .border-\[\#212835\],
+html.light .border-\[\#232b38\],
+html.light .border-\[\#2c3645\],
+html.light .border-\[\#1b212b\],
+html.light .border-\[\#1f2634\],
+html.light .border-\[\#171c24\],
+html.light .border-\[\#12151b\],
+html.light .border-\[\#1a202c\],
+.light .border-\[\#2c333f\],
+.light .border-\[\#242c38\],
+.light .border-\[\#202735\],
+.light .border-\[\#212835\],
+.light .border-\[\#232b38\],
+.light .border-\[\#2c3645\],
+.light .border-\[\#1b212b\],
+.light .border-\[\#1f2634\],
+.light .border-\[\#171c24\],
+.light .border-\[\#12151b\],
+.light .border-\[\#1a202c\] {
+  border-color: #e2e8f0 !important;
+}
+
+html.light .border-\[\#2c333f\]\/70,
+html.light .border-\[\#2c333f\]\/60,
+html.light .border-\[\#2c333f\]\/50,
+html.light .border-\[\#2c333f\]\/40,
+html.light .border-\[\#2c333f\]\/30,
+html.light .border-\[\#2c333f\]\/20,
+.light .border-\[\#2c333f\]\/70,
+.light .border-\[\#2c333f\]\/60,
+.light .border-\[\#2c333f\]\/50,
+.light .border-\[\#2c333f\]\/40,
+.light .border-\[\#2c333f\]\/30,
+.light .border-\[\#2c333f\]\/20 {
+  border-color: #cbd5e1 !important;
+}
+
+/* Hovers */
+html.light .hover\:bg-\[\#12151b\]:hover,
+html.light .hover\:bg-\[\#1b212b\]:hover,
+html.light .hover\:bg-\[\#171c24\]:hover,
+.light .hover\:bg-\[\#12151b\]:hover,
+.light .hover\:bg-\[\#1b212b\]:hover,
+.light .hover\:bg-\[\#171c24\]:hover {
+  background-color: #f1f5f9 !important;
+}
+
+html.light .hover\:bg-\[\#242c38\]:hover,
+.light .hover\:bg-\[\#242c38\]:hover {
+  background-color: #e2e8f0 !important;
+}
+
+html.light .hover\:bg-\[\#1a202c\]:hover,
+.light .hover\:bg-\[\#1a202c\]:hover {
+  background-color: #f8fafc !important;
+}
+
+html.light .hover\:text-\[\#f5efe3\]:hover,
+html.light .hover\:text-white:hover,
+.light .hover\:text-\[\#f5efe3\]:hover,
+.light .hover\:text-white:hover {
+  color: #020617 !important;
+}
+
+html.light .hover\:border-\[\#6d7580\]:hover,
+.light .hover\:border-\[\#6d7580\]:hover {
+  border-color: #94a3b8 !important;
+}
+
+html.light .hover\:border-\[\#d8b34a\]:hover,
+.light .hover\:border-\[\#d8b34a\]:hover {
+  border-color: #b45309 !important;
+}
+
+html.light .hover\:border-\[\#e28b37\]:hover,
+.light .hover\:border-\[\#e28b37\]:hover {
+  border-color: #c26117 !important;
+}
+
